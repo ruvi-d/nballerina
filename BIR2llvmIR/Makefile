@@ -1,8 +1,8 @@
 # Define these parameters to reflect the proper directories.
 TOP=..
-LLVM_INCLUDES_DIR=$(TOP)/llvm-project-master/llvm/include
-LLVM_BUILD_INCLUDES_DIR=$(TOP)/build/llvm/include
-LLVM_BUILD_LIB_DIR=$(TOP)/build/llvm/lib
+LLVM_INCLUDES_DIR=/usr/include/llvm-11
+LLVM_BUILD_INCLUDES_DIR=/usr/include/llvm-c-11
+LLVM_BUILD_LIB_DIR=/usr/lib/llvm-11/lib
 NBALLERINA_BUILD_DIR=$(TOP)/build/nballerina
 
 # No user definable parameters below.
@@ -15,11 +15,11 @@ PARALLEL_MAKE=make -j
 CXX=g++
 CFLAGS=-g -Wall -I. -I$(LLVM_INCLUDES_DIR) -I$(LLVM_BUILD_INCLUDES_DIR)
 LDFLAGS= -L$(LLVM_BUILD_LIB_DIR) $(LIBS) 
-LIBS= -lLLVMXRay -lLLVMWindowsManifest -lLLVMTestingSupport -lLLVMTableGen \
+LIBS= -lLLVMXRay -lLLVMWindowsManifest -lLLVMTableGen \
       -lLLVMSymbolize -lLLVMDebugInfoPDB -lLLVMOrcJIT -lLLVMOrcError -lLLVMJITLink \
       -lLLVMObjectYAML -lLLVMMCA -lLLVMLTO -lLLVMPasses -lLLVMCoroutines \
       -lLLVMObjCARCOpts -lLLVMExtensions -lLLVMLineEditor -lLLVMLibDriver \
-      -lLLVMInterpreter -lgtest_main -lgtest -lLLVMFuzzMutate -lLLVMMCJIT \
+      -lLLVMInterpreter -lLLVMFuzzMutate -lLLVMMCJIT \
       -lLLVMExecutionEngine -lLLVMRuntimeDyld -lLLVMDWARFLinker -lLLVMDlltoolDriver \
       -lLLVMOption -lLLVMDebugInfoGSYM -lLLVMCoverage -lLLVMXCoreDisassembler \
       -lLLVMXCoreCodeGen -lLLVMXCoreDesc -lLLVMXCoreInfo -lLLVMX86Disassembler \
