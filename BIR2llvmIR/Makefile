@@ -11,7 +11,7 @@ ifeq ($(UNAME), Linux)
   LTINFO = -ltinfo
 endif
 
-PARALLEL_MAKE=make -j 20
+PARALLEL_MAKE=make -j
 CXX=g++
 CFLAGS=-g -Wall -I. -I$(LLVM_INCLUDES_DIR) -I$(LLVM_BUILD_INCLUDES_DIR)
 LDFLAGS= -L$(LLVM_BUILD_LIB_DIR) $(LIBS) 
