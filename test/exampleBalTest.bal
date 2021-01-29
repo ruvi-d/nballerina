@@ -1,14 +1,6 @@
-// RUN: export JAVA_HOME=%java_path
-// RUN: ballerina build --dump-bir-file=%t %s
-// RUN: %nballerinacc %t
-// RUN: temp=$(echo %t) && filename="${temp%%%%.*}"
-// RUN: clang-11 -O0 -o $filename.out $filename.ll
-// RUN: echo RETVAL=$($filename.out)
+// RUN: JAVA_HOME=%java_path %testRunScript %s %nballerinacc | grep -e "RETVAL=16"
 
-int result = 0;
+int _val = 0;
 public function main(){
-    result = 1;
+    _val = 8;
 }
-
-// CHECK: RETVAL
-// CHECK-SAME: 0
