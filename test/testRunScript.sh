@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "Input file name is $1"
+# echo "Input file name is $1"
 FILE=$(basename $1)
 filename="${FILE%.*}"
 

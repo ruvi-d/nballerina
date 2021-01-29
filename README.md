@@ -21,10 +21,9 @@
 * The a.out can be disassembled using "objdump -d" to see the machine instructions generated in main.
 
 ### Run integration tests (LIT tests)
-* Install standalone Pyhton LIT package `pip3 install lit`
+* Install standalone Pyhton LIT package `pip3 install lit filecheck`
 * Execute tests:
 
         cd build/
         make check
 * To add LIT tests, add LIT compatible .bal files to the `test/` folder
-* For LLVM LIT's `FileCheck` is not available by default; but is available via additional [package](https://github.com/mull-project/FileCheck.py)
