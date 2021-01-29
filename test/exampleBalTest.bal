@@ -1,4 +1,4 @@
-// RUN: export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64/jre
+// RUN: export JAVA_HOME=%java_path
 // RUN: ballerina build --dump-bir-file=%t %s
 // RUN: %nballerinacc %t
 // RUN: temp=$(echo %t) && filename="${temp%%%%.*}"

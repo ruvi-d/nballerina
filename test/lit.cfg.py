@@ -10,3 +10,5 @@ config.test_exec_root = os.path.join(config.my_obj_root, 'test')
 
 config.substitutions.append(('%nballerinacc',
     os.path.join(config.my_obj_root, 'nballerinacc')))
+
+config.substitutions.append(('%java_path',config.java_path))

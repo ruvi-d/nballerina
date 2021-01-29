@@ -1,3 +1,4 @@
+set(java_path "$ENV{JAVA_HOME}")
 configure_file(lit.site.cfg.py.in lit.site.cfg.py @ONLY)
 
 add_custom_target(check
