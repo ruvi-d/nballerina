@@ -1,4 +1,4 @@
-// RUN: JAVA_HOME=%JAVA_HOME WORK_PATH=%WORK_PATH %WORK_PATH/testRunScript.sh %s -o - | FileCheck %s
+// RUN: JAVA_HOME=%java_path %testRunScript %s %nballerinacc | filecheck %s
 
 int _bal_result = 0;
 public function bar(int x, int y, int z) returns int
@@ -11,5 +11,4 @@ public function main() {
   int b = 10;
   _bal_result = bar(a,b,a);
 }
-// CHECK: RETVAL
-// CHECK-SAME: 55
+// CHECK: RETVAL=55
