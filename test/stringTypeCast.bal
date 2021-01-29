@@ -1,4 +1,4 @@
-// RUN: JAVA_HOME=%JAVA_HOME WORK_PATH=%WORK_PATH %WORK_PATH/testRunScript.sh %s -o - | FileCheck %s
+// RUN: JAVA_HOME=%java_path %testRunScript %s %nballerinacc | filecheck %s
 
 public function bar(any z) returns string
 {
@@ -11,5 +11,4 @@ public function main() {
   string c = bar(b);
 }
 
-// CHECK: RETVAL
-// CHECK-SAME: 40
+// CHECK: RETVAL=
