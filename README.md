@@ -19,3 +19,12 @@
   * The -O0 is required because the optimizer will otherwise optimize everything away. 
 * Running the a.out and checking the return value on the command-line by using "echo $?" will yield the int value returned by the function. 
 * The a.out can be disassembled using "objdump -d" to see the machine instructions generated in main.
+
+### Run integration tests (LIT tests)
+* Install standalone Pyhton LIT package `pip3 install lit`
+* Execute tests:
+
+        cd build/
+        make check
+* To add LIT tests, add LIT compatible .bal files to the `test/` folder
+* For LLVM LIT's `FileCheck` is not available by default; but is available via additional [package](https://github.com/mull-project/FileCheck.py)

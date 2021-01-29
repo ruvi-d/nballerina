@@ -16,3 +16,6 @@ file(GLOB SOURCES
 
 add_executable(nballerinacc ${SOURCES})
 target_link_libraries(nballerinacc PRIVATE LLVM-11)
+
+# Add LIT tests
+add_subdirectory(test)
