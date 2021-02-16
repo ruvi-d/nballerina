@@ -19,6 +19,8 @@
 
 // Rust Library
 
+use std::collections::HashMap;
+use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_char;
 
@@ -130,4 +132,70 @@ pub extern "C" fn int_array_load(arr_ptr: *mut Vec<*mut i32>, n: i32) -> *mut i3
     let return_val = arr[n_size];
     mem::forget(arr);
     return return_val;
+}
+
+// Ballerina Map implementation
+// ref: http://jakegoulding.com/rust-ffi-omnibus/objects/
+
+pub struct BalMapInt {
+   map: HashMap<String, i32>,
+}
+
+impl BalMapInt {
+   fn new() -> BalMapInt {
+      let mut val = BalMapInt {
+         map: HashMap::new(),
+      };
+      val.test_init();
+      return val;
+   }
+
+   fn test_init(&mut self) {
+      self.map.insert(String::from("test_key"), 42);
+   }
+   fn get(&self, key: &str) -> i32 {
+      self.map.get(key).cloned().unwrap_or(0)
+   }
+
+   fn get_length(&self) -> usize {
+      self.map.len()
+   }
+
+   fn insert_field(&mut self, key: &str, member: i32) {
+      self.map.insert(String::from(key), member);
+   }
+}
+
+#[no_mangle]
+pub extern "C" fn map_new_int() -> *mut BalMapInt {
+   println!("map_new_int");
+   Box::into_raw(Box::new(BalMapInt::new()))
+   // let foo: Box<Vec<*mut i32>> = Box::new(Vec::with_capacity(size_t));
+   // let vec_pointer = Box::into_raw(foo);
+}
+
+#[no_mangle]
+pub extern "C" fn map_deint_int(ptr: *mut BalMapInt) {
+   if ptr.is_null() {
+      return;
+   }
+   unsafe {
+      Box::from_raw(ptr);
+   }
+}
+
+#[no_mangle]
+pub extern "C" fn map_store_int(ptr: *const BalMapInt, key: *const c_char, member_ptr: *const i32) {
+   println!("map_store_int");
+   let bal_map = unsafe {
+      assert!(!ptr.is_null());
+      &*ptr
+   };
+   let key = unsafe {
+      assert!(!key.is_null());
+      CStr::from_ptr(key)
+   };
+   let key_str = key.to_str().unwrap();
+   println!("{}", key_str);
+   println!("map length {}", bal_map.get_length());
 }
