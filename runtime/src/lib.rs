@@ -23,6 +23,7 @@ use std::collections::HashMap;
 use std::ffi::CStr;
 use std::mem;
 use std::os::raw::c_char;
+use std::slice;
 
 // String comparision
 #[no_mangle]
@@ -135,7 +136,6 @@ pub extern "C" fn int_array_load(arr_ptr: *mut Vec<*mut i32>, n: i32) -> *mut i3
 }
 
 // Ballerina Map implementation
-// ref: http://jakegoulding.com/rust-ffi-omnibus/objects/
 
 pub struct BalMapInt {
    map: HashMap<String, i32>,
@@ -143,39 +143,49 @@ pub struct BalMapInt {
 
 impl BalMapInt {
    fn new() -> BalMapInt {
-      let mut val = BalMapInt {
+      BalMapInt {
          map: HashMap::new(),
-      };
-      val.test_init();
-      return val;
+      }
+      // let mut val = BalMapInt {
+      //    map: HashMap::new(),
+      // };
+      // val.test_init();
+      // return val;
    }
 
-   fn test_init(&mut self) {
-      self.map.insert(String::from("test_key"), 42);
-   }
+   // Map get
    fn get(&self, key: &str) -> i32 {
       self.map.get(key).cloned().unwrap_or(0)
    }
-
-   fn get_length(&self) -> usize {
-      self.map.len()
+   // Map insert
+   fn insert(&mut self, key: &str, member: i32) {
+      self.map.insert(String::from(key), member);
    }
 
-   fn insert_field(&mut self, key: &str, member: i32) {
-      self.map.insert(String::from(key), member);
+   // test functions
+   fn test_init(&mut self) {
+      self.map.insert(String::from("test_key"), 42);
+   }
+   fn length(&self) -> usize {
+      self.map.len()
+   }
+   fn print(&self) {
+      println!("Map contents");
+      for (key, value) in &self.map {
+         println!("\t {}: {}", key, value);
+      }
    }
 }
 
 #[no_mangle]
 pub extern "C" fn map_new_int() -> *mut BalMapInt {
-   println!("map_new_int");
+   println!("function enter:: map_new_int");
    Box::into_raw(Box::new(BalMapInt::new()))
-   // let foo: Box<Vec<*mut i32>> = Box::new(Vec::with_capacity(size_t));
-   // let vec_pointer = Box::into_raw(foo);
 }
 
 #[no_mangle]
 pub extern "C" fn map_deint_int(ptr: *mut BalMapInt) {
+   println!("function enter:: map_deint_int");
    if ptr.is_null() {
       return;
    }
@@ -185,17 +195,36 @@ pub extern "C" fn map_deint_int(ptr: *mut BalMapInt) {
 }
 
 #[no_mangle]
-pub extern "C" fn map_store_int(ptr: *const BalMapInt, key: *const c_char, member_ptr: *const i32) {
-   println!("map_store_int");
+pub extern "C" fn map_store_int(ptr: *mut BalMapInt, key: *const c_char, member_ptr: *const i32) {
+   println!("function enter:: map_store_int");
+
+   // Load BalMap from pointer
    let bal_map = unsafe {
       assert!(!ptr.is_null());
-      &*ptr
+      &mut *ptr
    };
+   let len = bal_map.length();
+   if len > 0 {
+      bal_map.print();
+   } else {
+      println!("BalMap initial length: {}", len);
+   }
+
+   // Load Key C string
    let key = unsafe {
       assert!(!key.is_null());
       CStr::from_ptr(key)
    };
    let key_str = key.to_str().unwrap();
-   println!("{}", key_str);
-   println!("map length {}", bal_map.get_length());
+
+   // Load member value
+   let member = unsafe {
+      assert!(!member_ptr.is_null());
+      slice::from_raw_parts(member_ptr, 1)
+   };
+   println!("new field to insert : {}:{}", key_str, member[0]);
+
+   // Insert new field
+   bal_map.insert(key_str, member[0]);
+   bal_map.print();
 }
