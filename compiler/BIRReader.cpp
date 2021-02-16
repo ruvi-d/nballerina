@@ -138,19 +138,29 @@ TypeDecl *ConstantPoolSet::getTypeCp(uint32_t index, bool voidToInt) {
   assert(poolEntry->getTag() ==
          ConstantPoolEntry::tagEnum::TAG_ENUM_CP_ENTRY_SHAPE);
   ShapeCpInfo *shapeCp = static_cast<ShapeCpInfo *>(poolEntry);
-  TypeDecl *typeDecl = new TypeDecl();
-  typeDecl->setTypeDeclName(getStringCp(shapeCp->getNameIndex()));
-  if (typeDecl->getTypeDeclName() == "") {
+  TypeDecl *typeDecl; // = new TypeDecl();
+  std::string name = getStringCp(shapeCp->getNameIndex());
+  if (name == "") {
     char newName[20];
     char *p;
     p = stpcpy(newName, "anon-");
     sprintf(p, "%5ld", random() % 100000);
-    typeDecl->setTypeDeclName(newName);
+    name = std::string(newName);
   }
-  typeDecl->setTypeTag(shapeCp->getTypeTag());
-  if (shapeCp->getTypeTag() == TYPE_TAG_NIL && voidToInt)
-    typeDecl->setTypeTag(TYPE_TAG_INT);
-  typeDecl->setFlags(shapeCp->getTypeFlag());
+  int type = shapeCp->getTypeTag();
+  if (type == TYPE_TAG_NIL && voidToInt)
+    typeDecl = new TypeDecl(TYPE_TAG_INT, name, shapeCp->getTypeFlag());
+  else if (type == TYPE_TAG_MAP) {
+    int memberShapeIndx = shapeCp->getConstraintTypeCpIndex();
+    ConstantPoolEntry *shapeEntry = getEntry(memberShapeIndx);
+    assert(shapeEntry->getTag() ==
+           ConstantPoolEntry::tagEnum::TAG_ENUM_CP_ENTRY_SHAPE);
+    ShapeCpInfo *typeShapeCp = static_cast<ShapeCpInfo *>(shapeEntry);
+    int memeberType = typeShapeCp->getTypeTag();
+    typeDecl = new MapTypeDecl(type, name, shapeCp->getTypeFlag(), memeberType);
+  } else
+    typeDecl = new TypeDecl(type, name, shapeCp->getTypeFlag());
+
   return typeDecl;
 }
 
@@ -526,6 +536,7 @@ void BIRReader::readInsn(BIRFunction *birFunction, BIRBasicBlock *basicBlock) {
   case INSTRUCTION_KIND_NEW_STRUCTURE: {
     StructureInsn *structureInsn =
         ReadStructureInsn::readStructureInsn.readNonTerminatorInsn();
+    structureInsn->setInstKind(insnKind);
     nonTerminatorInsn = structureInsn;
     break;
   }
