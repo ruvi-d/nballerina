@@ -11,7 +11,6 @@ add_definitions(${LLVM_DEFINITIONS})
 
 # Include and lib directories
 include_directories(SYSTEM ${LLVM_INCLUDE_DIRS}) 
-include_directories(${CMAKE_SOURCE_DIR}/runtime/include)
 link_directories(${CMAKE_SOURCE_DIR}/runtime/target/release)
 
 # Add runtime project
