@@ -19,6 +19,7 @@
 #include "Function.h"
 #include "BasicBlock.h"
 #include "FunctionParam.h"
+#include "InvocableType.h"
 #include "Operand.h"
 #include "Package.h"
 #include "Types.h"
@@ -27,8 +28,7 @@
 
 namespace nballerina {
 
-Function::Function(Package *_parentPackage, std::string name, std::string workerName, int flags,
-                   [[maybe_unused]] InvokableType *type)
+Function::Function(Package *_parentPackage, std::string name, std::string workerName, int flags)
     : parentPackage(_parentPackage), name(std::move(name)), workerName(std::move(workerName)), flags(flags),
       returnVar(nullptr), restParam(nullptr), receiver(nullptr), llvmBuilder(nullptr), llvmFunction(nullptr) {}
 

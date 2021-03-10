@@ -16,8 +16,8 @@
  * under the License.
  */
 
-#ifndef __INVOKABLETYPE__H__
-#define __INVOKABLETYPE__H__
+#ifndef __INVOCABLETYPE__H__
+#define __INVOCABLETYPE__H__
 
 #include "Types.h"
 #include <optional>
@@ -28,23 +28,19 @@ namespace nballerina {
 // Forward Declaration
 class Type;
 
-class InvokableType {
+class InvocableType {
   private:
     std::vector<Type> paramTypes;
     Type returnType;
     std::optional<Type> restType;
 
   public:
-    InvokableType() = delete;
-    InvokableType(std::vector<Type> paramTy, Type restTy, Type retTy);
-    InvokableType(std::vector<Type> paramTy, Type retTy);
-    ~InvokableType() = default;
-
-    const Type &getReturnType() const;
-    const Type &getParamType(int i) const;
-    size_t getParamTypeCount() const;
+    InvocableType() = delete;
+    InvocableType(std::vector<Type> paramTy, Type restTy, Type retTy);
+    InvocableType(std::vector<Type> paramTy, Type retTy);
+    ~InvocableType() = default;
 };
 
 } // namespace nballerina
 
-#endif //!__INVOKABLETYPE__H__
+#endif //!__INVOCABLETYPE__H__

@@ -193,7 +193,7 @@ TypeTag ConstantPoolSet::getTypeTag(uint32_t index) {
 }
 
 // Search type from the constant pool based on index
-InvokableType *ConstantPoolSet::getInvokableType(uint32_t index) {
+InvocableType ConstantPoolSet::getInvocableType(uint32_t index) {
 
     ConstantPoolEntry *poolEntry = getEntry(index);
     assert(poolEntry->getTag() == ConstantPoolEntry::tagEnum::TAG_ENUM_CP_ENTRY_SHAPE);
@@ -205,9 +205,9 @@ InvokableType *ConstantPoolSet::getInvokableType(uint32_t index) {
     auto returnTypeDecl = getTypeCp(shapeCp->getReturnTypeIndex(), false);
     if (shapeCp->getRestType()) {
         auto restTypeDecl = getTypeCp(shapeCp->getRestTypeIndex(), false);
-        return new InvokableType(std::move(paramTypes), restTypeDecl, returnTypeDecl);
+        return InvocableType(std::move(paramTypes), restTypeDecl, returnTypeDecl);
     }
-    return new InvokableType(std::move(paramTypes), returnTypeDecl);
+    return InvocableType(std::move(paramTypes), returnTypeDecl);
 }
 
 // Read Global Variable and push it to BIRPackage
@@ -657,9 +657,8 @@ Function *BIRReader::readFunction(Package *package) {
     uint32_t workdernameCpIndex = readS4be();
     uint32_t flags = readS4be();
     uint32_t typeCpIndex = readS4be();
-
-    Function *birFunction = new Function(package, functionName, constantPool->getStringCp(workdernameCpIndex), flags,
-                                         constantPool->getInvokableType(typeCpIndex));
+    [[maybe_unused]] auto invocable_type = constantPool->getInvocableType(typeCpIndex);
+    Function *birFunction = new Function(package, functionName, constantPool->getStringCp(workdernameCpIndex), flags);
     birFunction->setLocation(location);
 
     uint64_t annotationLength __attribute__((unused)) = readS8be();
@@ -949,7 +948,7 @@ void BIRReader::patchTypesToFuncParam() {
             for (int i = 0; i < Terminator->getArgCount(); i++) {
               Function *patchCallFunction =
                   birPackage.getFunction(Terminator->getFunctionName());
-              InvokableType *invokableType =
+              InvocableType *invokableType =
                   patchCallFunction->getInvokableType();
               for (size_t i = 0; i < invokableType->getParamTypeCount(); i++) {
                 Type *typeDecl = invokableType->getParamType(i);
