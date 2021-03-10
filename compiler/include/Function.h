@@ -54,7 +54,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     std::vector<BasicBlock *> basicBlocks;
     std::map<std::string, LLVMValueRef> branchComparisonList;
     std::map<std::string, LLVMValueRef> localVarRefs;
-    std::vector<FunctionParam *> requiredParams;
+    std::vector<FunctionParam> requiredParams;
     inline static const std::string MAIN_FUNCTION_NAME = "main";
     static constexpr unsigned int PUBLIC = 1;
     static constexpr unsigned int NATIVE = PUBLIC << 1;
@@ -65,7 +65,6 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     Function(const Function &) = delete;
     ~Function() = default;
 
-    FunctionParam *getParam(int index);
     std::string getName();
     size_t getNumParams();
     RestParam *getRestParam();
@@ -85,8 +84,9 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     LLVMTypeRef getLLVMTypeOfReturnVal();
     bool isMainFunction();
     bool isExternalFunction();
+    const FunctionParam &getParam(int i) const;
 
-    void insertParam(FunctionParam *param);
+    void insertParam(FunctionParam param);
     void setRestParam(RestParam *param);
     void setReceiver(Variable *var);
     void setReturnVar(Variable *var);

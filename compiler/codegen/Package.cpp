@@ -136,8 +136,8 @@ void Package::translate(LLVMModuleRef &modRef) {
         }
         assert(function->getReturnVar());
         for (size_t i = 0; i < numParams; i++) {
-            FunctionParam *funcParam = function->getParam(i);
-            paramTypes[i] = getLLVMTypeOfType(funcParam->getType());
+            FunctionParam funcParam = function->getParam(i);
+            paramTypes[i] = getLLVMTypeOfType(funcParam.getType());
         }
 
         LLVMTypeRef funcType = LLVMFunctionType(function->getLLVMTypeOfReturnVal(), paramTypes, numParams,

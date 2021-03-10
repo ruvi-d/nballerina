@@ -28,18 +28,14 @@ namespace nballerina {
 
 class FunctionParam : public Operand {
   private:
-    std::unique_ptr<Type> type;
+    Type type;
 
   public:
     FunctionParam() = delete;
-    FunctionParam(std::string name) : Operand(std::move(name), ARG_VAR_KIND), type() {}
+    FunctionParam(Operand paramOp, Type type) : Operand(std::move(paramOp)), type(std::move(type)) {}
     ~FunctionParam() = default;
 
-    const Type &getType() const {
-        assert(type);
-        return *type;
-    }
-    void setType(std::unique_ptr<Type> type) { this->type = std::move(type); }
+    const Type &getType() const { return type; }
 };
 
 } // namespace nballerina

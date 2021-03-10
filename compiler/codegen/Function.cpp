@@ -42,7 +42,7 @@ BasicBlock *Function::FindBasicBlock(const std::string &id) {
 }
 
 std::string Function::getName() { return name; }
-FunctionParam *Function::getParam(int i) { return requiredParams[i]; }
+const FunctionParam &Function::getParam(int i) const { return requiredParams[i]; }
 RestParam *Function::getRestParam() { return restParam; }
 Variable *Function::getReturnVar() { return returnVar; }
 unsigned int Function::getFlags() { return flags; }
@@ -58,7 +58,7 @@ LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsNam
     return branch->second;
 }
 
-LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) const{
+LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) const {
     auto varIt = localVarRefs.find(varName);
     if (varIt == localVarRefs.end()) {
         return nullptr;
@@ -66,7 +66,7 @@ LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) const{
     return varIt->second;
 }
 
-LLVMValueRef Function::createTempVariable(const Operand &operand) const{
+LLVMValueRef Function::createTempVariable(const Operand &operand) const {
     LLVMValueRef locVRef = getLLVMLocalOrGlobalVar(operand);
     std::string tempName = operand.getName() + "_temp";
     return LLVMBuildLoad(llvmBuilder, locVRef, tempName.c_str());
@@ -106,7 +106,7 @@ LLVMTypeRef Function::getLLVMTypeOfReturnVal() {
     return parentPackage->getLLVMTypeOfType(retType);
 }
 
-void Function::insertParam(FunctionParam *param) { requiredParams.push_back(param); }
+void Function::insertParam(FunctionParam param) { requiredParams.push_back(std::move(param)); }
 void Function::setReceiver(Variable *var) { receiver = var; }
 void Function::setRestParam(RestParam *param) { restParam = param; }
 void Function::insertLocalVar(Variable *var) {
@@ -123,7 +123,7 @@ void Function::insertBranchComparisonValue(const std::string &name, LLVMValueRef
     branchComparisonList.insert(std::pair<std::string, LLVMValueRef>(name, compRef));
 }
 
-Variable *Function::getLocalVariable(const std::string &opName) const{
+Variable *Function::getLocalVariable(const std::string &opName) const {
     auto varIt = localVars.find(opName);
     if (varIt == localVars.end()) {
         return nullptr;
@@ -131,14 +131,14 @@ Variable *Function::getLocalVariable(const std::string &opName) const{
     return varIt->second;
 }
 
-Variable *Function::getLocalOrGlobalVariable(const Operand &op) const{
+Variable *Function::getLocalOrGlobalVariable(const Operand &op) const {
     if (op.getKind() == GLOBAL_VAR_KIND) {
         return parentPackage->getGlobalVariable(op.getName());
     }
     return getLocalVariable(op.getName());
 }
 
-LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const{
+LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const {
     if (op.getKind() == GLOBAL_VAR_KIND) {
         return parentPackage->getGlobalLLVMVar(op.getName());
     }
@@ -166,7 +166,7 @@ void Function::translate(LLVMModuleRef &modRef) {
         localVarRefs.insert({locVar->getName(), localVarRef});
         if (isParamter(locVar)) {
             LLVMValueRef parmRef = LLVMGetParam(llvmFunction, paramIndex);
-            std::string paramName = getParam(paramIndex)->getName();
+            std::string paramName = requiredParams[paramIndex].getName();
             LLVMSetValueName2(parmRef, paramName.c_str(), paramName.length());
             if (parmRef != nullptr) {
                 LLVMBuildStore(llvmBuilder, parmRef, localVarRef);

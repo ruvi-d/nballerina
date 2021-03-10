@@ -54,10 +54,10 @@ void StructureInsn::mapInsnTranslate(Variable *lhsVar, LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    auto *mapTypeDelare = dynamic_cast<MapTypeDecl *>(lhsVar->getTypeObj());
+    auto mapType = lhsVar->getType();
 
     // Get member type
-    TypeTag memberTypeTag = mapTypeDelare->getMemberTypeTag();
+    TypeTag memberTypeTag = mapType.getMemberTypeTag();
     // Only handle Int type
     if (memberTypeTag != TYPE_TAG_INT) {
         std::cerr << "Non INT type maps are currently not supported" << std::endl;

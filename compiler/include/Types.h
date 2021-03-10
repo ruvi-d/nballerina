@@ -84,26 +84,16 @@ class Type {
     TypeTag type;
     std::string name;
     int flags;
+    TypeTag memberType;
 
   public:
     Type() = delete;
-    Type(TypeTag type, std::string name, int flags);
+    Type(TypeTag type, std::string name, int flags, TypeTag memberType = TypeTag{});
     virtual ~Type() = default;
 
     TypeTag getTypeTag() const;
     const std::string &getName() const;
     static std::string getNameOfType(TypeTag typeTag);
-};
-
-// Extend Type for MapTypeDecl; to store member type info
-class MapTypeDecl : public Type {
-  private:
-    TypeTag memberType;
-
-  public:
-    MapTypeDecl() = delete;
-    MapTypeDecl(TypeTag type, std::string name, int flags, TypeTag memberType);
-    ~MapTypeDecl() = default;
     TypeTag getMemberTypeTag() const;
 };
 
