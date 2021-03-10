@@ -83,29 +83,28 @@ class Type {
   private:
     TypeTag type;
     std::string name;
-    const int flags;
+    int flags;
 
   public:
     Type() = delete;
     Type(TypeTag type, std::string name, int flags);
     virtual ~Type() = default;
 
-    TypeTag getTypeTag();
-    std::string getName();
-    int getFlags();
-    static const char *getNameOfType(TypeTag typeTag);
+    TypeTag getTypeTag() const;
+    const std::string &getName() const;
+    static std::string getNameOfType(TypeTag typeTag);
 };
 
 // Extend Type for MapTypeDecl; to store member type info
 class MapTypeDecl : public Type {
   private:
-    const TypeTag memberType;
+    TypeTag memberType;
 
   public:
     MapTypeDecl() = delete;
     MapTypeDecl(TypeTag type, std::string name, int flags, TypeTag memberType);
     ~MapTypeDecl() = default;
-    TypeTag getMemberTypeTag();
+    TypeTag getMemberTypeTag() const;
 };
 
 } // namespace nballerina
