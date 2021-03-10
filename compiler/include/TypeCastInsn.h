@@ -30,15 +30,13 @@ class Operand;
 
 class TypeCastInsn : public NonTerminatorInsn {
   private:
-    Operand *rhsOp;
-    LLVMValueRef getIsSameTypeDeclaration(LLVMModuleRef &modRef, Package *pkg, LLVMValueRef lhsRef,
-                                          LLVMValueRef rhsRef);
+    Operand rhsOp;
+    LLVMValueRef getIsSameTypeDeclaration(LLVMModuleRef &modRef, LLVMValueRef lhsRef, LLVMValueRef rhsRef);
 
   public:
     TypeCastInsn() = delete;
-    TypeCastInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp, Type *tDecl, bool checkTypes);
+    TypeCastInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &rhsOp);
     ~TypeCastInsn() = default;
-    LLVMValueRef isSameType(LLVMModuleRef &modRef, LLVMValueRef lhsRef, LLVMValueRef rhsRef);
     std::string_view typeStringMangleName(LLVMTypeRef valType, TypeTag typeTag);
     void translate(LLVMModuleRef &modRef) final;
 };
