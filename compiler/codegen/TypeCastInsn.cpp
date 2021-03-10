@@ -71,7 +71,7 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         LLVMValueRef origTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 0, "origTypeIdx");
         Variable *origVarDecl = funcObj->getLocalVariable(lhsOpName);
         TypeTag origTypeTag = origVarDecl->getTypeDecl()->getTypeTag();
-        const char *origTypeName = Type::getNameOfType(origTypeTag);
+        auto origTypeName = Type::getNameOfType(origTypeTag);
         if (!strTable->contains(origTypeName))
             strTable->add(origTypeName);
         LLVMValueRef constValue = LLVMConstInt(LLVMInt32Type(), -1, 0);
@@ -82,7 +82,7 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         Variable *lastTypeVarDecl = funcObj->getLocalVariable(rhsOpName);
         assert(lastTypeVarDecl->getTypeDecl()->getTypeTag());
         TypeTag lastTypeTag = lastTypeVarDecl->getTypeDecl()->getTypeTag();
-        const char *lastTypeName = Type::getNameOfType(lastTypeTag);
+        auto lastTypeName = Type::getNameOfType(lastTypeTag);
         if (!strTable->contains(lastTypeName))
             strTable->add(lastTypeName);
         LLVMValueRef constValue1 = LLVMConstInt(LLVMInt32Type(), -2, 0);
