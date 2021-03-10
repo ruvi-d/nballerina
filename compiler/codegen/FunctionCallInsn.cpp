@@ -50,11 +50,11 @@ void FunctionCallInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     }
     for (int i = 0; i < argCount; i++) {
         Operand *op = argsList[i];
-        LLVMValueRef opRef = funcObj->getTempLocalVariable(op);
+        LLVMValueRef opRef = funcObj->createTempVariable(*op);
         ParamRefs[i] = opRef;
     }
 
-    LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
+    LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef namedFuncRef = function->getLLVMFunctionValue();
     LLVMValueRef callResult = LLVMBuildCall(builder, namedFuncRef, ParamRefs, argCount, "call");
     LLVMBuildStore(builder, callResult, lhsRef);

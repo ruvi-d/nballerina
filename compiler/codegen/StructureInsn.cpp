@@ -37,7 +37,7 @@ void StructureInsn::translate(LLVMModuleRef &modRef) {
 
     Function *funcObj = getFunction();
     // Find Variable corresponding to lhs to determine structure and member type
-    Variable *lhsVar = funcObj->getLocalOrGlobalVariable(getLHS());
+    Variable *lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
 
     // Determine structure type
     TypeTag structType = lhsVar->getType().getTypeTag();
@@ -54,7 +54,7 @@ void StructureInsn::mapInsnTranslate(Variable *lhsVar, LLVMModuleRef &modRef) {
 
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
-    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
+    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     auto *mapTypeDelare = dynamic_cast<MapTypeDecl *>(lhsVar->getTypeObj());
 
     // Get member type

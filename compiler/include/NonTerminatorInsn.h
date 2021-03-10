@@ -21,6 +21,7 @@
 
 #include "interfaces/AbstractInstruction.h"
 #include "interfaces/Translatable.h"
+#include <memory>
 
 namespace nballerina {
 
@@ -31,7 +32,8 @@ class NonTerminatorInsn : public AbstractInstruction, public Translatable {
   private:
   public:
     NonTerminatorInsn() = delete;
-    NonTerminatorInsn(Operand *lOp, BasicBlock *currentBB) : AbstractInstruction(lOp, currentBB) {}
+    NonTerminatorInsn(Operand *lOp, BasicBlock *currentBB)
+        : AbstractInstruction(std::unique_ptr<Operand>(lOp), currentBB) {}
     virtual ~NonTerminatorInsn() = default;
 
     virtual void translate([[maybe_unused]] LLVMModuleRef &modRef) override {}

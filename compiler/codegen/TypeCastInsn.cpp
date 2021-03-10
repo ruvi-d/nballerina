@@ -36,7 +36,7 @@ TypeCastInsn::TypeCastInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp, [[
 
 void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
-    string lhsOpName = getLHS()->getName();
+    string lhsOpName = getLhsOperand().getName();
     string rhsOpName = rhsOp->getName();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef rhsOpRef;
@@ -63,8 +63,8 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         LLVMValueRef castResult = LLVMBuildBitCast(builder, dataLoad, lhsTypeRef, lhsOpName.c_str());
         LLVMValueRef castLoad = LLVMBuildLoad(builder, castResult, "");
         LLVMBuildStore(builder, castLoad, lhsOpRef);
-    } else if (getLHS() && funcObj->getLocalVariable(lhsOpName)->getType().getTypeTag() == TYPE_TAG_ANY) {
-        LLVMValueRef structAllocaRef = funcObj->getLLVMLocalVar(getLHS()->getName());
+    } else if (funcObj->getLocalVariable(lhsOpName)->getType().getTypeTag() == TYPE_TAG_ANY) {
+        LLVMValueRef structAllocaRef = funcObj->getLLVMLocalVar(getLhsOperand().getName());
         StringTableBuilder *strTable = getPackage()->getStrTableBuilder();
 
         // struct first element original type

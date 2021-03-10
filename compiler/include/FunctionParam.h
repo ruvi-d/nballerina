@@ -37,7 +37,7 @@ class FunctionParam : public Operand {
 
     const Type &getType() const {
         assert(type);
-        return *type.get();
+        return *type;
     }
     void setType(std::unique_ptr<Type> type) { this->type = std::move(type); }
 };
