@@ -20,15 +20,14 @@
 
 namespace nballerina {
 
-InvokableType::InvokableType(std::vector<Type *> paramTy, Type *restTy, Type *retTy)
-    : paramTypes(std::move(paramTy)), restType(restTy), returnType(retTy) {}
+InvokableType::InvokableType(std::vector<Type> paramTy, Type restTy, Type retTy)
+    : paramTypes(std::move(paramTy)), returnType(std::move(retTy)), restType(std::move(restTy)) {}
 
-InvokableType::InvokableType(std::vector<Type *> paramTy, Type *retTy)
-    : paramTypes(std::move(paramTy)), restType(nullptr), returnType(retTy) {}
+InvokableType::InvokableType(std::vector<Type> paramTy, Type retTy)
+    : paramTypes(std::move(paramTy)), returnType(std::move(retTy)), restType() {}
 
-const Type *InvokableType::getReturnType() { return returnType; }
-const Type *InvokableType::getRestType() { return restType; }
-Type *InvokableType::getParamType(int i) { return paramTypes[i]; }
-size_t InvokableType::getParamTypeCount() { return paramTypes.size(); }
+const Type &InvokableType::getReturnType() const { return returnType; }
+const Type &InvokableType::getParamType(int i) const { return paramTypes[i]; }
+size_t InvokableType::getParamTypeCount() const { return paramTypes.size(); }
 
 } // namespace nballerina

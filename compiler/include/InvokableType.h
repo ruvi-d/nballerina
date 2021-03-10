@@ -19,6 +19,8 @@
 #ifndef __INVOKABLETYPE__H__
 #define __INVOKABLETYPE__H__
 
+#include "Types.h"
+#include <optional>
 #include <vector>
 
 namespace nballerina {
@@ -28,20 +30,19 @@ class Type;
 
 class InvokableType {
   private:
-    std::vector<Type *> paramTypes;
-    Type *restType;
-    Type *returnType;
+    std::vector<Type> paramTypes;
+    Type returnType;
+    std::optional<Type> restType;
 
   public:
     InvokableType() = delete;
-    InvokableType(std::vector<Type *> paramTy, Type *restTy, Type *retTy);
-    InvokableType(std::vector<Type *> paramTy, Type *retTy);
+    InvokableType(std::vector<Type> paramTy, Type restTy, Type retTy);
+    InvokableType(std::vector<Type> paramTy, Type retTy);
     ~InvokableType() = default;
 
-    const Type *getReturnType();
-    const Type *getRestType();
-    Type *getParamType(int i);
-    size_t getParamTypeCount();
+    const Type &getReturnType() const;
+    const Type &getParamType(int i) const;
+    size_t getParamTypeCount() const;
 };
 
 } // namespace nballerina

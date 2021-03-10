@@ -28,19 +28,15 @@ namespace nballerina {
 
 class Variable : public AbstractVariable {
   private:
-    std::unique_ptr<Type> type;
+    Type type;
 
   public:
     Variable() = delete;
-    Variable(std::unique_ptr<Type> type, std::string name, VarKind kind)
+    Variable(Type type, std::string name, VarKind kind)
         : AbstractVariable(std::move(name), kind), type(std::move(type)) {}
     virtual ~Variable() = default;
 
-    const Type &getType() const {
-        assert(type);
-        return *type;
-    }
-    Type *getTypeObj() { return type.get(); }
+    const Type &getType() const { return type; }
 };
 
 } // namespace nballerina
