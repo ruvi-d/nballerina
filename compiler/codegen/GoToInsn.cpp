@@ -24,7 +24,8 @@
 
 namespace nballerina {
 
-GoToInsn::GoToInsn(BasicBlock *nextBB, BasicBlock *currentBB) : TerminatorInsn(Operand(), currentBB, nextBB, true) {
+GoToInsn::GoToInsn(BasicBlock *nextBB, BasicBlock *currentBB)
+    : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nextBB, true) {
     kind = INSTRUCTION_KIND_GOTO;
 }
 

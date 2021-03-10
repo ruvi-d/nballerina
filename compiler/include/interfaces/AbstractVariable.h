@@ -24,6 +24,7 @@
 namespace nballerina {
 
 enum VarKind {
+    NOT_A_KIND = 0,
     LOCAL_VAR_KIND = 1,
     ARG_VAR_KIND = 2,
     TEMP_VAR_KIND = 3,

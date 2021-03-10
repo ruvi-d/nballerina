@@ -18,10 +18,10 @@
 
 #include "ReturnInsn.h"
 #include "Function.h"
+#include "Operand.h"
 #include "Package.h"
 #include "Types.h"
 #include "Variable.h"
-#include "Operand.h"
 #include "llvm-c/Core.h"
 
 using namespace std;
@@ -29,7 +29,7 @@ using namespace llvm;
 
 namespace nballerina {
 
-ReturnInsn::ReturnInsn(BasicBlock *currentBB) : TerminatorInsn(Operand(), currentBB, nullptr, false) {}
+ReturnInsn::ReturnInsn(BasicBlock *currentBB) : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nullptr, false) {}
 
 void ReturnInsn::translate(LLVMModuleRef &) {
 
