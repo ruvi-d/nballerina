@@ -586,7 +586,7 @@ void BIRReader::patchInsn(vector<BasicBlock *> basicBlocks) {
     for (auto const &basicBlock : basicBlocks) {
         Function *curFunc = basicBlock->getFunction();
         TerminatorInsn *terminator = basicBlock->getTerminatorInsn();
-        if ((terminator == nullptr) || !terminator->getPatchStatus()) {
+        if ((terminator == nullptr) || !terminator->isPatched()) {
             continue;
         }
         switch (terminator->getInstKind()) {
@@ -941,7 +941,7 @@ void BIRReader::patchTypesToFuncParam() {
       BasicBlock *birBasicBlock = curFunc->getBasicBlock(i);
       for (size_t i = 0; i < birBasicBlock->numInsns(); i++) {
         TerminatorInsn *terminator = birBasicBlock->getTerminatorInsn();
-        if (terminator && terminator->getPatchStatus()) {
+        if (terminator && terminator->isPatched()) {
           switch (terminator->getInstKind()) {
           case INSTRUCTION_KIND_CALL: {
             FunctionCallInsn *Terminator =
