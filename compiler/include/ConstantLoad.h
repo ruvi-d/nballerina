@@ -29,34 +29,19 @@ namespace nballerina {
 class ConstantLoadInsn : public NonTerminatorInsn {
   private:
     TypeTag typeTag;
-    union value {
-        int intValue;
-        double floatValue;
-        bool boolValue;
-        std::string *strValue;
-        value() {}
-        value(int x) : intValue(x) {}
-        value(float x) : floatValue(x) {}
-        value(bool x) : boolValue(x) {}
-        value(std::string *x) : strValue(x) {}
-    } val;
+    int intValue;
+    double floatValue;
+    bool boolValue;
+    std::string strValue;
 
   public:
     ConstantLoadInsn() = delete;
+    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, int intVal);
+    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, float floatVal);
+    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, bool boolVal);
+    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, std::string str);
     ConstantLoadInsn(Operand lhs, BasicBlock *currentBB);
     ~ConstantLoadInsn() = default;
-
-    int getIntValue();
-    float getFloatValue();
-    bool getBoolValue();
-    std::string *getStringValue();
-    TypeTag getTypeTag();
-
-    void setIntValue(int intVal, TypeTag TypeTag);
-    void setFloatValue(float floatVal, TypeTag TypeTag);
-    void setBoolValue(bool boolVal, TypeTag TypeTag);
-    void setStringValue(std::string *str, TypeTag TypeTag);
-    void setTypeTagNil(TypeTag TypeTag);
 
     void translate(LLVMModuleRef &modRef) final;
 };

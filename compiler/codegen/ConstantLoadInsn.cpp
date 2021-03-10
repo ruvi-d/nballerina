@@ -32,35 +32,19 @@ using namespace llvm;
 
 namespace nballerina {
 
+// With Nil Type setting only Type Tag because value will be zero with NIL Type.
 ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag{} {}
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_NIL) {}
 
-int ConstantLoadInsn::getIntValue() { return val.intValue; }
-float ConstantLoadInsn::getFloatValue() { return val.floatValue; }
-bool ConstantLoadInsn::getBoolValue() { return val.boolValue; }
-std::string *ConstantLoadInsn::getStringValue() { return val.strValue; }
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, int intVal)
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_INT), intValue(intVal) {}
 
-void ConstantLoadInsn::setIntValue(int intVal, TypeTag TypeTag) {
-    val.intValue = intVal;
-    typeTag = TypeTag;
-}
-void ConstantLoadInsn::setFloatValue(float floatVal, TypeTag TypeTag) {
-    val.floatValue = floatVal;
-    typeTag = TypeTag;
-}
-void ConstantLoadInsn::setBoolValue(bool boolVal, TypeTag TypeTag) {
-    val.boolValue = boolVal;
-    typeTag = TypeTag;
-}
-void ConstantLoadInsn::setStringValue(std::string *str, TypeTag TypeTag) {
-    val.strValue = str;
-    typeTag = TypeTag;
-}
-// With Nil Type setting only Type Tag because value will be zero with NIL
-// Type.
-void ConstantLoadInsn::setTypeTagNil(TypeTag TypeTag) { typeTag = TypeTag; }
-
-TypeTag ConstantLoadInsn::getTypeTag() { return typeTag; }
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, float floatVal)
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_FLOAT), floatValue(floatVal) {}
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, bool boolVal)
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_BOOLEAN), boolValue(boolVal) {}
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, std::string str)
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_STRING), strValue(std::move(str)) {}
 
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef constRef = nullptr;
@@ -72,21 +56,21 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
 
     switch (typeTag) {
     case TYPE_TAG_INT: {
-        constRef = LLVMConstInt(LLVMInt32Type(), val.intValue, 0);
+        constRef = LLVMConstInt(LLVMInt32Type(), intValue, 0);
         break;
     }
     case TYPE_TAG_FLOAT: {
-        constRef = LLVMConstReal(LLVMFloatType(), val.floatValue);
+        constRef = LLVMConstReal(LLVMFloatType(), floatValue);
         break;
     }
     case TYPE_TAG_BOOLEAN: {
-        constRef = LLVMConstInt(LLVMInt8Type(), val.boolValue, 0);
+        constRef = LLVMConstInt(LLVMInt8Type(), boolValue, 0);
         break;
     }
     case TYPE_TAG_STRING:
     case TYPE_TAG_CHAR_STRING: {
         LLVMValueRef *paramTypes = new LLVMValueRef[3];
-        string stringValue = *val.strValue;
+        string stringValue = strValue;
         Constant *C = llvm::ConstantDataArray::getString(*unwrap(LLVMGetGlobalContext()),
                                                          StringRef(stringValue.c_str(), stringValue.length()));
         GlobalVariable *GV =

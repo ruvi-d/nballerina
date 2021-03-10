@@ -287,10 +287,8 @@ StructureInsn *ReadStructureInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
 ConstantLoadInsn *ReadConstLoadInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
     uint32_t typeCpIndex __attribute__((unused)) = readerRef.readS4be();
     auto lhsOp = readerRef.readOperand();
-    ConstantLoadInsn *constantloadInsn = new ConstantLoadInsn(std::move(lhsOp), currentBB);
 
-    TypeTag typeTag = readerRef.constantPool->getTypeTag(typeCpIndex);
-    switch (typeTag) {
+    switch (readerRef.constantPool->getTypeTag(typeCpIndex)) {
     case TYPE_TAG_INT:
     case TYPE_TAG_UNSIGNED8_INT:
     case TYPE_TAG_UNSIGNED16_INT:
@@ -301,33 +299,27 @@ ConstantLoadInsn *ReadConstLoadInsn::readNonTerminatorInsn(BasicBlock *currentBB
     case TYPE_TAG_DECIMAL:
     case TYPE_TAG_BYTE: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        constantloadInsn->setIntValue(readerRef.constantPool->getIntCp(valueCpIndex), typeTag);
-        break;
+        return new ConstantLoadInsn(std::move(lhsOp), currentBB, (int)readerRef.constantPool->getIntCp(valueCpIndex));
     }
     case TYPE_TAG_BOOLEAN: {
-        uint8_t valueCpIndex = readerRef.readU1();
-        constantloadInsn->setBoolValue(readerRef.constantPool->getBooleanCp(valueCpIndex), typeTag);
-        break;
+        uint8_t valueCpIndex = readerRef.readU1(); // ToDo why is the index unit8 ?
+        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getBooleanCp(valueCpIndex));
     }
     case TYPE_TAG_FLOAT: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        constantloadInsn->setFloatValue(readerRef.constantPool->getFloatCp(valueCpIndex), typeTag);
-        break;
+        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getFloatCp(valueCpIndex));
     }
     case TYPE_TAG_CHAR_STRING:
     case TYPE_TAG_STRING: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        string *strVal = new string();
-        strVal[0] = readerRef.constantPool->getStringCp(valueCpIndex);
-        constantloadInsn->setStringValue(strVal, typeTag);
-        break;
+        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getStringCp(valueCpIndex));
     }
     case TYPE_TAG_NIL:
-        constantloadInsn->setTypeTagNil(typeTag);
+        return new ConstantLoadInsn(std::move(lhsOp), currentBB);
     default:
-        break;
+        // add an error msg
+        abort();
     }
-    return constantloadInsn;
 }
 
 // Read Unary Operand
