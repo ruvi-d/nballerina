@@ -36,7 +36,7 @@ class Variable : public AbstractVariable {
     Variable(Type *type, std::string name, VarKind kind) : AbstractVariable(std::move(name), kind), type(type) {}
     virtual ~Variable() = default;
 
-    Type *getTypeDecl() { return type; }
+    Type *getType() { return type; }
 };
 
 } // namespace nballerina

@@ -95,7 +95,7 @@ void Package::translate(LLVMModuleRef &modRef) {
     // iterate over all global variables and translate
     for (auto const &it : globalVars) {
         Variable *globVar = it.second;
-        LLVMTypeRef varTyperef = getLLVMTypeOfType(globVar->getTypeDecl());
+        LLVMTypeRef varTyperef = getLLVMTypeOfType(globVar->getType());
         string varName = globVar->getName();
         // emit/adding the global variable.
         llvm::Constant *initValue = llvm::Constant::getNullValue(llvm::unwrap(varTyperef));
