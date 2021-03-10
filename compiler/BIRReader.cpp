@@ -478,12 +478,12 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     }
     case INSTRUCTION_KIND_GOTO: {
         GoToInsn *gotoInsn = ReadGoToInsn::readGoToInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(gotoInsn);
+        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(gotoInsn));
         break;
     }
     case INSTRUCTION_KIND_RETURN: {
         ReturnInsn *returnInsn = ReadReturnInsn::readReturnInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(returnInsn);
+        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(returnInsn));
         break;
     }
     case INSTRUCTION_KIND_BINARY_ADD:
@@ -511,7 +511,7 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     }
     case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
         ConditionBrInsn *conditionBrInsn = ReadCondBrInsn::readCondBrInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(conditionBrInsn);
+        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(conditionBrInsn));
         break;
     }
     case INSTRUCTION_KIND_MOVE: {
@@ -521,7 +521,7 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     }
     case INSTRUCTION_KIND_CALL: {
         FunctionCallInsn *functionCallInsn = ReadFuncCallInsn::readFuncCallInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(functionCallInsn);
+        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(functionCallInsn));
         break;
     }
     case INSTRUCTION_KIND_TYPE_CAST: {
@@ -577,7 +577,7 @@ BasicBlock *BIRReader::readBasicBlock(Function *birFunction) {
 void BIRReader::patchInsn(vector<BasicBlock *> basicBlocks) {
     for (auto const &basicBlock : basicBlocks) {
         Function *curFunc = basicBlock->getFunction();
-        TerminatorInsn *terminator = basicBlock->getTerminatorInsn();
+        TerminatorInsn *terminator = basicBlock->getTerminatorInsnPtr();
         if ((terminator == nullptr) || !terminator->isPatched()) {
             continue;
         }
