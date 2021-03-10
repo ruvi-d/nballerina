@@ -20,23 +20,27 @@
 #define __VARIABLE__H__
 
 #include "interfaces/AbstractVariable.h"
+#include <Types.h>
+#include <memory>
 #include <string>
 
 namespace nballerina {
 
-// Forward Declaration
-class Type;
-
 class Variable : public AbstractVariable {
   private:
-    Type *type;
+    std::unique_ptr<Type> type;
 
   public:
     Variable() = delete;
-    Variable(Type *type, std::string name, VarKind kind) : AbstractVariable(std::move(name), kind), type(type) {}
+    Variable(std::unique_ptr<Type> type, std::string name, VarKind kind)
+        : AbstractVariable(std::move(name), kind), type(std::move(type)) {}
     virtual ~Variable() = default;
 
-    Type *getType() { return type; }
+    const Type &getType() const {
+        assert(type);
+        return *type.get();
+    }
+    Type *getTypeObj() { return type.get(); }
 };
 
 } // namespace nballerina

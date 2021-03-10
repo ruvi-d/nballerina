@@ -60,7 +60,7 @@ class Package : public Translatable {
     std::string getSrcFileName();
     Variable *getGlobalVariable(const std::string &name);
     LLVMValueRef getGlobalLLVMVar(const std::string &globVar);
-    LLVMTypeRef getLLVMTypeOfType(Type *typeD);
+    LLVMTypeRef getLLVMTypeOfType(const Type &type) const;
     llvm::StringTableBuilder *getStrTableBuilder();
     Function *getFunction(const std::string &name);
     LLVMValueRef getFunctionRef(const std::string &arrayName);

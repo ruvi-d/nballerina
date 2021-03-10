@@ -64,9 +64,8 @@ void Package::addFunctionRef(const std::string &arrayName, LLVMValueRef function
     functionRefs.insert(std::pair<std::string, LLVMValueRef>(arrayName, functionRef));
 }
 
-LLVMTypeRef Package::getLLVMTypeOfType(Type *typeD) {
-    int typeTag = typeD->getTypeTag();
-    switch (typeTag) {
+LLVMTypeRef Package::getLLVMTypeOfType(const Type &type) const {
+    switch (type.getTypeTag()) {
     case TYPE_TAG_INT:
         return LLVMInt32Type();
     case TYPE_TAG_BYTE:
@@ -138,7 +137,6 @@ void Package::translate(LLVMModuleRef &modRef) {
         assert(function->getReturnVar());
         for (size_t i = 0; i < numParams; i++) {
             FunctionParam *funcParam = function->getParam(i);
-            assert(funcParam->getType());
             paramTypes[i] = getLLVMTypeOfType(funcParam->getType());
         }
 
