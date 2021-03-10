@@ -36,7 +36,7 @@ Package *BasicBlock::getPackage() { return parentFunction->getPackage(); }
 void BasicBlock::setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn) { terminator = std::move(insn); }
 void BasicBlock::setNextBB(BasicBlock *bb) { nextBB = bb; }
 void BasicBlock::setLLVMBBRef(LLVMBasicBlockRef bbRef) { bbRefObj = bbRef; }
-void BasicBlock::addNonTermInsn(NonTerminatorInsn *insn) { instructions.push_back(insn); }
+void BasicBlock::addNonTermInsn(std::unique_ptr<NonTerminatorInsn> insn) { instructions.push_back(std::move(insn)); }
 
 void BasicBlock::translate(LLVMModuleRef &modRef) {
     for (const auto &instruction : instructions) {

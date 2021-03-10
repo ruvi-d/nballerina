@@ -468,12 +468,12 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     case INSTRUCTION_KIND_NEW_STRUCTURE: {
         StructureInsn *structureInsn = ReadStructureInsn::readStructureInsn.readNonTerminatorInsn(basicBlock);
         structureInsn->setLocation(location);
-        basicBlock->addNonTermInsn(structureInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(structureInsn));
         break;
     }
     case INSTRUCTION_KIND_CONST_LOAD: {
         ConstantLoadInsn *constantloadInsn = ReadConstLoadInsn::readConstLoadInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(constantloadInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(constantloadInsn));
         break;
     }
     case INSTRUCTION_KIND_GOTO: {
@@ -500,13 +500,13 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     case INSTRUCTION_KIND_BINARY_MOD: {
         BinaryOpInsn *binaryOpInsn = ReadBinaryInsn::readBinaryInsn.readNonTerminatorInsn(basicBlock);
         binaryOpInsn->setInstKind(insnKind);
-        basicBlock->addNonTermInsn(binaryOpInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(binaryOpInsn));
         break;
     }
     case INSTRUCTION_KIND_UNARY_NEG:
     case INSTRUCTION_KIND_UNARY_NOT: {
         UnaryOpInsn *unaryOpInsn = ReadUnaryInsn::readUnaryInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(unaryOpInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(unaryOpInsn));
         break;
     }
     case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
@@ -516,7 +516,7 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     }
     case INSTRUCTION_KIND_MOVE: {
         MoveInsn *moveInsn = ReadMoveInsn::readMoveInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(moveInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(moveInsn));
         break;
     }
     case INSTRUCTION_KIND_CALL: {
@@ -526,32 +526,32 @@ void BIRReader::readInsn(BasicBlock *basicBlock) {
     }
     case INSTRUCTION_KIND_TYPE_CAST: {
         TypeCastInsn *typeCastInsn = ReadTypeCastInsn::readTypeCastInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(typeCastInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(typeCastInsn));
         break;
     }
     case INSTRUCTION_KIND_TYPE_TEST: {
         TypeTestInsn *typeTestInsn = ReadTypeTestInsn::readTypeTestInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(typeTestInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(typeTestInsn));
         break;
     }
     case INSTRUCTION_KIND_NEW_ARRAY: {
         ArrayInsn *arrayInsn = ReadArrayInsn::readArrayInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(arrayInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayInsn));
         break;
     }
     case INSTRUCTION_KIND_ARRAY_STORE: {
         ArrayStoreInsn *arrayStoreInsn = ReadArrayStoreInsn::readArrayStoreInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(arrayStoreInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayStoreInsn));
         break;
     }
     case INSTRUCTION_KIND_ARRAY_LOAD: {
         ArrayLoadInsn *arrayLoadInsn = ReadArrayLoadInsn::readArrayLoadInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(arrayLoadInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayLoadInsn));
         break;
     }
     case INSTRUCTION_KIND_MAP_STORE: {
         MapStoreInsn *mapStoreInsn = ReadMapStoreInsn::readMapStoreInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(mapStoreInsn);
+        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(mapStoreInsn));
         break;
     }
     default:
