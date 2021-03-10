@@ -31,6 +31,6 @@ InstructionKind TerminatorInsn::getInstKind() { return kind; }
 void TerminatorInsn::setPatched() { patchRequire = false; }
 void TerminatorInsn::setNextBB(BasicBlock *bb) { thenBB = bb; }
 
-void TerminatorInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {}
+void TerminatorInsn::translate(LLVMModuleRef &) {}
 
 } // namespace nballerina

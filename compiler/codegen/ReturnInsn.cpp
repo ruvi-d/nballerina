@@ -31,7 +31,7 @@ namespace nballerina {
 
 ReturnInsn::ReturnInsn(BasicBlock *currentBB) : TerminatorInsn(Operand(), currentBB, nullptr, false) {}
 
-void ReturnInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void ReturnInsn::translate(LLVMModuleRef &) {
 
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();

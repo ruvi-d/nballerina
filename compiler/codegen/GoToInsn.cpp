@@ -16,11 +16,11 @@
  * under the License.
  */
 
+#include "GoToInsn.h"
 #include "BasicBlock.h"
 #include "Function.h"
-#include "GoToInsn.h"
-#include "llvm-c/Core.h"
 #include "Operand.h"
+#include "llvm-c/Core.h"
 
 namespace nballerina {
 
@@ -28,7 +28,7 @@ GoToInsn::GoToInsn(BasicBlock *nextBB, BasicBlock *currentBB) : TerminatorInsn(O
     kind = INSTRUCTION_KIND_GOTO;
 }
 
-void GoToInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void GoToInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
     LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
 }

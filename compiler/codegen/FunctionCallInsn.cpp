@@ -16,9 +16,9 @@
  * under the License.
  */
 
+#include "FunctionCallInsn.h"
 #include "BasicBlock.h"
 #include "Function.h"
-#include "FunctionCallInsn.h"
 #include "Operand.h"
 #include "Package.h"
 #include "llvm-c/Core.h"
@@ -27,15 +27,14 @@ using namespace std;
 
 namespace nballerina {
 
-FunctionCallInsn::FunctionCallInsn(bool, std::string funcName, int argNumber,
-                                   BasicBlock *nextBB, Operand lhs, std::vector<Operand> fnArgs,
-                                   BasicBlock *currentBB)
+FunctionCallInsn::FunctionCallInsn(std::string funcName, int argNumber, BasicBlock *nextBB, Operand lhs,
+                                   std::vector<Operand> fnArgs, BasicBlock *currentBB)
     : TerminatorInsn(std::move(lhs), currentBB, nextBB, true), functionName(std::move(funcName)), argCount(argNumber),
       argsList(std::move(fnArgs)) {
     kind = INSTRUCTION_KIND_CALL;
 }
 
-void FunctionCallInsn::translate(LLVMModuleRef&) {
+void FunctionCallInsn::translate(LLVMModuleRef &) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *ParamRefs = new LLVMValueRef[argCount];

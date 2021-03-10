@@ -28,7 +28,7 @@ namespace nballerina {
 MoveInsn::MoveInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp)
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
 
-void MoveInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void MoveInsn::translate(LLVMModuleRef &) {
 
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
     LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(getLhsOperand());

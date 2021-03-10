@@ -28,7 +28,7 @@ using namespace std;
 namespace nballerina {
 
 // New Array Instruction
-ArrayInsn::ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp, [[maybe_unused]] Type *tDecl)
+ArrayInsn::ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp)
     : NonTerminatorInsn(std::move(lhs), currentBB), sizeOp(std::move(sizeOp)) {}
 
 LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
@@ -60,8 +60,7 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
 }
 
 // Array Load Instruction
-ArrayLoadInsn::ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, [[maybe_unused]] bool optionalFieldAccess,
-                             [[maybe_unused]] bool fillingRead, Operand KOp, Operand ROp)
+ArrayLoadInsn::ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand ROp)
     : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(ROp)) {}
 
 LLVMValueRef ArrayLoadInsn::getArrayLoadDeclaration(LLVMModuleRef &modRef) {

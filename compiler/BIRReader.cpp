@@ -280,8 +280,8 @@ TypeDescInsn *ReadTypeDescInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
 // Read STRUCTURE Insn
 StructureInsn *ReadStructureInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
     auto rhsOp = readerRef.readOperand();
-    auto lhsOp = readerRef.readOperand();
-    return new StructureInsn(std::move(lhsOp), currentBB, std::move(rhsOp));
+    [[maybe_unused]] auto lhsOp = readerRef.readOperand();
+    return new StructureInsn(std::move(lhsOp), currentBB);
 }
 
 // Read CONST_LOAD Insn
@@ -371,7 +371,7 @@ MoveInsn *ReadMoveInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
 
 // Read Function Call
 FunctionCallInsn *ReadFuncCallInsn::readTerminatorInsn(BasicBlock *currentBB) {
-    uint8_t isVirtual = readerRef.readU1();
+    [[maybe_unused]] uint8_t isVirtual = readerRef.readU1();
     uint32_t packageIndex __attribute__((unused)) = readerRef.readS4be();
     uint32_t callNameCpIndex = readerRef.readS4be();
     string funcName = readerRef.constantPool->getStringCp(callNameCpIndex);
@@ -391,7 +391,7 @@ FunctionCallInsn *ReadFuncCallInsn::readTerminatorInsn(BasicBlock *currentBB) {
     BasicBlock *dummybasicBlock =
         new BasicBlock(readerRef.constantPool->getStringCp(thenBbIdNameCpIndex), currentBB->getFunction());
 
-    return new FunctionCallInsn((bool)isVirtual, funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs), currentBB);
+    return new FunctionCallInsn(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs), currentBB);
 }
 
 // Read TypeCast Insn
@@ -401,27 +401,30 @@ TypeCastInsn *ReadTypeCastInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
 
     uint32_t typeCpIndex = readerRef.readS4be();
     Type *typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
-    uint8_t isCheckTypes = readerRef.readU1();
+    delete typeDecl;
+    [[maybe_unused]] uint8_t isCheckTypes = readerRef.readU1();
 
-    return new TypeCastInsn(std::move(lhsOp), currentBB, rhsOperand, typeDecl, (bool)isCheckTypes);
+    return new TypeCastInsn(std::move(lhsOp), currentBB, rhsOperand);
 }
 
 // Read Type Test Insn
 TypeTestInsn *ReadTypeTestInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
     uint32_t typeCpIndex = readerRef.readS4be();
     Type *typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
+    delete typeDecl;
     auto lhsOp = readerRef.readOperand();
-    auto rhsOperand = readerRef.readOperand();
-    return new TypeTestInsn(lhsOp, currentBB, rhsOperand, typeDecl);
+    [[maybe_unused]] auto rhsOperand = readerRef.readOperand();
+    return new TypeTestInsn(lhsOp, currentBB);
 }
 
 // Read Array Insn
 ArrayInsn *ReadArrayInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
     uint32_t typeCpIndex = readerRef.readS4be();
     Type *typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
+    delete typeDecl;
     auto lhsOp = readerRef.readOperand();
     auto sizeOperand = readerRef.readOperand();
-    return new ArrayInsn(lhsOp, currentBB, sizeOperand, typeDecl);
+    return new ArrayInsn(lhsOp, currentBB, sizeOperand);
 }
 
 // Read Array Store Insn
@@ -434,13 +437,12 @@ ArrayStoreInsn *ReadArrayStoreInsn::readNonTerminatorInsn(BasicBlock *currentBB)
 
 // Read Array Load Insn
 ArrayLoadInsn *ReadArrayLoadInsn::readNonTerminatorInsn(BasicBlock *currentBB) {
-    uint8_t optionalFieldAccess = readerRef.readU1();
-    uint8_t fillingRead = readerRef.readU1();
+    [[maybe_unused]] uint8_t optionalFieldAccess = readerRef.readU1();
+    [[maybe_unused]] uint8_t fillingRead = readerRef.readU1();
     auto lhsOp = readerRef.readOperand();
     auto keyOperand = readerRef.readOperand();
     auto rhsOperand = readerRef.readOperand();
-    return new ArrayLoadInsn(lhsOp, currentBB, (bool)optionalFieldAccess, (bool)fillingRead, keyOperand,
-                             rhsOperand);
+    return new ArrayLoadInsn(lhsOp, currentBB, keyOperand, rhsOperand);
 }
 
 // Read Map Store Insn

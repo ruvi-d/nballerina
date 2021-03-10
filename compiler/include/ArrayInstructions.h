@@ -33,7 +33,7 @@ class ArrayInsn : public NonTerminatorInsn {
 
   public:
     ArrayInsn() = delete;
-    ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp, Type *TDecl);
+    ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp);
     ~ArrayInsn() = default;
     void translate(LLVMModuleRef &modRef) final;
 };
@@ -46,8 +46,7 @@ class ArrayLoadInsn : public NonTerminatorInsn {
 
   public:
     ArrayLoadInsn() = delete;
-    ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, bool optionalFieldAccess, bool fillingRead, Operand KOp,
-                  Operand ROp);
+    ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand ROp);
     ~ArrayLoadInsn() = default;
     void translate(LLVMModuleRef &modRef) final;
 };
