@@ -26,14 +26,14 @@ namespace nballerina {
 BasicBlock::BasicBlock(std::string pid, Function *parentFunc)
     : id(std::move(pid)), parentFunction(parentFunc), terminator(nullptr), nextBB(nullptr), bbRefObj(nullptr) {}
 
-std::string &BasicBlock::getId() { return id; }
-TerminatorInsn *BasicBlock::getTerminatorInsn() { return terminator; }
+const std::string &BasicBlock::getId() const { return id; }
+TerminatorInsn *BasicBlock::getTerminatorInsnPtr() { return terminator.get(); }
 Function *BasicBlock::getFunction() { return parentFunction; }
 BasicBlock *BasicBlock::getNextBB() { return nextBB; }
 LLVMBasicBlockRef BasicBlock::getLLVMBBRef() { return bbRefObj; }
 Package *BasicBlock::getPackage() { return parentFunction->getPackage(); }
 
-void BasicBlock::setTerminatorInsn(TerminatorInsn *insn) { terminator = insn; }
+void BasicBlock::setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn) { terminator = std::move(insn); }
 void BasicBlock::setNextBB(BasicBlock *bb) { nextBB = bb; }
 void BasicBlock::setLLVMBBRef(LLVMBasicBlockRef bbRef) { bbRefObj = bbRef; }
 void BasicBlock::addNonTermInsn(NonTerminatorInsn *insn) { instructions.push_back(insn); }

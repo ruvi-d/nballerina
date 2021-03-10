@@ -22,6 +22,7 @@
 #include "interfaces/Debuggable.h"
 #include "interfaces/PackageNode.h"
 #include "interfaces/Translatable.h"
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -36,7 +37,7 @@ class BasicBlock : public PackageNode, public Debuggable, public Translatable {
   private:
     std::string id;
     Function *parentFunction;
-    TerminatorInsn *terminator;
+    std::unique_ptr<TerminatorInsn> terminator;
     BasicBlock *nextBB;
     std::vector<NonTerminatorInsn *> instructions;
     LLVMBasicBlockRef bbRefObj;
@@ -46,15 +47,15 @@ class BasicBlock : public PackageNode, public Debuggable, public Translatable {
     BasicBlock(std::string id, Function *parentFunc);
     ~BasicBlock() = default;
 
-    std::string &getId();
-    TerminatorInsn *getTerminatorInsn();
+    const std::string &getId() const;
+    TerminatorInsn *getTerminatorInsnPtr();
     Function *getFunction();
     BasicBlock *getNextBB();
     LLVMBasicBlockRef getLLVMBBRef();
     Package *getPackage() final;
 
     void setNextBB(BasicBlock *bb);
-    void setTerminatorInsn(TerminatorInsn *insn);
+    void setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn);
     void addNonTermInsn(NonTerminatorInsn *insn);
     void setLLVMBBRef(LLVMBasicBlockRef bbRef);
 
