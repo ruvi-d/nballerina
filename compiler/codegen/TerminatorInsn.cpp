@@ -17,11 +17,13 @@
  */
 
 #include "TerminatorInsn.h"
+#include <memory>
 
 namespace nballerina {
 
 TerminatorInsn::TerminatorInsn(Operand *lOp, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire)
-    : AbstractInstruction(lOp, currentBB), thenBB(then), patchRequire(_patchRequire), kind() {}
+    : AbstractInstruction(std::unique_ptr<Operand>(lOp), currentBB), thenBB(then), patchRequire(_patchRequire), kind() {
+}
 
 BasicBlock *TerminatorInsn::getNextBB() { return thenBB; }
 bool TerminatorInsn::getPatchStatus() { return patchRequire; }

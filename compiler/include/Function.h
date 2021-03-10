@@ -77,11 +77,11 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName);
     BasicBlock *FindBasicBlock(const std::string &id);
     Package *getPackage() final;
-    LLVMValueRef getTempLocalVariable(Operand *op);
-    LLVMValueRef getLLVMLocalVar(const std::string &varName);
-    LLVMValueRef getLLVMLocalOrGlobalVar(Operand *op);
-    Variable *getLocalVariable(const std::string &opName);
-    Variable *getLocalOrGlobalVariable(Operand *op);
+    LLVMValueRef createTempVariable(const Operand &op) const;
+    LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
+    LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;
+    Variable *getLocalVariable(const std::string &opName) const;
+    Variable *getLocalOrGlobalVariable(const Operand &op) const;
     LLVMTypeRef getLLVMTypeOfReturnVal();
     bool isMainFunction();
     bool isExternalFunction();

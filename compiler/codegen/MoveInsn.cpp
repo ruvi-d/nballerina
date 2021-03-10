@@ -30,8 +30,8 @@ MoveInsn::MoveInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp) : NonTermi
 void MoveInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
-    LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(getLHS());
-    LLVMValueRef rhsVarOpRef = getFunction()->getTempLocalVariable(rhsOp);
+    LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef rhsVarOpRef = getFunction()->createTempVariable(*rhsOp);
     LLVMBuildStore(builder, rhsVarOpRef, lhsRef);
 }
 

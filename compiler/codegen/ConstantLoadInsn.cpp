@@ -64,7 +64,7 @@ TypeTag ConstantLoadInsn::getTypeTag() { return typeTag; }
 
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef constRef = nullptr;
-    Operand *lhsOp = getLHS();
+    auto lhsOp = getLhsOperand();
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
     LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(lhsOp);
 
@@ -100,7 +100,7 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
         break;
     }
     case TYPE_TAG_NIL: {
-        string lhsOpName = lhsOp->getName();
+        string lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
         if (getFunction()->isMainFunction() && (lhsOpName.compare(getFunction()->getReturnVar()->getName()) == 0)) {
             return;

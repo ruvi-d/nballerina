@@ -16,10 +16,10 @@
  * under the License.
  */
 
+#include "UnaryOpInsn.h"
 #include "Function.h"
 #include "Operand.h"
 #include "Package.h"
-#include "UnaryOpInsn.h"
 #include <llvm-c/Core.h>
 #include <string>
 
@@ -34,10 +34,10 @@ void UnaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
-    Operand *lhsOp = getLHS();
-    string lhsTmpName = lhsOp->getName() + "_temp";
+    auto lhsOp = getLhsOperand();
+    string lhsTmpName = lhsOp.getName() + "_temp";
     LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(lhsOp);
-    LLVMValueRef rhsOpref = funcObj->getTempLocalVariable(rhsOp);
+    LLVMValueRef rhsOpref = funcObj->createTempVariable(*rhsOp);
     LLVMValueRef ifReturn = LLVMBuildNot(builder, rhsOpref, lhsTmpName.c_str());
     LLVMBuildStore(builder, ifReturn, lhsRef);
 }

@@ -36,11 +36,11 @@ void BinaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
-    string lhsName = getLHS()->getName();
+    string lhsName = getLhsOperand().getName();
     string lhstmpName = lhsName + "_temp";
-    LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
-    LLVMValueRef rhsOp1ref = funcObj->getTempLocalVariable(rhsOp1);
-    LLVMValueRef rhsOp2ref = funcObj->getTempLocalVariable(rhsOp2);
+    LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef rhsOp1ref = funcObj->createTempVariable(*rhsOp1);
+    LLVMValueRef rhsOp2ref = funcObj->createTempVariable(*rhsOp2);
 
     LLVMValueRef ifReturn = nullptr;
     switch (kind) {

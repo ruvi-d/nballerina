@@ -41,11 +41,11 @@ void ConditionBrInsn::setElseBB(BasicBlock *bb) { elseBB = bb; }
 void ConditionBrInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
-    string lhsName = getLHS()->getName();
+    string lhsName = getLhsOperand().getName();
 
     LLVMValueRef brCondition = getFunction()->getLLVMValueForBranchComparison(lhsName);
     if (brCondition == nullptr) {
-        brCondition = LLVMBuildIsNotNull(builder, getFunction()->getTempLocalVariable(getLHS()), lhsName.c_str());
+        brCondition = LLVMBuildIsNotNull(builder, getFunction()->createTempVariable(getLhsOperand()), lhsName.c_str());
     }
 
     LLVMBuildCondBr(builder, brCondition, ifThenBB->getLLVMBBRef(), elseBB->getLLVMBBRef());

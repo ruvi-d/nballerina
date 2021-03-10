@@ -58,7 +58,7 @@ LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsNam
     return branch->second;
 }
 
-LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) {
+LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) const{
     auto varIt = localVarRefs.find(varName);
     if (varIt == localVarRefs.end()) {
         return nullptr;
@@ -66,9 +66,9 @@ LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) {
     return varIt->second;
 }
 
-LLVMValueRef Function::getTempLocalVariable(Operand *operand) {
+LLVMValueRef Function::createTempVariable(const Operand &operand) const{
     LLVMValueRef locVRef = getLLVMLocalOrGlobalVar(operand);
-    std::string tempName = operand->getName() + "_temp";
+    std::string tempName = operand.getName() + "_temp";
     return LLVMBuildLoad(llvmBuilder, locVRef, tempName.c_str());
 }
 
@@ -123,7 +123,7 @@ void Function::insertBranchComparisonValue(const std::string &name, LLVMValueRef
     branchComparisonList.insert(std::pair<std::string, LLVMValueRef>(name, compRef));
 }
 
-Variable *Function::getLocalVariable(const std::string &opName) {
+Variable *Function::getLocalVariable(const std::string &opName) const{
     auto varIt = localVars.find(opName);
     if (varIt == localVars.end()) {
         return nullptr;
@@ -131,18 +131,18 @@ Variable *Function::getLocalVariable(const std::string &opName) {
     return varIt->second;
 }
 
-Variable *Function::getLocalOrGlobalVariable(Operand *op) {
-    if (op->getKind() == GLOBAL_VAR_KIND) {
-        return parentPackage->getGlobalVariable(op->getName());
+Variable *Function::getLocalOrGlobalVariable(const Operand &op) const{
+    if (op.getKind() == GLOBAL_VAR_KIND) {
+        return parentPackage->getGlobalVariable(op.getName());
     }
-    return getLocalVariable(op->getName());
+    return getLocalVariable(op.getName());
 }
 
-LLVMValueRef Function::getLLVMLocalOrGlobalVar(Operand *op) {
-    if (op->getKind() == GLOBAL_VAR_KIND) {
-        return parentPackage->getGlobalLLVMVar(op->getName());
+LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const{
+    if (op.getKind() == GLOBAL_VAR_KIND) {
+        return parentPackage->getGlobalLLVMVar(op.getName());
     }
-    return getLLVMLocalVar(op->getName());
+    return getLLVMLocalVar(op.getName());
 }
 
 Package *Function::getPackage() { return parentPackage; }

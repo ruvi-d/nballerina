@@ -49,10 +49,10 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *sizeOpValueRef = new LLVMValueRef[1];
-    LLVMValueRef localTempCarRef = funcObj->getTempLocalVariable(sizeOp);
+    LLVMValueRef localTempCarRef = funcObj->createTempVariable(*sizeOp);
     sizeOpValueRef[0] = localTempCarRef;
 
-    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
+    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef arrayInitFunc = getArrayInitDeclaration(modRef);
     LLVMValueRef newArrayRef = LLVMBuildCall(builder, arrayInitFunc, sizeOpValueRef, 1, "");
 
@@ -84,9 +84,9 @@ void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef ArrayLoadFunc = getArrayLoadDeclaration(modRef);
 
-    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
-    LLVMValueRef keyRef = funcObj->getTempLocalVariable(keyOp);
+    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(*rhsOp);
+    LLVMValueRef keyRef = funcObj->createTempVariable(*keyOp);
 
     LLVMValueRef *sizeOpValueRef = new LLVMValueRef[2];
     sizeOpValueRef[0] = rhsOpRef;
@@ -122,9 +122,9 @@ void ArrayStoreInsn::translate(LLVMModuleRef &modRef) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef ArrayLoadFunc = getArrayStoreDeclaration(modRef);
 
-    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLHS());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
-    LLVMValueRef keyRef = funcObj->getTempLocalVariable(keyOp);
+    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(*rhsOp);
+    LLVMValueRef keyRef = funcObj->createTempVariable(*keyOp);
     LLVMValueRef *argOpValueRef = new LLVMValueRef[3];
     argOpValueRef[0] = lhsOpRef;
     argOpValueRef[1] = keyRef;

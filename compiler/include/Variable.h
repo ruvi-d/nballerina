@@ -38,7 +38,7 @@ class Variable : public AbstractVariable {
 
     const Type &getType() const {
         assert(type);
-        return *type.get();
+        return *type;
     }
     Type *getTypeObj() { return type.get(); }
 };
