@@ -40,11 +40,11 @@ class AbstractVariable {
 
   public:
     AbstractVariable() = delete;
-    AbstractVariable(std::string _name, VarKind _kind) : name(_name), kind(_kind) {}
+    AbstractVariable(std::string name, VarKind kind) : name(std::move(name)), kind(kind) {}
     virtual ~AbstractVariable() = default;
 
-    VarKind getKind() { return kind; }
-    std::string &getName() { return name; };
+    VarKind getKind() const { return kind; }
+    const std::string &getName() const { return name; };
 };
 
 } // namespace nballerina
