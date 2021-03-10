@@ -16,8 +16,8 @@
  * under the License.
  */
 
-#include "BasicBlock.h"
 #include "ConditionBrInsn.h"
+#include "BasicBlock.h"
 #include "Function.h"
 #include "Operand.h"
 #include "Types.h"
@@ -38,7 +38,7 @@ BasicBlock *ConditionBrInsn::getElseBB() { return elseBB; }
 void ConditionBrInsn::setIfThenBB(BasicBlock *bb) { ifThenBB = bb; }
 void ConditionBrInsn::setElseBB(BasicBlock *bb) { elseBB = bb; }
 
-void ConditionBrInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void ConditionBrInsn::translate(LLVMModuleRef &) {
 
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
     string lhsName = getLhsOperand().getName();

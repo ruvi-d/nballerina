@@ -30,11 +30,10 @@ using namespace llvm;
 
 namespace nballerina {
 
-TypeCastInsn::TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp, [[maybe_unused]] Type *tDecl,
-                           [[maybe_unused]] bool checkTypes)
+TypeCastInsn::TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp)
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
 
-void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void TypeCastInsn::translate(LLVMModuleRef &) {
     Function *funcObj = getFunction();
     string lhsOpName = getLhsOperand().getName();
     string rhsOpName = rhsOp.getName();

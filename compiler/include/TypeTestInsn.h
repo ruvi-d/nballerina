@@ -31,8 +31,7 @@ class TypeTestInsn : public NonTerminatorInsn {
 
   public:
     TypeTestInsn() = delete;
-    TypeTestInsn(Operand lhs, BasicBlock *currentBB, [[maybe_unused]] Operand rOp, [[maybe_unused]] Type *tDecl)
-        : NonTerminatorInsn(std::move(lhs), currentBB) {}
+    TypeTestInsn(Operand lhs, BasicBlock *currentBB) : NonTerminatorInsn(std::move(lhs), currentBB) {}
     ~TypeTestInsn() = default;
 };
 

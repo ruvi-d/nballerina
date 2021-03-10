@@ -33,7 +33,7 @@ class TypeCastInsn : public NonTerminatorInsn {
 
   public:
     TypeCastInsn() = delete;
-    TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp, Type *tDecl, bool checkTypes);
+    TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp);
     ~TypeCastInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

@@ -30,7 +30,7 @@ namespace nballerina {
 UnaryOpInsn::UnaryOpInsn(Operand lhs, BasicBlock *currentBB, Operand rhs)
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhs)) {}
 
-void UnaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void UnaryOpInsn::translate(LLVMModuleRef &) {
 
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
