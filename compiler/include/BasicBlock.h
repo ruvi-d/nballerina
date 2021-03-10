@@ -39,7 +39,7 @@ class BasicBlock : public PackageNode, public Debuggable, public Translatable {
     Function *parentFunction;
     std::unique_ptr<TerminatorInsn> terminator;
     BasicBlock *nextBB;
-    std::vector<NonTerminatorInsn *> instructions;
+    std::vector<std::unique_ptr<NonTerminatorInsn>> instructions;
     LLVMBasicBlockRef bbRefObj;
 
   public:
@@ -56,7 +56,7 @@ class BasicBlock : public PackageNode, public Debuggable, public Translatable {
 
     void setNextBB(BasicBlock *bb);
     void setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn);
-    void addNonTermInsn(NonTerminatorInsn *insn);
+    void addNonTermInsn(std::unique_ptr<NonTerminatorInsn> insn);
     void setLLVMBBRef(LLVMBasicBlockRef bbRef);
 
     void translate(LLVMModuleRef &modRef) final;
