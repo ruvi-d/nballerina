@@ -19,11 +19,13 @@
 #ifndef __TYPEDECL__H__
 #define __TYPEDECL__H__
 
+#include <optional>
 #include <string>
 
 namespace nballerina {
 
 enum TypeTag {
+    TYPE_TAG_INVALID = 0,
     TYPE_TAG_INT = 1,
     TYPE_TAG_BYTE = 2,
     TYPE_TAG_FLOAT = 3,
@@ -84,11 +86,12 @@ class Type {
     TypeTag type;
     std::string name;
     int flags;
-    TypeTag memberType;
+    std::optional<TypeTag> memberType;
 
   public:
     Type() = delete;
-    Type(TypeTag type, std::string name, int flags, TypeTag memberType = TypeTag{});
+    Type(TypeTag type, std::string name, int flags);
+    Type(TypeTag type, std::string name, int flags, TypeTag memberType);
     virtual ~Type() = default;
 
     TypeTag getTypeTag() const;

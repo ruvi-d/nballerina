@@ -21,11 +21,20 @@
 namespace nballerina {
 
 Type::Type(TypeTag type, std::string namep, int flagsp, TypeTag memberType)
-    : type(type), name(std::move(namep)), flags(flagsp), memberType{memberType} {}
+    : type(type), name(std::move(namep)), flags(flagsp), memberType(memberType) {}
+
+Type::Type(TypeTag type, std::string namep, int flagsp)
+    : type(type), name(std::move(namep)), flags(flagsp), memberType() {}
 
 TypeTag Type::getTypeTag() const { return type; }
-TypeTag Type::getMemberTypeTag() const { return memberType; }
 const std::string &Type::getName() const { return name; }
+
+TypeTag Type::getMemberTypeTag() const {
+    if (memberType) {
+        return memberType.value();
+    }
+    return TYPE_TAG_INVALID;
+}
 
 std::string Type::getNameOfType(TypeTag typeTag) {
     switch (typeTag) {
