@@ -26,10 +26,10 @@
 using namespace std;
 
 namespace nballerina {
-BinaryOpInsn::BinaryOpInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp1, Operand *rOp2)
-    : NonTerminatorInsn(lOp, currentBB), rhsOp1(rOp1), rhsOp2(rOp2), kind{} {}
+BinaryOpInsn::BinaryOpInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp1, Operand rhsOp2)
+    : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp1(std::move(rhsOp1)), rhsOp2(std::move(rhsOp2)), kind{} {}
 
-void BinaryOpInsn::setInstKind(InstructionKind _kind) { kind = _kind; }
+void BinaryOpInsn::setInstKind(InstructionKind kind) { this->kind = kind; }
 
 void BinaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
@@ -39,8 +39,8 @@ void BinaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     string lhsName = getLhsOperand().getName();
     string lhstmpName = lhsName + "_temp";
     LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef rhsOp1ref = funcObj->createTempVariable(*rhsOp1);
-    LLVMValueRef rhsOp2ref = funcObj->createTempVariable(*rhsOp2);
+    LLVMValueRef rhsOp1ref = funcObj->createTempVariable(rhsOp1);
+    LLVMValueRef rhsOp2ref = funcObj->createTempVariable(rhsOp2);
 
     LLVMValueRef ifReturn = nullptr;
     switch (kind) {

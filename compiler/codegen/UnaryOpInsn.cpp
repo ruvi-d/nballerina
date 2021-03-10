@@ -27,8 +27,8 @@ using namespace std;
 
 namespace nballerina {
 
-UnaryOpInsn::UnaryOpInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp)
-    : NonTerminatorInsn(lOp, currentBB), rhsOp(rOp) {}
+UnaryOpInsn::UnaryOpInsn(Operand lhs, BasicBlock *currentBB, Operand rhs)
+    : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhs)) {}
 
 void UnaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
@@ -37,7 +37,7 @@ void UnaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     auto lhsOp = getLhsOperand();
     string lhsTmpName = lhsOp.getName() + "_temp";
     LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(lhsOp);
-    LLVMValueRef rhsOpref = funcObj->createTempVariable(*rhsOp);
+    LLVMValueRef rhsOpref = funcObj->createTempVariable(rhsOp);
     LLVMValueRef ifReturn = LLVMBuildNot(builder, rhsOpref, lhsTmpName.c_str());
     LLVMBuildStore(builder, ifReturn, lhsRef);
 }

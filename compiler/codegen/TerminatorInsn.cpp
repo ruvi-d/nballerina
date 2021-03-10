@@ -21,8 +21,8 @@
 
 namespace nballerina {
 
-TerminatorInsn::TerminatorInsn(Operand *lOp, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire)
-    : AbstractInstruction(std::unique_ptr<Operand>(lOp), currentBB), thenBB(then), patchRequire(_patchRequire), kind() {
+TerminatorInsn::TerminatorInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire)
+    : AbstractInstruction(std::move(lhs), currentBB), thenBB(then), patchRequire(_patchRequire), kind() {
 }
 
 BasicBlock *TerminatorInsn::getNextBB() { return thenBB; }

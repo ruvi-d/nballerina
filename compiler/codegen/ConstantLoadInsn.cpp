@@ -32,8 +32,8 @@ using namespace llvm;
 
 namespace nballerina {
 
-ConstantLoadInsn::ConstantLoadInsn(Operand *lOp, BasicBlock *currentBB)
-    : NonTerminatorInsn(lOp, currentBB), typeTag{} {}
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB)
+    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag{} {}
 
 int ConstantLoadInsn::getIntValue() { return val.intValue; }
 float ConstantLoadInsn::getFloatValue() { return val.floatValue; }

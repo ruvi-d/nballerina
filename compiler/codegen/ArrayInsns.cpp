@@ -28,8 +28,8 @@ using namespace std;
 namespace nballerina {
 
 // New Array Instruction
-ArrayInsn::ArrayInsn(Operand *lOp, BasicBlock *currentBB, Operand *sOp, [[maybe_unused]] Type *tDecl)
-    : NonTerminatorInsn(lOp, currentBB), sizeOp(sOp) {}
+ArrayInsn::ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp, [[maybe_unused]] Type *tDecl)
+    : NonTerminatorInsn(std::move(lhs), currentBB), sizeOp(std::move(sizeOp)) {}
 
 LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
 
@@ -49,7 +49,7 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *sizeOpValueRef = new LLVMValueRef[1];
-    LLVMValueRef localTempCarRef = funcObj->createTempVariable(*sizeOp);
+    LLVMValueRef localTempCarRef = funcObj->createTempVariable(sizeOp);
     sizeOpValueRef[0] = localTempCarRef;
 
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
@@ -60,9 +60,9 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
 }
 
 // Array Load Instruction
-ArrayLoadInsn::ArrayLoadInsn(Operand *lOp, BasicBlock *currentBB, [[maybe_unused]] bool optionalFieldAccess,
-                             [[maybe_unused]] bool fillingRead, Operand *KOp, Operand *ROp)
-    : NonTerminatorInsn(lOp, currentBB), keyOp(KOp), rhsOp(ROp) {}
+ArrayLoadInsn::ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, [[maybe_unused]] bool optionalFieldAccess,
+                             [[maybe_unused]] bool fillingRead, Operand KOp, Operand ROp)
+    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(ROp)) {}
 
 LLVMValueRef ArrayLoadInsn::getArrayLoadDeclaration(LLVMModuleRef &modRef) {
     LLVMValueRef addedFuncRef = getPackage()->getFunctionRef("int_array_load");
@@ -85,8 +85,8 @@ void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef ArrayLoadFunc = getArrayLoadDeclaration(modRef);
 
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(*rhsOp);
-    LLVMValueRef keyRef = funcObj->createTempVariable(*keyOp);
+    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
+    LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
 
     LLVMValueRef *sizeOpValueRef = new LLVMValueRef[2];
     sizeOpValueRef[0] = rhsOpRef;
@@ -97,8 +97,8 @@ void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
 }
 
 // Array Store Instruction
-ArrayStoreInsn::ArrayStoreInsn(Operand *lOp, BasicBlock *currentBB, Operand *KOp, Operand *rOp)
-    : NonTerminatorInsn(lOp, currentBB), keyOp(KOp), rhsOp(rOp) {}
+ArrayStoreInsn::ArrayStoreInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand rOp)
+    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
 
 LLVMValueRef ArrayStoreInsn::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
 
@@ -123,8 +123,8 @@ void ArrayStoreInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef ArrayLoadFunc = getArrayStoreDeclaration(modRef);
 
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(*rhsOp);
-    LLVMValueRef keyRef = funcObj->createTempVariable(*keyOp);
+    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
+    LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
     LLVMValueRef *argOpValueRef = new LLVMValueRef[3];
     argOpValueRef[0] = lhsOpRef;
     argOpValueRef[1] = keyRef;

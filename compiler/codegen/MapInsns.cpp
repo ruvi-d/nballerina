@@ -31,8 +31,8 @@ namespace nballerina {
 
 // new Map Instruction and Codegen logic are in the llvmStructure.cpp
 
-MapStoreInsn::MapStoreInsn(Operand *lOp, BasicBlock *currentBB, Operand *KOp, Operand *rOp)
-    : NonTerminatorInsn(lOp, currentBB), keyOp(KOp), rhsOp(rOp) {}
+MapStoreInsn::MapStoreInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand rOp)
+    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
 
 void MapStoreInsn::translate(LLVMModuleRef &modRef) {
     Function *funcObj = getFunction();
@@ -52,8 +52,8 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
     // Codegen for Map of Int type store
     LLVMValueRef mapStoreFunc = getMapIntStoreDeclaration(modRef);
     LLVMValueRef lhsOpTempRef = funcObj->createTempVariable(getLhsOperand());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(*rhsOp);
-    LLVMValueRef keyRef = funcObj->createTempVariable(*keyOp);
+    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
+    LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
 
     LLVMValueRef *argOpValueRef = new LLVMValueRef[3];
     argOpValueRef[0] = lhsOpTempRef;

@@ -73,7 +73,7 @@ enum InstructionKind {
 
 class AbstractInstruction : public Debuggable, public PackageNode {
   private:
-    std::unique_ptr<Operand> lhsOp;
+    Operand lhsOp;
     BasicBlock *parentBB;
 
   protected:
@@ -82,7 +82,7 @@ class AbstractInstruction : public Debuggable, public PackageNode {
 
   public:
     AbstractInstruction() = delete;
-    AbstractInstruction(std::unique_ptr<Operand> lOp, BasicBlock *parentBB);
+    AbstractInstruction(Operand lOp, BasicBlock *parentBB);
     virtual ~AbstractInstruction() = default;
     Package *getPackage() final;
 };

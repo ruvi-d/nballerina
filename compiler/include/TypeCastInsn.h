@@ -29,11 +29,11 @@ class Operand;
 
 class TypeCastInsn : public NonTerminatorInsn {
   private:
-    Operand *rhsOp;
+    Operand rhsOp;
 
   public:
     TypeCastInsn() = delete;
-    TypeCastInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp, Type *tDecl, bool checkTypes);
+    TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp, Type *tDecl, bool checkTypes);
     ~TypeCastInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

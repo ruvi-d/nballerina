@@ -24,13 +24,13 @@
 namespace nballerina {
 class MapStoreInsn : public NonTerminatorInsn {
   private:
-    Operand *keyOp;
-    Operand *rhsOp;
+    Operand keyOp;
+    Operand rhsOp;
     LLVMValueRef getMapIntStoreDeclaration(LLVMModuleRef &modRef);
 
   public:
     MapStoreInsn() = delete;
-    MapStoreInsn(Operand *lOp, BasicBlock *currentBB, Operand *KOp, Operand *ROp);
+    MapStoreInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand ROp);
     ~MapStoreInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;
