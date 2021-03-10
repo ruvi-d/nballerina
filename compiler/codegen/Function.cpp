@@ -89,20 +89,20 @@ static bool isParamter(Variable *locVar) {
 
 LLVMTypeRef Function::getLLVMTypeOfReturnVal() {
 
-    Type *type = returnVar->getType();
+    auto retType = returnVar->getType();
 
     // if main function return type is void, but user wants to return some
     // value using _bal_result (global variable from BIR), change main function
     // return type from void to global variable (_bal_result) type.
     if (isMainFunction()) {
-        assert(type->getTypeTag() == TYPE_TAG_NIL);
+        assert(retType.getTypeTag() == TYPE_TAG_NIL);
         Variable *globRetVar = parentPackage->getGlobalVariable("_bal_result");
         if (globRetVar == nullptr) {
             return LLVMVoidType();
         }
         return parentPackage->getLLVMTypeOfType(globRetVar->getType());
     }
-    return parentPackage->getLLVMTypeOfType(type);
+    return parentPackage->getLLVMTypeOfType(retType);
 }
 
 void Function::insertParam(FunctionParam *param) { requiredParams.push_back(param); }

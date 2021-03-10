@@ -226,8 +226,8 @@ Variable *BIRReader::readGlobalVar() {
         uint32_t parameterCount __attribute__((unused)) = readS4be();
     }
     uint32_t typeCpIndex = readS4be();
-    Type *typeDecl = constantPool->getTypeCp(typeCpIndex, false);
-    Variable *varDecl = new Variable(typeDecl, (constantPool->getStringCp(varDclNameCpIndex)), (VarKind)kind);
+    auto type = std::unique_ptr<Type>(constantPool->getTypeCp(typeCpIndex, false));
+    Variable *varDecl = new Variable(std::move(type), (constantPool->getStringCp(varDclNameCpIndex)), (VarKind)kind);
     birPackage.insertGlobalVar(varDecl);
     return varDecl;
 }
@@ -235,10 +235,10 @@ Variable *BIRReader::readGlobalVar() {
 Variable *BIRReader::readLocalVar() {
     uint8_t kind = readU1();
     uint32_t typeCpIndex = readS4be();
-    Type *typeDecl = constantPool->getTypeCp(typeCpIndex, false);
+    auto type = std::unique_ptr<Type>(constantPool->getTypeCp(typeCpIndex, false));
     uint32_t nameCpIndex = readS4be();
 
-    Variable *varDecl = new Variable(typeDecl, constantPool->getStringCp(nameCpIndex), (VarKind)kind);
+    Variable *varDecl = new Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind);
 
     if (kind == ARG_VAR_KIND) {
         uint32_t metaVarNameCpIndex __attribute__((unused)) = readS4be();
@@ -704,10 +704,10 @@ Function *BIRReader::readFunction(Package *package) {
     if (hasReturnVar) {
         uint8_t kind = readU1();
         uint32_t typeCpIndex = readS4be();
-        Type *typeDecl = constantPool->getTypeCp(typeCpIndex, false);
+        auto type = std::unique_ptr<Type>(constantPool->getTypeCp(typeCpIndex, false));
         uint32_t nameCpIndex = readS4be();
 
-        Variable *varDecl = new Variable(typeDecl, constantPool->getStringCp(nameCpIndex), (VarKind)kind);
+        Variable *varDecl = new Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind);
         birFunction->setReturnVar(varDecl);
     }
 
@@ -716,7 +716,7 @@ Function *BIRReader::readFunction(Package *package) {
         uint8_t kind = readU1();
         uint32_t typeCpIndex = readS4be();
         FunctionParam *param = birFunction->getParam(i);
-        param->setType(constantPool->getTypeCp(typeCpIndex, false));
+        param->setType(std::unique_ptr<Type>(constantPool->getTypeCp(typeCpIndex, false)));
 
         uint32_t nameCpIndex __attribute__((unused)) = readS4be();
         if (kind == ARG_VAR_KIND) {

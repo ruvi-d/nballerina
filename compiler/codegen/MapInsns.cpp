@@ -40,7 +40,7 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
 
     // Find Variable corresponding to lhs to determine member type
     Variable *lhsVar = funcObj->getLocalOrGlobalVariable(getLHS());
-    auto *mapTypeDelare = dynamic_cast<MapTypeDecl *>(lhsVar->getType());
+    auto *mapTypeDelare = dynamic_cast<MapTypeDecl *>(lhsVar->getTypeObj());
     TypeTag memberTypeTag = mapTypeDelare->getMemberTypeTag();
 
     // Only handle Int type

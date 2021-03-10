@@ -48,7 +48,7 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     lhsTypeRef = wrap(unwrap(lhsOpRef)->getType());
     Variable *orignamVarDecl = funcObj->getLocalVariable(rhsOpName);
 
-    if (orignamVarDecl && orignamVarDecl->getType()->getTypeTag() == TYPE_TAG_ANY) {
+    if (orignamVarDecl && orignamVarDecl->getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef lastTypeIdx __attribute__((unused)) = LLVMBuildStructGEP(builder, rhsOpRef, 1, "lastTypeIdx");
 
         // TBD: Here, We should be checking whether this type can be cast to
@@ -63,14 +63,14 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         LLVMValueRef castResult = LLVMBuildBitCast(builder, dataLoad, lhsTypeRef, lhsOpName.c_str());
         LLVMValueRef castLoad = LLVMBuildLoad(builder, castResult, "");
         LLVMBuildStore(builder, castLoad, lhsOpRef);
-    } else if (getLHS() && funcObj->getLocalVariable(lhsOpName)->getType()->getTypeTag() == TYPE_TAG_ANY) {
+    } else if (getLHS() && funcObj->getLocalVariable(lhsOpName)->getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef structAllocaRef = funcObj->getLLVMLocalVar(getLHS()->getName());
         StringTableBuilder *strTable = getPackage()->getStrTableBuilder();
 
         // struct first element original type
         LLVMValueRef origTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 0, "origTypeIdx");
         Variable *origVarDecl = funcObj->getLocalVariable(lhsOpName);
-        TypeTag origTypeTag = origVarDecl->getType()->getTypeTag();
+        TypeTag origTypeTag = origVarDecl->getType().getTypeTag();
         auto origTypeName = Type::getNameOfType(origTypeTag);
         if (!strTable->contains(origTypeName))
             strTable->add(origTypeName);
@@ -80,8 +80,7 @@ void TypeCastInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         // struct second element last type
         LLVMValueRef lastTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 1, "lastTypeIdx");
         Variable *lastTypeVarDecl = funcObj->getLocalVariable(rhsOpName);
-        assert(lastTypeVarDecl->getType()->getTypeTag());
-        TypeTag lastTypeTag = lastTypeVarDecl->getType()->getTypeTag();
+        TypeTag lastTypeTag = lastTypeVarDecl->getType().getTypeTag();
         auto lastTypeName = Type::getNameOfType(lastTypeTag);
         if (!strTable->contains(lastTypeName))
             strTable->add(lastTypeName);

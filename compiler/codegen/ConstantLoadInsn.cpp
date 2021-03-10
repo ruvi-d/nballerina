@@ -68,7 +68,7 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
     LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(lhsOp);
 
-    assert(getFunction()->getLocalOrGlobalVariable(lhsOp)->getType()->getTypeTag() == typeTag);
+    assert(getFunction()->getLocalOrGlobalVariable(lhsOp)->getType().getTypeTag() == typeTag);
 
     switch (typeTag) {
     case TYPE_TAG_INT: {
