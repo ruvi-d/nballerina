@@ -21,10 +21,10 @@
 
 namespace nballerina {
 
-AbstractInstruction::AbstractInstruction(std::unique_ptr<Operand> lOp, BasicBlock *parentBB)
+AbstractInstruction::AbstractInstruction(Operand lOp, BasicBlock *parentBB)
     : lhsOp(std::move(lOp)), parentBB(parentBB) {}
 
-const Operand &AbstractInstruction::getLhsOperand() const { return *lhsOp; }
+const Operand &AbstractInstruction::getLhsOperand() const { return lhsOp; }
 Function *AbstractInstruction::getFunction() { return parentBB->getFunction(); }
 Package *AbstractInstruction::getPackage() { return parentBB->getPackage(); }
 

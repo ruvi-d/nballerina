@@ -29,16 +29,16 @@ class BasicBlock;
 
 class BinaryOpInsn : public NonTerminatorInsn {
   private:
-    Operand *rhsOp1;
-    Operand *rhsOp2;
+    Operand rhsOp1;
+    Operand rhsOp2;
     InstructionKind kind;
 
   public:
     BinaryOpInsn() = delete;
-    BinaryOpInsn(Operand *lOp, BasicBlock *currentBB, Operand *rOp1, Operand *rOp2);
+    BinaryOpInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp1, Operand rhsOp2);
     ~BinaryOpInsn() = default;
 
-    void setInstKind(InstructionKind _kind);
+    void setInstKind(InstructionKind kind);
     void translate(LLVMModuleRef &modRef) final;
 };
 

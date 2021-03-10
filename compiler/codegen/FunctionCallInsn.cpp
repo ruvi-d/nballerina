@@ -27,19 +27,15 @@ using namespace std;
 
 namespace nballerina {
 
-FunctionCallInsn::FunctionCallInsn([[maybe_unused]] bool funcVirtual, std::string funcName, int argNumber,
-                                   BasicBlock *nextBB, Operand *lhsOp, std::vector<Operand *> &fnArgs,
+FunctionCallInsn::FunctionCallInsn(bool, std::string funcName, int argNumber,
+                                   BasicBlock *nextBB, Operand lhs, std::vector<Operand> fnArgs,
                                    BasicBlock *currentBB)
-    : TerminatorInsn(lhsOp, currentBB, nextBB, true), functionName(std::move(funcName)), argCount(argNumber),
+    : TerminatorInsn(std::move(lhs), currentBB, nextBB, true), functionName(std::move(funcName)), argCount(argNumber),
       argsList(std::move(fnArgs)) {
     kind = INSTRUCTION_KIND_CALL;
 }
 
-std::string FunctionCallInsn::getFunctionName() { return functionName; }
-int FunctionCallInsn::getArgCount() { return argCount; }
-Operand *FunctionCallInsn::getArgumentFromList(int i) { return argsList[i]; }
-
-void FunctionCallInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
+void FunctionCallInsn::translate(LLVMModuleRef&) {
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *ParamRefs = new LLVMValueRef[argCount];
@@ -49,8 +45,8 @@ void FunctionCallInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
         llvm_unreachable("Unknown function call");
     }
     for (int i = 0; i < argCount; i++) {
-        Operand *op = argsList[i];
-        LLVMValueRef opRef = funcObj->createTempVariable(*op);
+        auto op = argsList[i];
+        LLVMValueRef opRef = funcObj->createTempVariable(op);
         ParamRefs[i] = opRef;
     }
 

@@ -20,10 +20,11 @@
 #include "Function.h"
 #include "GoToInsn.h"
 #include "llvm-c/Core.h"
+#include "Operand.h"
 
 namespace nballerina {
 
-GoToInsn::GoToInsn(BasicBlock *nextBB, BasicBlock *currentBB) : TerminatorInsn(nullptr, currentBB, nextBB, true) {
+GoToInsn::GoToInsn(BasicBlock *nextBB, BasicBlock *currentBB) : TerminatorInsn(Operand(), currentBB, nextBB, true) {
     kind = INSTRUCTION_KIND_GOTO;
 }
 

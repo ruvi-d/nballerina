@@ -30,7 +30,7 @@ class ConditionBrInsn : public TerminatorInsn {
 
   public:
     ConditionBrInsn() = delete;
-    ConditionBrInsn(Operand *lOp, BasicBlock *currentBB, BasicBlock *_ifThenBB, BasicBlock *_elseBB);
+    ConditionBrInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *_ifThenBB, BasicBlock *_elseBB);
     ~ConditionBrInsn() = default;
 
     BasicBlock *getIfThenBB();

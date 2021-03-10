@@ -38,7 +38,7 @@ class TerminatorInsn : public AbstractInstruction, public Translatable {
 
   public:
     TerminatorInsn() = delete;
-    TerminatorInsn(Operand *lOp, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire);
+    TerminatorInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire);
     virtual ~TerminatorInsn() = default;
 
     BasicBlock *getNextBB();

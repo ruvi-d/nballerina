@@ -43,7 +43,7 @@ class ConstantLoadInsn : public NonTerminatorInsn {
 
   public:
     ConstantLoadInsn() = delete;
-    ConstantLoadInsn(Operand *lOp, BasicBlock *currentBB);
+    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB);
     ~ConstantLoadInsn() = default;
 
     int getIntValue();

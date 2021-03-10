@@ -26,7 +26,7 @@ namespace nballerina {
 
 class Operand : public AbstractVariable {
   public:
-    Operand() = delete;
+    Operand() : AbstractVariable("", VarKind{}) {}
     Operand(std::string name, VarKind kind) : AbstractVariable(std::move(name), kind) {}
     virtual ~Operand() = default;
 };
