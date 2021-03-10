@@ -32,6 +32,7 @@ class BasicBlock;
 class Package;
 
 enum InstructionKind {
+    INSTRUCTION_NOT_AN_INSTRUCTION = 0,
     INSTRUCTION_KIND_GOTO = 1,
     INSTRUCTION_KIND_CALL = 2,
     INSTRUCTION_KIND_CONDITIONAL_BRANCH = 3,

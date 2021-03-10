@@ -381,11 +381,9 @@ FunctionCallInsn *ReadFuncCallInsn::readTerminatorInsn(BasicBlock *currentBB) {
         fnArgs.push_back(readerRef.readOperand());
     }
 
-    Operand lhsOp;
     uint8_t hasLhsOperand = readerRef.readU1();
-    if (hasLhsOperand) {
-        lhsOp = readerRef.readOperand();
-    }
+    Operand lhsOp = (hasLhsOperand > 0) ? readerRef.readOperand() : Operand("", NOT_A_KIND);
+
     uint32_t thenBbIdNameCpIndex = readerRef.readS4be();
     BasicBlock *dummybasicBlock =
         new BasicBlock(readerRef.constantPool->getStringCp(thenBbIdNameCpIndex), currentBB->getFunction());
@@ -669,7 +667,8 @@ Function *BIRReader::readFunction(Package *package) {
     uint32_t requiredParamCount = readS4be();
 
     // Set function param here and then fill remaining values from the default Params
-    std::vector<nballerina::Operand> functionParams(requiredParamCount);
+    std::vector<nballerina::Operand> functionParams;
+    functionParams.reserve(requiredParamCount);
     for (size_t i = 0; i < requiredParamCount; i++) {
         uint32_t paramNameCpIndex = readS4be();
         functionParams.push_back(Operand(constantPool->getStringCp(paramNameCpIndex), ARG_VAR_KIND));
