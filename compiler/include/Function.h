@@ -33,7 +33,7 @@ class BasicBlock;
 class Operand;
 class FunctionParam;
 class Variable;
-class InvokableType;
+class InvocableType;
 class RestParam;
 class Type;
 class Package;
@@ -58,7 +58,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
 
   public:
     Function() = delete;
-    Function(Package *parentPackage, std::string name, std::string workerName, int pflags, InvokableType *ptype);
+    Function(Package *parentPackage, std::string name, std::string workerName);
     Function(const Function &) = delete;
     ~Function() = default;
 

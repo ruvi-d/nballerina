@@ -28,7 +28,7 @@
 #include "FunctionCallInsn.h"
 #include "FunctionParam.h"
 #include "GoToInsn.h"
-#include "InvokableType.h"
+#include "InvocableType.h"
 #include "MapInsns.h"
 #include "MoveInsn.h"
 #include "NonTerminatorInsn.h"
@@ -308,7 +308,7 @@ class ConstantPoolSet {
     float getFloatCp(uint32_t index);
     bool getBooleanCp(uint32_t index);
     nballerina::TypeTag getTypeTag(uint32_t index);
-    nballerina::InvokableType *getInvokableType(uint32_t index);
+    nballerina::InvocableType getInvocableType(uint32_t index);
 };
 
 class ReadInsn {

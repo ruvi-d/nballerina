@@ -23,12 +23,12 @@
 #include "Package.h"
 #include "Types.h"
 #include "Variable.h"
+#include "InvocableType.h"
 #include "llvm-c/Core.h"
 
 namespace nballerina {
 
-Function::Function(Package *_parentPackage, std::string name, std::string workerName, [[maybe_unused]] int flags,
-                   [[maybe_unused]] InvokableType *type)
+Function::Function(Package *_parentPackage, std::string name, std::string workerName)
     : parentPackage(_parentPackage), name(std::move(name)), workerName(std::move(workerName)), returnVar(nullptr),
       restParam(nullptr), receiver(nullptr), llvmBuilder(nullptr), llvmFunction(nullptr) {}
 

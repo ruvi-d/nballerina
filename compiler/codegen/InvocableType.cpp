@@ -16,18 +16,14 @@
  * under the License.
  */
 
-#include "InvokableType.h"
+#include "InvocableType.h"
 
 namespace nballerina {
 
-InvokableType::InvokableType(std::vector<Type> paramTy, Type restTy, Type retTy)
+InvocableType::InvocableType(std::vector<Type> paramTy, Type restTy, Type retTy)
     : paramTypes(std::move(paramTy)), returnType(std::move(retTy)), restType(std::move(restTy)) {}
 
-InvokableType::InvokableType(std::vector<Type> paramTy, Type retTy)
+InvocableType::InvocableType(std::vector<Type> paramTy, Type retTy)
     : paramTypes(std::move(paramTy)), returnType(std::move(retTy)), restType() {}
-
-const Type &InvokableType::getReturnType() const { return returnType; }
-const Type &InvokableType::getParamType(int i) const { return paramTypes[i]; }
-size_t InvokableType::getParamTypeCount() const { return paramTypes.size(); }
 
 } // namespace nballerina
