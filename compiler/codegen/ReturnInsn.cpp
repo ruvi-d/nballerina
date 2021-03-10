@@ -29,7 +29,7 @@ using namespace llvm;
 
 namespace nballerina {
 
-ReturnInsn::ReturnInsn(BasicBlock *currentBB) : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nullptr, false) {}
+ReturnInsn::ReturnInsn(BasicBlock *currentBB) : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nullptr) {}
 
 void ReturnInsn::translate(LLVMModuleRef &) {
 

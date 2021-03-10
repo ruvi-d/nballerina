@@ -31,19 +31,20 @@ class Operand;
 class TerminatorInsn : public AbstractInstruction, public Translatable {
   private:
     BasicBlock *thenBB;
-    bool patchRequire = false;
+    bool patchRequired = false;
 
   protected:
     InstructionKind kind;
 
   public:
     TerminatorInsn() = delete;
-    TerminatorInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *then, bool _patchRequire);
+    TerminatorInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *then, bool patchRequired = false);
     virtual ~TerminatorInsn() = default;
 
     BasicBlock *getNextBB();
-    bool getPatchStatus();
-    InstructionKind getInstKind();
+    bool isPatched() const;
+    InstructionKind getInstKind() const;
+
     void setPatched();
     void setNextBB(BasicBlock *bb);
 
