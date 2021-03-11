@@ -691,9 +691,7 @@ Function *BIRReader::readFunction(Package *package) {
         uint32_t typeCpIndex = readS4be();
         auto type = constantPool->getTypeCp(typeCpIndex, false);
         uint32_t nameCpIndex = readS4be();
-
-        Variable *varDecl = new Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind);
-        birFunction->setReturnVar(varDecl);
+        birFunction->setReturnVar(Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind));
     }
 
     uint32_t defaultParamValue = readS4be();

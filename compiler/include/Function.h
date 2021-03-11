@@ -19,10 +19,13 @@
 #ifndef __FUNCTION__H__
 #define __FUNCTION__H__
 
+#include "RestParam.h"
+#include "Variable.h"
 #include "interfaces/Debuggable.h"
 #include "interfaces/PackageNode.h"
 #include "interfaces/Translatable.h"
 #include <map>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -32,9 +35,7 @@ namespace nballerina {
 class BasicBlock;
 class Operand;
 class FunctionParam;
-class Variable;
 class InvocableType;
-class RestParam;
 class Type;
 class Package;
 
@@ -43,9 +44,8 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     Package *parentPackage;
     std::string name;
     std::string workerName;
-    Variable *returnVar;
-    RestParam *restParam;
-    Variable *receiver;
+    std::optional<Variable> returnVar;
+    std::optional<RestParam> restParam;
     LLVMBuilderRef llvmBuilder;
     LLVMValueRef llvmFunction;
     std::map<std::string, Variable *> localVars;
@@ -64,8 +64,8 @@ class Function : public PackageNode, public Debuggable, public Translatable {
 
     std::string getName();
     size_t getNumParams();
-    RestParam *getRestParam();
-    Variable *getReturnVar();
+    const std::optional<RestParam> &getRestParam() const;
+    const std::optional<Variable> &getReturnVar() const;
     std::vector<BasicBlock *> getBasicBlocks();
     LLVMBuilderRef getLLVMBuilder();
     LLVMValueRef getLLVMFunctionValue();
@@ -82,9 +82,8 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     const FunctionParam &getParam(int i) const;
 
     void insertParam(FunctionParam param);
-    void setRestParam(RestParam *param);
-    void setReceiver(Variable *var);
-    void setReturnVar(Variable *var);
+    void setRestParam(RestParam param);
+    void setReturnVar(Variable var);
     void insertLocalVar(Variable *var);
     void insertBasicBlock(BasicBlock *bb);
     void insertBranchComparisonValue(const std::string &lhsName, LLVMValueRef compRef);

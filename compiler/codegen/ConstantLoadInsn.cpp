@@ -86,6 +86,7 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     case TYPE_TAG_NIL: {
         string lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
+        assert(getFunction()->getReturnVar());
         if (getFunction()->isMainFunction() && (lhsOpName.compare(getFunction()->getReturnVar()->getName()) == 0)) {
             return;
         }

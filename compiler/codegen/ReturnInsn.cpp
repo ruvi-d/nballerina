@@ -37,6 +37,7 @@ void ReturnInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
     if (!funcObj->isMainFunction()) {
+        assert(funcObj->getReturnVar());
         LLVMValueRef retValueRef =
             LLVMBuildLoad(builder, funcObj->getLLVMLocalVar(funcObj->getReturnVar()->getName()), "return_val_temp");
         LLVMBuildRet(builder, retValueRef);
