@@ -18,10 +18,12 @@
 
 #include "Function.h"
 #include "BasicBlock.h"
+#include "ConditionBrInsn.h"
 #include "FunctionParam.h"
 #include "InvocableType.h"
 #include "Operand.h"
 #include "Package.h"
+#include "TerminatorInsn.h"
 #include "Types.h"
 #include "llvm-c/Core.h"
 
@@ -32,7 +34,7 @@ Function::Function(Package *_parentPackage, std::string name, std::string worker
       flags(flags), returnVar{}, restParam{}, llvmBuilder(nullptr), llvmFunction(nullptr) {}
 
 // Search basic block based on the basic block ID
-BasicBlock *Function::FindBasicBlock(const std::string &id) {
+std::shared_ptr<BasicBlock> Function::FindBasicBlock(const std::string &id) {
     auto bb = basicBlocksMap.find(id);
     if (bb == basicBlocksMap.end()) {
         return nullptr;
@@ -45,7 +47,6 @@ const FunctionParam &Function::getParam(int i) const { return requiredParams[i];
 unsigned int Function::getFlags() { return flags; }
 const std::optional<RestParam> &Function::getRestParam() const { return restParam; }
 const std::optional<Variable> &Function::getReturnVar() const { return returnVar; }
-std::vector<BasicBlock *> Function::getBasicBlocks() { return basicBlocks; }
 LLVMBuilderRef Function::getLLVMBuilder() { return llvmBuilder; }
 LLVMValueRef Function::getLLVMFunctionValue() { return llvmFunction; }
 
@@ -111,9 +112,10 @@ void Function::insertLocalVar(Variable var) {
     localVars.insert(std::pair<std::string, Variable>(var.getName(), std::move(var)));
 }
 void Function::setReturnVar(Variable var) { returnVar = std::move(var); }
-void Function::insertBasicBlock(BasicBlock *bb) {
-    basicBlocks.push_back(bb);
-    basicBlocksMap.insert(std::pair<std::string, BasicBlock *>(bb->getId(), bb));
+void Function::insertBasicBlock(std::shared_ptr<BasicBlock> bb) {
+    if (!firstBlock)
+        firstBlock = bb;
+    basicBlocksMap.insert(std::pair<std::string, std::shared_ptr<BasicBlock>>(bb->getId(), bb));
 }
 void Function::setLLVMBuilder(LLVMBuilderRef b) { llvmBuilder = b; }
 void Function::setLLVMFunctionValue(LLVMValueRef newFuncRef) { llvmFunction = newFuncRef; }
@@ -152,6 +154,45 @@ bool Function::isMainFunction() { return (name.compare(MAIN_FUNCTION_NAME) == 0)
 
 bool Function::isExternalFunction() { return ((flags & NATIVE) == NATIVE); }
 
+// Patches the Terminator Insn with destination Basic Block
+void Function::patchBasicBlocks() {
+    for (auto &basicBlock : basicBlocksMap) {
+        TerminatorInsn *terminator = basicBlock.second->getTerminatorInsnPtr();
+        if ((terminator == nullptr) || !terminator->isPatched()) {
+            continue;
+        }
+        switch (terminator->getInstKind()) {
+        case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
+            ConditionBrInsn *instruction = (static_cast<ConditionBrInsn *>(terminator));
+            auto trueBB = FindBasicBlock(instruction->getIfThenBB()->getId());
+            auto falseBB = FindBasicBlock(instruction->getElseBB()->getId());
+            [[maybe_unused]] BasicBlock *danglingTrueBB = instruction->getIfThenBB();
+            [[maybe_unused]] BasicBlock *danglingFalseBB = instruction->getElseBB();
+            instruction->setIfThenBB(trueBB.get());
+            instruction->setElseBB(falseBB.get());
+            instruction->setPatched();
+            break;
+        }
+        case INSTRUCTION_KIND_GOTO: {
+            auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
+            [[maybe_unused]] BasicBlock *danglingBB = terminator->getNextBB();
+            terminator->setNextBB(destBB.get());
+            terminator->setPatched();
+            break;
+        }
+        case INSTRUCTION_KIND_CALL: {
+            auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
+            [[maybe_unused]] BasicBlock *danglingBB = terminator->getNextBB();
+            terminator->setNextBB(destBB.get());
+            break;
+        }
+        default:
+            std::fprintf(stderr, "%s:%d Invalid Insn Kind for Instruction Patching.\n", __FILE__, __LINE__);
+            break;
+        }
+    }
+}
+
 void Function::translate(LLVMModuleRef &modRef) {
 
     LLVMBasicBlockRef BbRef = LLVMAppendBasicBlock(llvmFunction, "entry");
@@ -176,20 +217,20 @@ void Function::translate(LLVMModuleRef &modRef) {
     }
 
     // iterate through with each basic block in the function and create them
-    for (auto const &bb : basicBlocks) {
-        LLVMBasicBlockRef bbRef = LLVMAppendBasicBlock(llvmFunction, bb->getId().c_str());
-        bb->setLLVMBBRef(bbRef);
+    for (auto &bb : basicBlocksMap) {
+        LLVMBasicBlockRef bbRef = LLVMAppendBasicBlock(llvmFunction, bb.second->getId().c_str());
+        bb.second->setLLVMBBRef(bbRef);
     }
 
     // creating branch to next basic block.
-    if (!basicBlocks.empty() && (basicBlocks[0] != nullptr) && (basicBlocks[0]->getLLVMBBRef() != nullptr)) {
-        LLVMBuildBr(llvmBuilder, basicBlocks[0]->getLLVMBBRef());
+    if (firstBlock && (firstBlock->getLLVMBBRef() != nullptr)) {
+        LLVMBuildBr(llvmBuilder, firstBlock->getLLVMBBRef());
     }
 
     // Now translate the basic blocks (essentially add the instructions in them)
-    for (auto const &bb : basicBlocks) {
-        LLVMPositionBuilderAtEnd(llvmBuilder, bb->getLLVMBBRef());
-        bb->translate(modRef);
+    for (auto &bb : basicBlocksMap) {
+        LLVMPositionBuilderAtEnd(llvmBuilder, bb.second->getLLVMBBRef());
+        bb.second->translate(modRef);
     }
 }
 

@@ -569,50 +569,6 @@ BasicBlock *BIRReader::readBasicBlock(Function *birFunction) {
     return basicBlock;
 }
 
-// Patches the Terminator Insn with destination Basic Block
-void BIRReader::patchInsn(vector<BasicBlock *> basicBlocks) {
-    for (auto const &basicBlock : basicBlocks) {
-        Function *curFunc = basicBlock->getFunction();
-        TerminatorInsn *terminator = basicBlock->getTerminatorInsnPtr();
-        if ((terminator == nullptr) || !terminator->isPatched()) {
-            continue;
-        }
-        switch (terminator->getInstKind()) {
-        case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
-            ConditionBrInsn *Terminator = (static_cast<ConditionBrInsn *>(terminator));
-            BasicBlock *trueBB = curFunc->FindBasicBlock(Terminator->getIfThenBB()->getId());
-            BasicBlock *falseBB = curFunc->FindBasicBlock(Terminator->getElseBB()->getId());
-            BasicBlock *danglingTrueBB = Terminator->getIfThenBB();
-            BasicBlock *danglingFalseBB = Terminator->getElseBB();
-            delete danglingTrueBB;
-            delete danglingFalseBB;
-            Terminator->setIfThenBB(trueBB);
-            Terminator->setElseBB(falseBB);
-            Terminator->setPatched();
-            break;
-        }
-        case INSTRUCTION_KIND_GOTO: {
-            BasicBlock *destBB = curFunc->FindBasicBlock(terminator->getNextBB()->getId());
-            BasicBlock *danglingBB = terminator->getNextBB();
-            delete danglingBB;
-            terminator->setNextBB(destBB);
-            terminator->setPatched();
-            break;
-        }
-        case INSTRUCTION_KIND_CALL: {
-            BasicBlock *destBB = curFunc->FindBasicBlock(terminator->getNextBB()->getId());
-            BasicBlock *danglingBB = terminator->getNextBB();
-            delete danglingBB;
-            terminator->setNextBB(destBB);
-            break;
-        }
-        default:
-            std::fprintf(stderr, "%s:%d Invalid Insn Kind for Instruction Patching.\n", __FILE__, __LINE__);
-            break;
-        }
-    }
-}
-
 bool BIRReader::ignoreFunction(std::string funcName) {
     std::array<std::string, 3> ignoreNames{"..<init>", "..<start>", "..<stop>"};
     bool ignoreFunction = false;
@@ -716,7 +672,7 @@ Function *BIRReader::readFunction(Package *package) {
     BasicBlock *previousBB = nullptr;
     for (size_t i = 0; i < BBCount; i++) {
         BasicBlock *basicBlock = readBasicBlock(birFunction);
-        birFunction->insertBasicBlock(basicBlock);
+        birFunction->insertBasicBlock(std::shared_ptr<BasicBlock>(basicBlock));
         // Create links between the basic blocks
         if (previousBB) {
             previousBB->setNextBB(basicBlock);
@@ -725,7 +681,7 @@ Function *BIRReader::readFunction(Package *package) {
     }
 
     // Patching the Instructions
-    patchInsn(birFunction->getBasicBlocks());
+    birFunction->patchBasicBlocks();
 
     uint32_t errorEntriesCount __attribute__((unused)) = readS4be();
     uint32_t channelsLength __attribute__((unused)) = readS4be();

@@ -28,6 +28,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <memory>
 
 namespace nballerina {
 
@@ -49,15 +50,16 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     std::optional<RestParam> restParam;
     LLVMBuilderRef llvmBuilder;
     LLVMValueRef llvmFunction;
+    std::shared_ptr<BasicBlock> firstBlock;
     std::map<std::string, Variable> localVars;
-    std::map<std::string, BasicBlock *> basicBlocksMap;
-    std::vector<BasicBlock *> basicBlocks;
+    std::map<std::string, std::shared_ptr<BasicBlock>> basicBlocksMap;
     std::map<std::string, LLVMValueRef> branchComparisonList;
     std::map<std::string, LLVMValueRef> localVarRefs;
     std::vector<FunctionParam> requiredParams;
     inline static const std::string MAIN_FUNCTION_NAME = "main";
     static constexpr unsigned int PUBLIC = 1;
     static constexpr unsigned int NATIVE = PUBLIC << 1;
+    std::shared_ptr<BasicBlock> FindBasicBlock(const std::string &id);
 
   public:
     Function() = delete;
@@ -70,11 +72,9 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     unsigned int getFlags();
     const std::optional<RestParam> &getRestParam() const;
     const std::optional<Variable> &getReturnVar() const;
-    std::vector<BasicBlock *> getBasicBlocks();
     LLVMBuilderRef getLLVMBuilder();
     LLVMValueRef getLLVMFunctionValue();
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName);
-    BasicBlock *FindBasicBlock(const std::string &id);
     Package *getPackage() final;
     LLVMValueRef createTempVariable(const Operand &op) const;
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
@@ -85,12 +85,13 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     bool isMainFunction();
     bool isExternalFunction();
     const FunctionParam &getParam(int i) const;
+    void patchBasicBlocks();
 
     void insertParam(FunctionParam param);
     void setRestParam(RestParam param);
     void setReturnVar(Variable var);
     void insertLocalVar(Variable var);
-    void insertBasicBlock(BasicBlock *bb);
+    void insertBasicBlock(std::shared_ptr<BasicBlock> bb);
     void insertBranchComparisonValue(const std::string &lhsName, LLVMValueRef compRef);
     void setLLVMBuilder(LLVMBuilderRef builder);
     void setLLVMFunctionValue(LLVMValueRef funcRef);
