@@ -35,11 +35,11 @@ FunctionCallInsn::FunctionCallInsn(std::string funcName, int argNumber, std::sha
 }
 
 void FunctionCallInsn::translate(LLVMModuleRef &) {
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *ParamRefs = new LLVMValueRef[argCount];
 
-    Function *function = getPackage()->getFunction(functionName);
+    auto function = getPackage()->getFunction(functionName);
     if (function == nullptr) {
         llvm_unreachable("Unknown function call");
     }

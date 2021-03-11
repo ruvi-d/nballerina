@@ -23,12 +23,12 @@
 
 namespace nballerina {
 
-BasicBlock::BasicBlock(std::string pid, Function *parentFunc)
+BasicBlock::BasicBlock(std::string pid, std::shared_ptr<Function> parentFunc)
     : id(std::move(pid)), parentFunction(parentFunc), terminator(nullptr), nextBB(nullptr), bbRefObj(nullptr) {}
 
 const std::string &BasicBlock::getId() const { return id; }
 TerminatorInsn *BasicBlock::getTerminatorInsnPtr() { return terminator.get(); }
-Function *BasicBlock::getFunction() { return parentFunction; }
+std::shared_ptr<Function> BasicBlock::getFunction() { return parentFunction; }
 LLVMBasicBlockRef BasicBlock::getLLVMBBRef() { return bbRefObj; }
 Package *BasicBlock::getPackage() { return parentFunction->getPackage(); }
 

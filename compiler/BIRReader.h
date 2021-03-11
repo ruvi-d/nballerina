@@ -65,8 +65,8 @@ class BIRReader {
     nballerina::TypeDescInsn *readTypeDescInsn();
     nballerina::StructureInsn *readStructureInsn();
     void readInsn(std::shared_ptr<nballerina::BasicBlock> basicBlock);
-    std::shared_ptr<nballerina::BasicBlock> readBasicBlock(nballerina::Function *birFunction);
-    nballerina::Function *readFunction(nballerina::Package *birPackage);
+    std::shared_ptr<nballerina::BasicBlock> readBasicBlock(std::shared_ptr<nballerina::Function> birFunction);
+    std::shared_ptr<nballerina::Function> readFunction(nballerina::Package *birPackage);
     void readModule();
 
     // Read bytes functions

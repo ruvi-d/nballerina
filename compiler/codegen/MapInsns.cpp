@@ -35,7 +35,7 @@ MapStoreInsn::MapStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, O
     : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
 
 void MapStoreInsn::translate(LLVMModuleRef &modRef) {
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
     // Find Variable corresponding to lhs to determine member type

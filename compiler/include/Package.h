@@ -19,6 +19,7 @@
 #ifndef __PACKAGE__H__
 #define __PACKAGE__H__
 
+#include "Function.h"
 #include "Variable.h"
 #include "interfaces/Translatable.h"
 #include "llvm/IR/DerivedTypes.h"
@@ -31,7 +32,6 @@
 namespace nballerina {
 
 // Forward Declaration
-class Function;
 class Type;
 
 class Package : public Translatable {
@@ -40,10 +40,10 @@ class Package : public Translatable {
     std::string name;
     std::string version;
     std::string sourceFileName;
-    std::vector<Function *> functions;
+    std::vector<std::shared_ptr<Function>> functions;
     std::map<std::string, Variable> globalVars;
     std::map<std::string, LLVMValueRef> globalVarRefs;
-    std::map<std::string, Function *> functionLookUp;
+    std::map<std::string, std::shared_ptr<Function>> functionLookUp;
     llvm::StructType *boxType;
     llvm::StringTableBuilder *strBuilder;
     std::map<std::string, std::vector<LLVMValueRef>> structElementStoreInst;
@@ -63,7 +63,7 @@ class Package : public Translatable {
     LLVMValueRef getGlobalLLVMVar(const std::string &globVar);
     LLVMTypeRef getLLVMTypeOfType(const Type &type) const;
     llvm::StringTableBuilder *getStrTableBuilder();
-    Function *getFunction(const std::string &name);
+    std::shared_ptr<Function> getFunction(const std::string &name);
     LLVMValueRef getFunctionRef(const std::string &arrayName);
     LLVMValueRef getGlobalNilVar();
 
@@ -72,7 +72,7 @@ class Package : public Translatable {
     void setVersion(std::string verName);
     void setSrcFileName(std::string srcFileName);
     void insertGlobalVar(Variable var);
-    void insertFunction(Function *function);
+    void insertFunction(std::shared_ptr<Function> function);
     void addFunctionRef(const std::string &, LLVMValueRef functionRef);
     void addStringOffsetRelocationEntry(const std::string &, LLVMValueRef storeInsn);
 

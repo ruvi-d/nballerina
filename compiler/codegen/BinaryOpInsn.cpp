@@ -33,7 +33,7 @@ void BinaryOpInsn::setInstKind(InstructionKind kind) { this->kind = kind; }
 
 void BinaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
 
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
     string lhsName = getLhsOperand().getName();

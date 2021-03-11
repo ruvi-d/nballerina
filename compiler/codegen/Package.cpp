@@ -52,12 +52,12 @@ void Package::setVersion(std::string verName) { version = std::move(verName); }
 
 void Package::setSrcFileName(std::string srcFileName) { sourceFileName = std::move(srcFileName); }
 
-void Package::insertFunction(Function *function) {
+void Package::insertFunction(std::shared_ptr<Function> function) {
     functions.push_back(function);
-    functionLookUp.insert(std::pair<std::string, Function *>(function->getName(), function));
+    functionLookUp.insert(std::pair<std::string, std::shared_ptr<Function>>(function->getName(), function));
 }
 
-Function *Package::getFunction(const std::string &funcName) { return functionLookUp.at(funcName); }
+std::shared_ptr<Function> Package::getFunction(const std::string &funcName) { return functionLookUp.at(funcName); }
 
 void Package::addFunctionRef(const std::string &arrayName, LLVMValueRef functionRef) {
     functionRefs.insert(std::pair<std::string, LLVMValueRef>(arrayName, functionRef));
