@@ -295,20 +295,24 @@ std::unique_ptr<ConstantLoadInsn> ReadConstLoadInsn::readNonTerminatorInsn(std::
     case TYPE_TAG_DECIMAL:
     case TYPE_TAG_BYTE: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, (int)readerRef.constantPool->getIntCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB,
+                                                  (int)readerRef.constantPool->getIntCp(valueCpIndex));
     }
     case TYPE_TAG_BOOLEAN: {
         uint8_t valueCpIndex = readerRef.readU1(); // ToDo why is the index unit8 ?
-        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getBooleanCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB,
+                                                  readerRef.constantPool->getBooleanCp(valueCpIndex));
     }
     case TYPE_TAG_FLOAT: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getFloatCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB,
+                                                  readerRef.constantPool->getFloatCp(valueCpIndex));
     }
     case TYPE_TAG_CHAR_STRING:
     case TYPE_TAG_STRING: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getStringCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB,
+                                                  readerRef.constantPool->getStringCp(valueCpIndex));
     }
     case TYPE_TAG_NIL:
         return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB);
@@ -376,7 +380,8 @@ std::unique_ptr<FunctionCallInsn> ReadFuncCallInsn::readTerminatorInsn(std::shar
     auto dummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(thenBbIdNameCpIndex),
                                                         currentBB->getFunction());
 
-    return std::make_unique<FunctionCallInsn>(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs), currentBB);
+    return std::make_unique<FunctionCallInsn>(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs),
+                                              currentBB);
 }
 
 // Read TypeCast Insn
@@ -453,8 +458,7 @@ void BIRReader::readInsn(std::shared_ptr<BasicBlock> basicBlock) {
     uint32_t sCol = readS4be();
     uint32_t eCol = readS4be();
     uint32_t sourceFileCpIndex = readS4be();
-    Location *location =
-        new Location(constantPool->getStringCp(sourceFileCpIndex), (int)sLine, (int)eLine, (int)sCol, (int)eCol);
+    Location location(constantPool->getStringCp(sourceFileCpIndex), (int)sLine, (int)eLine, (int)sCol, (int)eCol);
 
     InstructionKind insnKind = (InstructionKind)readU1();
 
@@ -579,8 +583,7 @@ std::shared_ptr<Function> BIRReader::readFunction(std::shared_ptr<Package> packa
     uint32_t sCol = readS4be();
     uint32_t eCol = readS4be();
     uint32_t sourceFileCpIndex = readS4be();
-    Location *location =
-        new Location(constantPool->getStringCp(sourceFileCpIndex), (int)sLine, (int)eLine, (int)sCol, (int)eCol);
+    Location location(constantPool->getStringCp(sourceFileCpIndex), (int)sLine, (int)eLine, (int)sCol, (int)eCol);
 
     // TODO should not set src for every function
     package->setSrcFileName(constantPool->getStringCp(sourceFileCpIndex));
