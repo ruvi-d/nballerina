@@ -69,17 +69,15 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     }
     case TYPE_TAG_STRING:
     case TYPE_TAG_CHAR_STRING: {
-        LLVMValueRef *paramTypes = new LLVMValueRef[3];
         string stringValue = strValue;
         Constant *C = llvm::ConstantDataArray::getString(*unwrap(LLVMGetGlobalContext()),
                                                          StringRef(stringValue.c_str(), stringValue.length()));
-        GlobalVariable *GV =
+        llvm::GlobalVariable *GV =
             new GlobalVariable(*unwrap(modRef), C->getType(), false, GlobalValue::PrivateLinkage, C, ".str");
         GV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
         GV->setAlignment(llvm::Align(1));
 
-        paramTypes[0] = wrap(unwrap(builder)->getInt64(0)); //
-        paramTypes[1] = wrap(unwrap(builder)->getInt64(0));
+        LLVMValueRef paramTypes[] = {wrap(unwrap(builder)->getInt64(0)), wrap(unwrap(builder)->getInt64(0))};
         constRef = LLVMBuildInBoundsGEP(builder, wrap(GV), paramTypes, 2, "simple");
         break;
     }
