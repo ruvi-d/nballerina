@@ -21,7 +21,6 @@
 #include "FunctionParam.h"
 #include "Operand.h"
 #include "Types.h"
-#include "Variable.h"
 #include "llvm-c/Core.h"
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/GlobalVariable.h"
@@ -93,9 +92,9 @@ void Package::translate(LLVMModuleRef &modRef) {
 
     // iterate over all global variables and translate
     for (auto const &it : globalVars) {
-        Variable *globVar = it.second;
-        LLVMTypeRef varTyperef = getLLVMTypeOfType(globVar->getType());
-        string varName = globVar->getName();
+        Variable globVar = it.second;
+        LLVMTypeRef varTyperef = getLLVMTypeOfType(globVar.getType());
+        string varName = globVar.getName();
         // emit/adding the global variable.
         llvm::Constant *initValue = llvm::Constant::getNullValue(llvm::unwrap(varTyperef));
         llvm::GlobalVariable *gVar =
@@ -189,16 +188,16 @@ LLVMValueRef Package::getFunctionRef(const std::string &arrayName) {
     return it->second;
 }
 
-Variable *Package::getGlobalVariable(const std::string &name) {
+std::optional<Variable> Package::getGlobalVariable(const std::string &name) const {
     auto varIt = globalVars.find(name);
     if (varIt == globalVars.end()) {
-        return nullptr;
+        return std::nullopt;
     }
     return varIt->second;
 }
 
-void Package::insertGlobalVar(Variable *var) {
-    globalVars.insert(std::pair<std::string, Variable *>(var->getName(), var));
+void Package::insertGlobalVar(Variable var) {
+    globalVars.insert(std::pair<std::string, Variable>(var.getName(), std::move(var)));
 }
 
 } // namespace nballerina

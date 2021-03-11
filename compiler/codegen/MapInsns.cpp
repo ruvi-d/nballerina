@@ -16,8 +16,8 @@
  * under the License.
  */
 
-#include "Function.h"
 #include "MapInsns.h"
+#include "Function.h"
 #include "Operand.h"
 #include "Package.h"
 #include "Types.h"
@@ -39,7 +39,8 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
     // Find Variable corresponding to lhs to determine member type
-    Variable *lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    auto lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    assert(lhsVar);
     auto mapType = lhsVar->getType();
     TypeTag memberTypeTag = mapType.getMemberTypeTag();
 

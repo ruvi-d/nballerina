@@ -59,9 +59,9 @@ class BIRReader {
     BIRReader() {}
 
     ConstantPoolSet *constantPool;
-    nballerina::Variable *readGlobalVar();
+    nballerina::Variable readGlobalVar();
     nballerina::Operand readOperand();
-    nballerina::Variable *readLocalVar();
+    nballerina::Variable readLocalVar();
     nballerina::TypeDescInsn *readTypeDescInsn();
     nballerina::StructureInsn *readStructureInsn();
     void readInsn(nballerina::BasicBlock *basicBlock);

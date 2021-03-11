@@ -29,7 +29,7 @@ class Variable;
 
 class StructureInsn : public NonTerminatorInsn {
   private:
-    void mapInsnTranslate(Variable *lhsVar, LLVMModuleRef &modRef);
+    void mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modRef);
     LLVMValueRef getNewMapIntDeclaration(LLVMModuleRef &modRef);
 
   public:
