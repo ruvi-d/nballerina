@@ -266,21 +266,21 @@ Operand BIRReader::readOperand() {
 }
 
 // Read TYPEDESC Insn
-TypeDescInsn *ReadTypeDescInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<TypeDescInsn> ReadTypeDescInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto lhsOp = readerRef.readOperand();
     uint32_t typeCpIndex __attribute__((unused)) = readerRef.readS4be();
-    return new TypeDescInsn(std::move(lhsOp), currentBB);
+    return std::make_unique<TypeDescInsn>(std::move(lhsOp), currentBB);
 }
 
 // Read STRUCTURE Insn
-StructureInsn *ReadStructureInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<StructureInsn> ReadStructureInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto rhsOp = readerRef.readOperand();
     [[maybe_unused]] auto lhsOp = readerRef.readOperand();
-    return new StructureInsn(std::move(lhsOp), currentBB);
+    return std::make_unique<StructureInsn>(std::move(lhsOp), currentBB);
 }
 
 // Read CONST_LOAD Insn
-ConstantLoadInsn *ReadConstLoadInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<ConstantLoadInsn> ReadConstLoadInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     uint32_t typeCpIndex __attribute__((unused)) = readerRef.readS4be();
     auto lhsOp = readerRef.readOperand();
 
@@ -295,23 +295,23 @@ ConstantLoadInsn *ReadConstLoadInsn::readNonTerminatorInsn(std::shared_ptr<Basic
     case TYPE_TAG_DECIMAL:
     case TYPE_TAG_BYTE: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return new ConstantLoadInsn(std::move(lhsOp), currentBB, (int)readerRef.constantPool->getIntCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, (int)readerRef.constantPool->getIntCp(valueCpIndex));
     }
     case TYPE_TAG_BOOLEAN: {
         uint8_t valueCpIndex = readerRef.readU1(); // ToDo why is the index unit8 ?
-        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getBooleanCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getBooleanCp(valueCpIndex));
     }
     case TYPE_TAG_FLOAT: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getFloatCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getFloatCp(valueCpIndex));
     }
     case TYPE_TAG_CHAR_STRING:
     case TYPE_TAG_STRING: {
         uint32_t valueCpIndex = readerRef.readS4be();
-        return new ConstantLoadInsn(std::move(lhsOp), currentBB, readerRef.constantPool->getStringCp(valueCpIndex));
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB, readerRef.constantPool->getStringCp(valueCpIndex));
     }
     case TYPE_TAG_NIL:
-        return new ConstantLoadInsn(std::move(lhsOp), currentBB);
+        return std::make_unique<ConstantLoadInsn>(std::move(lhsOp), currentBB);
     default:
         // add an error msg
         abort();
@@ -319,22 +319,22 @@ ConstantLoadInsn *ReadConstLoadInsn::readNonTerminatorInsn(std::shared_ptr<Basic
 }
 
 // Read Unary Operand
-UnaryOpInsn *ReadUnaryInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<UnaryOpInsn> ReadUnaryInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto rhsOp = readerRef.readOperand();
     auto lhsOp = readerRef.readOperand();
-    return new UnaryOpInsn(std::move(lhsOp), currentBB, rhsOp);
+    return std::make_unique<UnaryOpInsn>(std::move(lhsOp), currentBB, rhsOp);
 }
 
 // Read Binary Operand
-BinaryOpInsn *ReadBinaryInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<BinaryOpInsn> ReadBinaryInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto rhsOp1 = readerRef.readOperand();
     auto rhsOp2 = readerRef.readOperand();
     auto lhsOp = readerRef.readOperand();
-    return new BinaryOpInsn(std::move(lhsOp), currentBB, rhsOp1, rhsOp2);
+    return std::make_unique<BinaryOpInsn>(std::move(lhsOp), currentBB, rhsOp1, rhsOp2);
 }
 
 // Read BRANCH Insn
-ConditionBrInsn *ReadCondBrInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<ConditionBrInsn> ReadCondBrInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto lhsOp = readerRef.readOperand();
     uint32_t trueBbIdNameCpIndex = readerRef.readS4be();
     uint32_t falseBbIdNameCpIndex = readerRef.readS4be();
@@ -345,19 +345,19 @@ ConditionBrInsn *ReadCondBrInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> 
     auto falseDummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(falseBbIdNameCpIndex),
                                                              currentBB->getFunction());
 
-    return new ConditionBrInsn(std::move(lhsOp), currentBB, trueDummybasicBlock, falseDummybasicBlock);
+    return std::make_unique<ConditionBrInsn>(std::move(lhsOp), currentBB, trueDummybasicBlock, falseDummybasicBlock);
 }
 
 // Read MOV Insn
-MoveInsn *ReadMoveInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<MoveInsn> ReadMoveInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto rhsOp = readerRef.readOperand();
     auto lhsOp = readerRef.readOperand();
 
-    return new MoveInsn(std::move(lhsOp), currentBB, rhsOp);
+    return std::make_unique<MoveInsn>(std::move(lhsOp), currentBB, rhsOp);
 }
 
 // Read Function Call
-FunctionCallInsn *ReadFuncCallInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<FunctionCallInsn> ReadFuncCallInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     [[maybe_unused]] uint8_t isVirtual = readerRef.readU1();
     uint32_t packageIndex __attribute__((unused)) = readerRef.readS4be();
     uint32_t callNameCpIndex = readerRef.readS4be();
@@ -376,11 +376,11 @@ FunctionCallInsn *ReadFuncCallInsn::readTerminatorInsn(std::shared_ptr<BasicBloc
     auto dummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(thenBbIdNameCpIndex),
                                                         currentBB->getFunction());
 
-    return new FunctionCallInsn(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs), currentBB);
+    return std::make_unique<FunctionCallInsn>(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs), currentBB);
 }
 
 // Read TypeCast Insn
-TypeCastInsn *ReadTypeCastInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<TypeCastInsn> ReadTypeCastInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto lhsOp = readerRef.readOperand();
     auto rhsOperand = readerRef.readOperand();
 
@@ -388,62 +388,62 @@ TypeCastInsn *ReadTypeCastInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock
     Type typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
     [[maybe_unused]] uint8_t isCheckTypes = readerRef.readU1();
 
-    return new TypeCastInsn(std::move(lhsOp), currentBB, rhsOperand);
+    return std::make_unique<TypeCastInsn>(std::move(lhsOp), currentBB, rhsOperand);
 }
 
 // Read Type Test Insn
-TypeTestInsn *ReadTypeTestInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<TypeTestInsn> ReadTypeTestInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     uint32_t typeCpIndex = readerRef.readS4be();
     Type typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
     auto lhsOp = readerRef.readOperand();
     [[maybe_unused]] auto rhsOperand = readerRef.readOperand();
-    return new TypeTestInsn(lhsOp, currentBB);
+    return std::make_unique<TypeTestInsn>(lhsOp, currentBB);
 }
 
 // Read Array Insn
-ArrayInsn *ReadArrayInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<ArrayInsn> ReadArrayInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     uint32_t typeCpIndex = readerRef.readS4be();
     Type typeDecl = readerRef.constantPool->getTypeCp(typeCpIndex, false);
     auto lhsOp = readerRef.readOperand();
     auto sizeOperand = readerRef.readOperand();
-    return new ArrayInsn(lhsOp, currentBB, sizeOperand);
+    return std::make_unique<ArrayInsn>(lhsOp, currentBB, sizeOperand);
 }
 
 // Read Array Store Insn
-ArrayStoreInsn *ReadArrayStoreInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<ArrayStoreInsn> ReadArrayStoreInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto lhsOp = readerRef.readOperand();
     auto keyOperand = readerRef.readOperand();
     auto rhsOperand = readerRef.readOperand();
-    return new ArrayStoreInsn(lhsOp, currentBB, keyOperand, rhsOperand);
+    return std::make_unique<ArrayStoreInsn>(lhsOp, currentBB, keyOperand, rhsOperand);
 }
 
 // Read Array Load Insn
-ArrayLoadInsn *ReadArrayLoadInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<ArrayLoadInsn> ReadArrayLoadInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     [[maybe_unused]] uint8_t optionalFieldAccess = readerRef.readU1();
     [[maybe_unused]] uint8_t fillingRead = readerRef.readU1();
     auto lhsOp = readerRef.readOperand();
     auto keyOperand = readerRef.readOperand();
     auto rhsOperand = readerRef.readOperand();
-    return new ArrayLoadInsn(lhsOp, currentBB, keyOperand, rhsOperand);
+    return std::make_unique<ArrayLoadInsn>(lhsOp, currentBB, keyOperand, rhsOperand);
 }
 
 // Read Map Store Insn
-MapStoreInsn *ReadMapStoreInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<MapStoreInsn> ReadMapStoreInsn::readNonTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     auto lhsOp = readerRef.readOperand();
     auto keyOperand = readerRef.readOperand();
     auto rhsOperand = readerRef.readOperand();
-    return new MapStoreInsn(lhsOp, currentBB, keyOperand, rhsOperand);
+    return std::make_unique<MapStoreInsn>(lhsOp, currentBB, keyOperand, rhsOperand);
 }
 
-GoToInsn *ReadGoToInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+std::unique_ptr<GoToInsn> ReadGoToInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     uint32_t nameId = readerRef.readS4be();
     auto dummybasicBlock =
         std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(nameId), currentBB->getFunction());
-    return new GoToInsn(dummybasicBlock, currentBB);
+    return std::make_unique<GoToInsn>(dummybasicBlock, currentBB);
 }
 
-ReturnInsn *ReadReturnInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
-    return new ReturnInsn(currentBB);
+std::unique_ptr<ReturnInsn> ReadReturnInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
+    return std::make_unique<ReturnInsn>(currentBB);
 }
 
 // Read an Instruction - either a NonTerminatorInsn or TerminatorInsn from the BIR
@@ -460,29 +460,25 @@ void BIRReader::readInsn(std::shared_ptr<BasicBlock> basicBlock) {
 
     switch (insnKind) {
     case INSTRUCTION_KIND_NEW_TYPEDESC: {
-        TypeDescInsn *typeDescInsn = ReadTypeDescInsn::readTypeDescInsn.readNonTerminatorInsn(basicBlock);
-        delete typeDescInsn;
+        [[maybe_unused]] auto typeDescInsn = ReadTypeDescInsn::readTypeDescInsn.readNonTerminatorInsn(basicBlock);
         break;
     }
     case INSTRUCTION_KIND_NEW_STRUCTURE: {
-        StructureInsn *structureInsn = ReadStructureInsn::readStructureInsn.readNonTerminatorInsn(basicBlock);
+        auto structureInsn = ReadStructureInsn::readStructureInsn.readNonTerminatorInsn(basicBlock);
         structureInsn->setLocation(location);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(structureInsn));
+        basicBlock->addNonTermInsn(std::move(structureInsn));
         break;
     }
     case INSTRUCTION_KIND_CONST_LOAD: {
-        ConstantLoadInsn *constantloadInsn = ReadConstLoadInsn::readConstLoadInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(constantloadInsn));
+        basicBlock->addNonTermInsn(ReadConstLoadInsn::readConstLoadInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_GOTO: {
-        GoToInsn *gotoInsn = ReadGoToInsn::readGoToInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(gotoInsn));
+        basicBlock->setTerminatorInsn(ReadGoToInsn::readGoToInsn.readTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_RETURN: {
-        ReturnInsn *returnInsn = ReadReturnInsn::readReturnInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(returnInsn));
+        basicBlock->setTerminatorInsn(ReadReturnInsn::readReturnInsn.readTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_BINARY_ADD:
@@ -497,60 +493,50 @@ void BIRReader::readInsn(std::shared_ptr<BasicBlock> basicBlock) {
     case INSTRUCTION_KIND_BINARY_LESS_EQUAL:
     case INSTRUCTION_KIND_BINARY_BITWISE_XOR:
     case INSTRUCTION_KIND_BINARY_MOD: {
-        BinaryOpInsn *binaryOpInsn = ReadBinaryInsn::readBinaryInsn.readNonTerminatorInsn(basicBlock);
+        auto binaryOpInsn = ReadBinaryInsn::readBinaryInsn.readNonTerminatorInsn(basicBlock);
         binaryOpInsn->setInstKind(insnKind);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(binaryOpInsn));
+        basicBlock->addNonTermInsn(std::move(binaryOpInsn));
         break;
     }
     case INSTRUCTION_KIND_UNARY_NEG:
     case INSTRUCTION_KIND_UNARY_NOT: {
-        UnaryOpInsn *unaryOpInsn = ReadUnaryInsn::readUnaryInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(unaryOpInsn));
+        basicBlock->addNonTermInsn(ReadUnaryInsn::readUnaryInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
-        ConditionBrInsn *conditionBrInsn = ReadCondBrInsn::readCondBrInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(conditionBrInsn));
+        basicBlock->setTerminatorInsn(ReadCondBrInsn::readCondBrInsn.readTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_MOVE: {
-        MoveInsn *moveInsn = ReadMoveInsn::readMoveInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(moveInsn));
+        basicBlock->addNonTermInsn(ReadMoveInsn::readMoveInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_CALL: {
-        FunctionCallInsn *functionCallInsn = ReadFuncCallInsn::readFuncCallInsn.readTerminatorInsn(basicBlock);
-        basicBlock->setTerminatorInsn(std::unique_ptr<TerminatorInsn>(functionCallInsn));
+        basicBlock->setTerminatorInsn(ReadFuncCallInsn::readFuncCallInsn.readTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_TYPE_CAST: {
-        TypeCastInsn *typeCastInsn = ReadTypeCastInsn::readTypeCastInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(typeCastInsn));
+        basicBlock->addNonTermInsn(ReadTypeCastInsn::readTypeCastInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_TYPE_TEST: {
-        TypeTestInsn *typeTestInsn = ReadTypeTestInsn::readTypeTestInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(typeTestInsn));
+        basicBlock->addNonTermInsn(ReadTypeTestInsn::readTypeTestInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_NEW_ARRAY: {
-        ArrayInsn *arrayInsn = ReadArrayInsn::readArrayInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayInsn));
+        basicBlock->addNonTermInsn(ReadArrayInsn::readArrayInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_ARRAY_STORE: {
-        ArrayStoreInsn *arrayStoreInsn = ReadArrayStoreInsn::readArrayStoreInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayStoreInsn));
+        basicBlock->addNonTermInsn(ReadArrayStoreInsn::readArrayStoreInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_ARRAY_LOAD: {
-        ArrayLoadInsn *arrayLoadInsn = ReadArrayLoadInsn::readArrayLoadInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(arrayLoadInsn));
+        basicBlock->addNonTermInsn(ReadArrayLoadInsn::readArrayLoadInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     case INSTRUCTION_KIND_MAP_STORE: {
-        MapStoreInsn *mapStoreInsn = ReadMapStoreInsn::readMapStoreInsn.readNonTerminatorInsn(basicBlock);
-        basicBlock->addNonTermInsn(std::unique_ptr<NonTerminatorInsn>(mapStoreInsn));
+        basicBlock->addNonTermInsn(ReadMapStoreInsn::readMapStoreInsn.readNonTerminatorInsn(basicBlock));
         break;
     }
     default:
