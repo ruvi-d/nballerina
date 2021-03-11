@@ -37,7 +37,7 @@ FunctionCallInsn::FunctionCallInsn(std::string funcName, int argNumber, std::sha
 void FunctionCallInsn::translate(LLVMModuleRef &) {
     auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
-    LLVMValueRef *ParamRefs = new LLVMValueRef[argCount];
+    std::unique_ptr<LLVMValueRef[]> ParamRefs(new LLVMValueRef[argCount]);
 
     auto function = getPackage()->getFunction(functionName);
     if (!function) {
@@ -51,14 +51,13 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
 
     LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef namedFuncRef = function->getLLVMFunctionValue();
-    LLVMValueRef callResult = LLVMBuildCall(builder, namedFuncRef, ParamRefs, argCount, "call");
+    LLVMValueRef callResult = LLVMBuildCall(builder, namedFuncRef, ParamRefs.get(), argCount, "call");
     LLVMBuildStore(builder, callResult, lhsRef);
 
     // creating branch to next basic block.
     if (getNextBB()) {
         LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
     }
-    delete ParamRefs;
 }
 
 } // namespace nballerina

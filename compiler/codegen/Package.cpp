@@ -125,7 +125,7 @@ void Package::translate(LLVMModuleRef &modRef) {
     for (const auto &function : functions) {
         function->setLLVMBuilder(LLVMCreateBuilder());
         size_t numParams = function->getNumParams();
-        LLVMTypeRef *paramTypes = new LLVMTypeRef[numParams];
+        std::unique_ptr<LLVMTypeRef[]> paramTypes(new LLVMTypeRef[numParams]);
         bool isVarArg = false;
 
         if (function->getRestParam()) {
@@ -137,12 +137,11 @@ void Package::translate(LLVMModuleRef &modRef) {
             paramTypes[i] = getLLVMTypeOfType(funcParam.getType());
         }
 
-        LLVMTypeRef funcType = LLVMFunctionType(function->getLLVMTypeOfReturnVal(), paramTypes, numParams,
+        LLVMTypeRef funcType = LLVMFunctionType(function->getLLVMTypeOfReturnVal(), paramTypes.get(), numParams,
                                                 static_cast<LLVMBool>(isVarArg));
         if (funcType != nullptr) {
             function->setLLVMFunctionValue(LLVMAddFunction(modRef, function->getName().c_str(), funcType));
         }
-        delete paramTypes;
     }
 
     // iterating over each function translate the function body.
