@@ -22,13 +22,12 @@
 #include "RestParam.h"
 #include "Variable.h"
 #include "interfaces/Debuggable.h"
-#include "interfaces/PackageNode.h"
 #include "interfaces/Translatable.h"
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
-#include <memory>
 
 namespace nballerina {
 
@@ -40,9 +39,9 @@ class InvocableType;
 class Type;
 class Package;
 
-class Function : public PackageNode, public Debuggable, public Translatable {
+class Function : public Debuggable, public Translatable {
   private:
-    Package *parentPackage;
+    std::shared_ptr<Package> parentPackage;
     std::string name;
     std::string workerName;
     unsigned int flags;
@@ -63,7 +62,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
 
   public:
     Function() = delete;
-    Function(Package *parentPackage, std::string name, std::string workerName, unsigned int flags);
+    Function(std::shared_ptr<Package> parentPackage, std::string name, std::string workerName, unsigned int flags);
     Function(const Function &) = delete;
     ~Function() = default;
 
@@ -75,7 +74,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     LLVMBuilderRef getLLVMBuilder();
     LLVMValueRef getLLVMFunctionValue();
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName);
-    Package *getPackage() final;
+    std::shared_ptr<Package> getPackage();
     LLVMValueRef createTempVariable(const Operand &op) const;
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
     LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;

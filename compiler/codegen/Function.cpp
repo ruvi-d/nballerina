@@ -29,8 +29,8 @@
 
 namespace nballerina {
 
-Function::Function(Package *_parentPackage, std::string name, std::string workerName, unsigned int flags)
-    : parentPackage(_parentPackage), name(std::move(name)), workerName(std::move(workerName)),
+Function::Function(std::shared_ptr<Package> parentPackage, std::string name, std::string workerName, unsigned int flags)
+    : parentPackage(parentPackage), name(std::move(name)), workerName(std::move(workerName)),
       flags(flags), returnVar{}, restParam{}, llvmBuilder(nullptr), llvmFunction(nullptr) {}
 
 // Search basic block based on the basic block ID
@@ -147,7 +147,8 @@ LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const {
     return getLLVMLocalVar(op.getName());
 }
 
-Package *Function::getPackage() { return parentPackage; }
+std::shared_ptr<Package> Function::getPackage() { return parentPackage; }
+
 size_t Function::getNumParams() { return requiredParams.size(); }
 
 bool Function::isMainFunction() { return (name.compare(MAIN_FUNCTION_NAME) == 0); }
