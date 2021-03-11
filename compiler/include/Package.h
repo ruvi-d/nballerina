@@ -23,6 +23,7 @@
 #include "Variable.h"
 #include "interfaces/Translatable.h"
 #include "llvm/IR/DerivedTypes.h"
+#include "llvm/IR/GlobalVariable.h"
 #include "llvm/MC/StringTableBuilder.h"
 #include <map>
 #include <optional>
@@ -44,10 +45,11 @@ class Package : public Translatable {
     std::map<std::string, Variable> globalVars;
     std::map<std::string, LLVMValueRef> globalVarRefs;
     std::map<std::string, std::shared_ptr<Function>> functionLookUp;
-    llvm::StructType *boxType;
-    llvm::StringTableBuilder *strBuilder;
+    std::unique_ptr<llvm::StructType> boxType;
+    std::unique_ptr<llvm::StringTableBuilder> strBuilder;
     std::map<std::string, std::vector<LLVMValueRef>> structElementStoreInst;
     std::map<std::string, LLVMValueRef> functionRefs;
+    std::vector<std::unique_ptr<llvm::GlobalVariable>> globalStringValues;
     void applyStringOffsetRelocations();
     inline static const std::string BAL_NIL_VALUE = "bal_nil_value";
 

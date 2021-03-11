@@ -20,6 +20,7 @@
 #define __CONSTANTLOAD__H__
 
 #include "NonTerminatorInsn.h"
+#include "llvm/IR/GlobalVariable.h"
 #include "Types.h"
 #include <string>
 
@@ -33,6 +34,7 @@ class ConstantLoadInsn : public NonTerminatorInsn {
     double floatValue;
     bool boolValue;
     std::string strValue;
+    std::unique_ptr<llvm::GlobalVariable> globalStringValue;
 
   public:
     ConstantLoadInsn() = delete;

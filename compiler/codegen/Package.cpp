@@ -23,7 +23,6 @@
 #include "Types.h"
 #include "llvm-c/Core.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/Module.h"
 
 using namespace std;
@@ -45,7 +44,7 @@ std::string Package::getOrgName() { return org; }
 std::string Package::getPackageName() { return name; }
 std::string Package::getVersion() { return version; }
 std::string Package::getSrcFileName() { return sourceFileName; }
-llvm::StringTableBuilder *Package::getStrTableBuilder() { return strBuilder; }
+llvm::StringTableBuilder *Package::getStrTableBuilder() { return strBuilder.get(); }
 void Package::setOrgName(std::string orgName) { org = std::move(orgName); }
 void Package::setPackageName(std::string pkgName) { name = std::move(pkgName); }
 void Package::setVersion(std::string verName) { version = std::move(verName); }
@@ -79,7 +78,7 @@ LLVMTypeRef Package::getLLVMTypeOfType(const Type &type) const {
     case TYPE_TAG_NIL:
         return LLVMPointerType(LLVMInt8Type(), 0);
     case TYPE_TAG_ANY:
-        return wrap(boxType);
+        return wrap(boxType.get());
     default:
         return LLVMInt32Type();
     }
@@ -88,7 +87,7 @@ LLVMTypeRef Package::getLLVMTypeOfType(const Type &type) const {
 void Package::translate(LLVMModuleRef &modRef) {
 
     // String Table initialization
-    strBuilder = new llvm::StringTableBuilder(llvm::StringTableBuilder::RAW, 1);
+    strBuilder = std::make_unique<llvm::StringTableBuilder>(llvm::StringTableBuilder::RAW, 1);
 
     // iterate over all global variables and translate
     for (auto const &it : globalVars) {
@@ -97,27 +96,29 @@ void Package::translate(LLVMModuleRef &modRef) {
         string varName = globVar.getName();
         // emit/adding the global variable.
         llvm::Constant *initValue = llvm::Constant::getNullValue(llvm::unwrap(varTyperef));
-        llvm::GlobalVariable *gVar =
-            new llvm::GlobalVariable(*llvm::unwrap(modRef), llvm::unwrap(varTyperef), false,
-                                     llvm::GlobalValue::ExternalLinkage, initValue, varName, nullptr);
+        auto gVar =
+            std::make_unique<llvm::GlobalVariable>(*llvm::unwrap(modRef), llvm::unwrap(varTyperef), false,
+                                                   llvm::GlobalValue::ExternalLinkage, initValue, varName, nullptr);
         gVar->setAlignment(llvm::Align(4));
-        LLVMValueRef globVarRef = wrap(gVar);
+        LLVMValueRef globVarRef = wrap(gVar.get());
         globalVarRefs.insert({varName, globVarRef});
+        globalStringValues.push_back(std::move(gVar));
     }
 
     // create global var for nil value
     llvm::Constant *nullValue = llvm::Constant::getNullValue(llvm::unwrap(LLVMPointerType(LLVMInt8Type(), 0)));
-    llvm::GlobalVariable *gVar =
-        new llvm::GlobalVariable(*llvm::unwrap(modRef), llvm::unwrap(LLVMPointerType(LLVMInt8Type(), 0)), false,
-                                 llvm::GlobalValue::InternalLinkage, nullValue, BAL_NIL_VALUE, 0);
-    LLVMValueRef globVarRef = llvm::wrap(gVar);
+    auto gVal = std::make_unique<llvm::GlobalVariable>(
+        *llvm::unwrap(modRef), llvm::unwrap(LLVMPointerType(LLVMInt8Type(), 0)), false,
+        llvm::GlobalValue::InternalLinkage, nullValue, BAL_NIL_VALUE, nullptr);
+    LLVMValueRef globVarRef = llvm::wrap(gVal.get());
     globalVarRefs.insert({BAL_NIL_VALUE, globVarRef});
+    globalStringValues.push_back(std::move(gVal));
 
     // creating struct smart pointer to store any type variables data.
     LLVMTypeRef structGen = LLVMStructCreateNamed(LLVMGetGlobalContext(), "struct.smtPtr");
     LLVMTypeRef structElementTypes[] = {LLVMInt32Type(), LLVMInt32Type(), LLVMPointerType(LLVMInt8Type(), 0)};
     LLVMStructSetBody(structGen, structElementTypes, 3, 0);
-    boxType = llvm::unwrap<llvm::StructType>(structGen);
+    boxType = std::unique_ptr<llvm::StructType>(llvm::unwrap<llvm::StructType>(structGen));
 
     // iterating over each function, first create function definition
     // (without function body) and adding to Module.
