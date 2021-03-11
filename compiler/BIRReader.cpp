@@ -211,7 +211,7 @@ InvocableType ConstantPoolSet::getInvocableType(uint32_t index) {
 }
 
 // Read Global Variable and push it to BIRPackage
-Variable *BIRReader::readGlobalVar() {
+Variable BIRReader::readGlobalVar() {
     uint8_t kind = readU1();
 
     uint32_t varDclNameCpIndex = readS4be();
@@ -226,18 +226,14 @@ Variable *BIRReader::readGlobalVar() {
     }
     uint32_t typeCpIndex = readS4be();
     auto type = constantPool->getTypeCp(typeCpIndex, false);
-    Variable *varDecl = new Variable(std::move(type), (constantPool->getStringCp(varDclNameCpIndex)), (VarKind)kind);
-    birPackage.insertGlobalVar(varDecl);
-    return varDecl;
+    return Variable(std::move(type), (constantPool->getStringCp(varDclNameCpIndex)), (VarKind)kind);
 }
 
-Variable *BIRReader::readLocalVar() {
+Variable BIRReader::readLocalVar() {
     uint8_t kind = readU1();
     uint32_t typeCpIndex = readS4be();
     auto type = constantPool->getTypeCp(typeCpIndex, false);
     uint32_t nameCpIndex = readS4be();
-
-    Variable *varDecl = new Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind);
 
     if (kind == ARG_VAR_KIND) {
         uint32_t metaVarNameCpIndex __attribute__((unused)) = readS4be();
@@ -247,7 +243,7 @@ Variable *BIRReader::readLocalVar() {
         uint32_t startBbIdCpIndex __attribute__((unused)) = readS4be();
         uint32_t instructionOffset __attribute__((unused)) = readS4be();
     }
-    return varDecl;
+    return Variable(std::move(type), constantPool->getStringCp(nameCpIndex), (VarKind)kind);
 }
 
 // Read Local Variable and return Variable pointer
@@ -709,8 +705,7 @@ Function *BIRReader::readFunction(Package *package) {
 
     uint32_t localVarCount = readS4be();
     for (size_t i = 0; i < localVarCount; i++) {
-        Variable *varDecl = readLocalVar();
-        birFunction->insertLocalVar(varDecl);
+        birFunction->insertLocalVar(readLocalVar());
     }
     // Ignore default param values
     for (size_t i = 0; i < defaultParamValue; i++) {
@@ -998,8 +993,7 @@ void BIRReader::readModule() {
     uint32_t globalVarCount = readS4be();
     if (globalVarCount > 0) {
         for (unsigned int i = 0; i < globalVarCount; i++) {
-            Variable *varDecl = readGlobalVar();
-            birPackage.insertGlobalVar(varDecl);
+            birPackage.insertGlobalVar(readGlobalVar());
         }
     }
 

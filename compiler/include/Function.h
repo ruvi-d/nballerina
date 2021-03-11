@@ -48,7 +48,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     std::optional<RestParam> restParam;
     LLVMBuilderRef llvmBuilder;
     LLVMValueRef llvmFunction;
-    std::map<std::string, Variable *> localVars;
+    std::map<std::string, Variable> localVars;
     std::map<std::string, BasicBlock *> basicBlocksMap;
     std::vector<BasicBlock *> basicBlocks;
     std::map<std::string, LLVMValueRef> branchComparisonList;
@@ -75,8 +75,8 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     LLVMValueRef createTempVariable(const Operand &op) const;
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
     LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;
-    Variable *getLocalVariable(const std::string &opName) const;
-    Variable *getLocalOrGlobalVariable(const Operand &op) const;
+    std::optional<Variable> getLocalVariable(const std::string &opName) const;
+    std::optional<Variable> getLocalOrGlobalVariable(const Operand &op) const;
     LLVMTypeRef getLLVMTypeOfReturnVal();
     bool isMainFunction();
     const FunctionParam &getParam(int i) const;
@@ -84,7 +84,7 @@ class Function : public PackageNode, public Debuggable, public Translatable {
     void insertParam(FunctionParam param);
     void setRestParam(RestParam param);
     void setReturnVar(Variable var);
-    void insertLocalVar(Variable *var);
+    void insertLocalVar(Variable var);
     void insertBasicBlock(BasicBlock *bb);
     void insertBranchComparisonValue(const std::string &lhsName, LLVMValueRef compRef);
     void setLLVMBuilder(LLVMBuilderRef builder);

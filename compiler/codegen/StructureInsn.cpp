@@ -36,7 +36,8 @@ void StructureInsn::translate(LLVMModuleRef &modRef) {
 
     Function *funcObj = getFunction();
     // Find Variable corresponding to lhs to determine structure and member type
-    Variable *lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    auto lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    assert(lhsVar);
 
     // Determine structure type
     TypeTag structType = lhsVar->getType().getTypeTag();
@@ -46,15 +47,15 @@ void StructureInsn::translate(LLVMModuleRef &modRef) {
         std::cerr << "Non MAP type structs are currently not supported" << std::endl;
         llvm_unreachable("");
     }
-    mapInsnTranslate(lhsVar, modRef);
+    mapInsnTranslate(*lhsVar, modRef);
 }
 
-void StructureInsn::mapInsnTranslate(Variable *lhsVar, LLVMModuleRef &modRef) {
+void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modRef) {
 
     Function *funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    auto mapType = lhsVar->getType();
+    auto mapType = lhsVar.getType();
 
     // Get member type
     TypeTag memberTypeTag = mapType.getMemberTypeTag();
