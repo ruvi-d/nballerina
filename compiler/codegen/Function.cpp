@@ -23,14 +23,13 @@
 #include "Operand.h"
 #include "Package.h"
 #include "Types.h"
-#include "Variable.h"
 #include "llvm-c/Core.h"
 
 namespace nballerina {
 
-Function::Function(Package *_parentPackage, std::string name, std::string workerName, int flags)
-    : parentPackage(_parentPackage), name(std::move(name)), workerName(std::move(workerName)), flags(flags),
-      returnVar(nullptr), restParam(nullptr), receiver(nullptr), llvmBuilder(nullptr), llvmFunction(nullptr) {}
+Function::Function(Package *_parentPackage, std::string name, std::string workerName, unsigned int flags)
+    : parentPackage(_parentPackage), name(std::move(name)), workerName(std::move(workerName)),
+      flags(flags), returnVar{}, restParam{}, llvmBuilder(nullptr), llvmFunction(nullptr) {}
 
 // Search basic block based on the basic block ID
 BasicBlock *Function::FindBasicBlock(const std::string &id) {
@@ -43,9 +42,9 @@ BasicBlock *Function::FindBasicBlock(const std::string &id) {
 
 std::string Function::getName() { return name; }
 const FunctionParam &Function::getParam(int i) const { return requiredParams[i]; }
-RestParam *Function::getRestParam() { return restParam; }
-Variable *Function::getReturnVar() { return returnVar; }
 unsigned int Function::getFlags() { return flags; }
+const std::optional<RestParam> &Function::getRestParam() const { return restParam; }
+const std::optional<Variable> &Function::getReturnVar() const { return returnVar; }
 std::vector<BasicBlock *> Function::getBasicBlocks() { return basicBlocks; }
 LLVMBuilderRef Function::getLLVMBuilder() { return llvmBuilder; }
 LLVMValueRef Function::getLLVMFunctionValue() { return llvmFunction; }
@@ -107,12 +106,11 @@ LLVMTypeRef Function::getLLVMTypeOfReturnVal() {
 }
 
 void Function::insertParam(FunctionParam param) { requiredParams.push_back(std::move(param)); }
-void Function::setReceiver(Variable *var) { receiver = var; }
-void Function::setRestParam(RestParam *param) { restParam = param; }
+void Function::setRestParam(RestParam param) { restParam = std::move(param); }
 void Function::insertLocalVar(Variable *var) {
     localVars.insert(std::pair<std::string, Variable *>(var->getName(), var));
 }
-void Function::setReturnVar(Variable *var) { returnVar = var; }
+void Function::setReturnVar(Variable var) { returnVar = std::move(var); }
 void Function::insertBasicBlock(BasicBlock *bb) {
     basicBlocks.push_back(bb);
     basicBlocksMap.insert(std::pair<std::string, BasicBlock *>(bb->getId(), bb));

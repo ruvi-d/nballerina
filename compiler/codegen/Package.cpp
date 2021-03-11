@@ -131,7 +131,7 @@ void Package::translate(LLVMModuleRef &modRef) {
         LLVMTypeRef *paramTypes = new LLVMTypeRef[numParams];
         bool isVarArg = false;
 
-        if (function->getRestParam() != nullptr) {
+        if (function->getRestParam()) {
             isVarArg = true;
         }
         assert(function->getReturnVar());
