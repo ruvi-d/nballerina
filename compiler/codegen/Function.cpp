@@ -155,7 +155,7 @@ bool Function::isMainFunction() { return (name.compare(MAIN_FUNCTION_NAME) == 0)
 // Patches the Terminator Insn with destination Basic Block
 void Function::patchBasicBlocks() {
     for (auto &basicBlock : basicBlocksMap) {
-        TerminatorInsn *terminator = basicBlock.second->getTerminatorInsnPtr();
+        auto terminator = basicBlock.second->getTerminatorInsnPtr();
         if ((terminator == nullptr) || !terminator->isPatched()) {
             continue;
         }

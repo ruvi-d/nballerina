@@ -55,7 +55,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     LLVMBuildStore(builder, callResult, lhsRef);
 
     // creating branch to next basic block.
-    if (getNextBB() != nullptr) {
+    if (getNextBB()) {
         LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
     }
 }

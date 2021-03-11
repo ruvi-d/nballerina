@@ -42,91 +42,65 @@ void BinaryOpInsn::translate([[maybe_unused]] LLVMModuleRef &modRef) {
     LLVMValueRef rhsOp1ref = funcObj->createTempVariable(rhsOp1);
     LLVMValueRef rhsOp2ref = funcObj->createTempVariable(rhsOp2);
 
-    LLVMValueRef ifReturn = nullptr;
     switch (kind) {
     case INSTRUCTION_KIND_BINARY_ADD: {
-        ifReturn = LLVMBuildAdd(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
+        LLVMValueRef ifReturn = LLVMBuildAdd(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     case INSTRUCTION_KIND_BINARY_SUB: {
-        ifReturn = LLVMBuildSub(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
-
+        LLVMValueRef ifReturn = LLVMBuildSub(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     case INSTRUCTION_KIND_BINARY_MUL: {
-        ifReturn = LLVMBuildMul(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
+        LLVMValueRef ifReturn = LLVMBuildMul(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     case INSTRUCTION_KIND_BINARY_DIV: {
-        ifReturn = LLVMBuildUDiv(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
+        LLVMValueRef ifReturn = LLVMBuildUDiv(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     case INSTRUCTION_KIND_BINARY_MOD: {
-        ifReturn = LLVMBuildURem(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
+        LLVMValueRef ifReturn = LLVMBuildURem(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     case INSTRUCTION_KIND_BINARY_GREATER_THAN: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntUGT, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntUGT, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_GREATER_EQUAL: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntUGE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntUGE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_LESS_THAN: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntULT, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntULT, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_LESS_EQUAL: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntULE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntULE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_EQUAL: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntEQ, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntEQ, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_NOT_EQUAL: {
-        ifReturn = LLVMBuildICmp(builder, LLVMIntNE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            funcObj->insertBranchComparisonValue(lhsName, ifReturn);
-        }
+        LLVMValueRef ifReturn = LLVMBuildICmp(builder, LLVMIntNE, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        funcObj->insertBranchComparisonValue(lhsName, ifReturn);
         break;
     }
     case INSTRUCTION_KIND_BINARY_BITWISE_XOR: {
-        ifReturn = LLVMBuildXor(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
-        if (ifReturn != nullptr) {
-            LLVMBuildStore(builder, ifReturn, lhsRef);
-        }
+        LLVMValueRef ifReturn = LLVMBuildXor(builder, rhsOp1ref, rhsOp2ref, lhstmpName.c_str());
+        LLVMBuildStore(builder, ifReturn, lhsRef);
         break;
     }
     default:
