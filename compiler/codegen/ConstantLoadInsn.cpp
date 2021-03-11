@@ -23,7 +23,6 @@
 #include "Variable.h"
 #include "llvm-c/Core.h"
 #include "llvm/IR/Constants.h"
-#include "llvm/IR/GlobalVariable.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 
@@ -70,15 +69,15 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     case TYPE_TAG_STRING:
     case TYPE_TAG_CHAR_STRING: {
         string stringValue = strValue;
-        Constant *C = llvm::ConstantDataArray::getString(*unwrap(LLVMGetGlobalContext()),
-                                                         StringRef(stringValue.c_str(), stringValue.length()));
-        llvm::GlobalVariable *GV =
-            new GlobalVariable(*unwrap(modRef), C->getType(), false, GlobalValue::PrivateLinkage, C, ".str");
-        GV->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
-        GV->setAlignment(llvm::Align(1));
+        llvm::Constant *C = llvm::ConstantDataArray::getString(*unwrap(LLVMGetGlobalContext()),
+                                                               StringRef(stringValue.c_str(), stringValue.length()));
+        globalStringValue = std::make_unique<llvm::GlobalVariable>(*unwrap(modRef), C->getType(), false,
+                                                                   llvm::GlobalValue::PrivateLinkage, C, ".str");
+        globalStringValue->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
+        globalStringValue->setAlignment(llvm::Align(1));
 
         LLVMValueRef paramTypes[] = {wrap(unwrap(builder)->getInt64(0)), wrap(unwrap(builder)->getInt64(0))};
-        constRef = LLVMBuildInBoundsGEP(builder, wrap(GV), paramTypes, 2, "simple");
+        constRef = LLVMBuildInBoundsGEP(builder, wrap(globalStringValue.get()), paramTypes, 2, "simple");
         break;
     }
     case TYPE_TAG_NIL: {
