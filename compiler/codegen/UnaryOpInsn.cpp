@@ -32,7 +32,7 @@ UnaryOpInsn::UnaryOpInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Ope
 
 void UnaryOpInsn::translate(LLVMModuleRef &) {
 
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     auto lhsOp = getLhsOperand();
     string lhsTmpName = lhsOp.getName() + "_temp";

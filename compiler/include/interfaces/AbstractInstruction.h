@@ -79,7 +79,7 @@ class AbstractInstruction : public Debuggable, public PackageNode {
 
   protected:
     const Operand &getLhsOperand() const;
-    Function *getFunction();
+    std::shared_ptr<Function> getFunction();
 
   public:
     AbstractInstruction() = delete;

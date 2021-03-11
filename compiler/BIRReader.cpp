@@ -560,7 +560,7 @@ void BIRReader::readInsn(std::shared_ptr<BasicBlock> basicBlock) {
 }
 
 // Read Basic Block from the BIR
-std::shared_ptr<BasicBlock> BIRReader::readBasicBlock(Function *birFunction) {
+std::shared_ptr<BasicBlock> BIRReader::readBasicBlock(std::shared_ptr<Function> birFunction) {
     uint32_t nameCpIndex = readS4be();
     auto basicBlock = std::make_shared<BasicBlock>(constantPool->getStringCp(nameCpIndex), birFunction);
 
@@ -585,7 +585,7 @@ bool BIRReader::ignoreFunction(std::string funcName) {
 }
 
 // Reads BIR function
-Function *BIRReader::readFunction(Package *package) {
+std::shared_ptr<Function> BIRReader::readFunction(Package *package) {
 
     // Read debug info
     uint32_t sLine = readS4be();
@@ -605,7 +605,7 @@ Function *BIRReader::readFunction(Package *package) {
     [[maybe_unused]] uint32_t flags = readS4be();
     uint32_t typeCpIndex = readS4be();
     [[maybe_unused]] auto invocable_type = constantPool->getInvocableType(typeCpIndex);
-    Function *birFunction = new Function(package, functionName, constantPool->getStringCp(workdernameCpIndex));
+    auto birFunction = std::make_shared<Function>(package, functionName, constantPool->getStringCp(workdernameCpIndex));
     birFunction->setLocation(location);
 
     uint64_t annotationLength __attribute__((unused)) = readS8be();
@@ -961,10 +961,8 @@ void BIRReader::readModule() {
 
     // Push all the functions in BIRpackage except __init, __start & __stop
     for (unsigned int i = 0; i < functionCount; i++) {
-        Function *curFunc = readFunction(&birPackage);
-        if (ignoreFunction(curFunc->getName())) {
-            delete curFunc;
-        } else {
+        auto curFunc = readFunction(&birPackage);
+        if (!ignoreFunction(curFunc->getName())) {
             birPackage.insertFunction(curFunc);
         }
     }

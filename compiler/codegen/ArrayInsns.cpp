@@ -46,7 +46,7 @@ LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
 }
 
 void ArrayInsn::translate(LLVMModuleRef &modRef) {
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef *sizeOpValueRef = new LLVMValueRef[1];
     LLVMValueRef localTempCarRef = funcObj->createTempVariable(sizeOp);
@@ -79,7 +79,7 @@ LLVMValueRef ArrayLoadInsn::getArrayLoadDeclaration(LLVMModuleRef &modRef) {
 }
 
 void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef ArrayLoadFunc = getArrayLoadDeclaration(modRef);
 
@@ -117,7 +117,7 @@ LLVMValueRef ArrayStoreInsn::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
 }
 
 void ArrayStoreInsn::translate(LLVMModuleRef &modRef) {
-    Function *funcObj = getFunction();
+    auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef ArrayLoadFunc = getArrayStoreDeclaration(modRef);
 
