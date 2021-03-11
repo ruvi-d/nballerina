@@ -28,15 +28,16 @@ using namespace std;
 
 namespace nballerina {
 
-ConditionBrInsn::ConditionBrInsn(Operand lhs, BasicBlock *currentBB, BasicBlock *_ifThenBB, BasicBlock *_elseBB)
-    : TerminatorInsn(std::move(lhs), currentBB, nullptr, true), ifThenBB(_ifThenBB), elseBB(_elseBB) {
+ConditionBrInsn::ConditionBrInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB,
+                                 std::shared_ptr<BasicBlock> ifThenBB, std::shared_ptr<BasicBlock> elseBB)
+    : TerminatorInsn(std::move(lhs), currentBB, nullptr, true), ifThenBB(ifThenBB), elseBB(elseBB) {
     kind = INSTRUCTION_KIND_CONDITIONAL_BRANCH;
 }
 
-BasicBlock *ConditionBrInsn::getIfThenBB() { return ifThenBB; }
-BasicBlock *ConditionBrInsn::getElseBB() { return elseBB; }
-void ConditionBrInsn::setIfThenBB(BasicBlock *bb) { ifThenBB = bb; }
-void ConditionBrInsn::setElseBB(BasicBlock *bb) { elseBB = bb; }
+std::shared_ptr<BasicBlock> ConditionBrInsn::getIfThenBB() { return ifThenBB; }
+std::shared_ptr<BasicBlock> ConditionBrInsn::getElseBB() { return elseBB; }
+void ConditionBrInsn::setIfThenBB(std::shared_ptr<BasicBlock> bb) { ifThenBB = bb; }
+void ConditionBrInsn::setElseBB(std::shared_ptr<BasicBlock> bb) { elseBB = bb; }
 
 void ConditionBrInsn::translate(LLVMModuleRef &) {
 

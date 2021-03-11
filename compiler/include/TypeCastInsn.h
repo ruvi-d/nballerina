@@ -33,7 +33,7 @@ class TypeCastInsn : public NonTerminatorInsn {
 
   public:
     TypeCastInsn() = delete;
-    TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp);
+    TypeCastInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp);
     ~TypeCastInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

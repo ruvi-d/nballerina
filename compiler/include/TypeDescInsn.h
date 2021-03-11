@@ -25,7 +25,7 @@ namespace nballerina {
 
 class TypeDescInsn : public NonTerminatorInsn {
   public:
-    TypeDescInsn(Operand lhs, BasicBlock *currentBB) : NonTerminatorInsn(std::move(lhs), currentBB){};
+    TypeDescInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB) : NonTerminatorInsn(std::move(lhs), currentBB){};
     ~TypeDescInsn() = default;
 };
 

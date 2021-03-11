@@ -33,17 +33,17 @@ using namespace llvm;
 namespace nballerina {
 
 // With Nil Type setting only Type Tag because value will be zero with NIL Type.
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB)
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
     : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_NIL) {}
 
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, int intVal)
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, int intVal)
     : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_INT), intValue(intVal) {}
 
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, float floatVal)
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal)
     : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_FLOAT), floatValue(floatVal) {}
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, bool boolVal)
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal)
     : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_BOOLEAN), boolValue(boolVal) {}
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, std::string str)
+ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::string str)
     : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_STRING), strValue(std::move(str)) {}
 
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {

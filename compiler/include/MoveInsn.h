@@ -29,7 +29,7 @@ class MoveInsn : public NonTerminatorInsn {
 
   public:
     MoveInsn() = delete;
-    MoveInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp);
+    MoveInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp);
     ~MoveInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

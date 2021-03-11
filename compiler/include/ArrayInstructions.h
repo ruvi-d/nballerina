@@ -33,7 +33,7 @@ class ArrayInsn : public NonTerminatorInsn {
 
   public:
     ArrayInsn() = delete;
-    ArrayInsn(Operand lhs, BasicBlock *currentBB, Operand sizeOp);
+    ArrayInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand sizeOp);
     ~ArrayInsn() = default;
     void translate(LLVMModuleRef &modRef) final;
 };
@@ -46,7 +46,7 @@ class ArrayLoadInsn : public NonTerminatorInsn {
 
   public:
     ArrayLoadInsn() = delete;
-    ArrayLoadInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand ROp);
+    ArrayLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand ROp);
     ~ArrayLoadInsn() = default;
     void translate(LLVMModuleRef &modRef) final;
 };
@@ -59,7 +59,7 @@ class ArrayStoreInsn : public NonTerminatorInsn {
 
   public:
     ArrayStoreInsn() = delete;
-    ArrayStoreInsn(Operand lhs, BasicBlock *currentBB, Operand KOp, Operand ROp);
+    ArrayStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand ROp);
     ~ArrayStoreInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

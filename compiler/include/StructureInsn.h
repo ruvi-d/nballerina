@@ -34,7 +34,7 @@ class StructureInsn : public NonTerminatorInsn {
 
   public:
     StructureInsn() = delete;
-    StructureInsn(Operand lhs, BasicBlock *currentBB);
+    StructureInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB);
     ~StructureInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

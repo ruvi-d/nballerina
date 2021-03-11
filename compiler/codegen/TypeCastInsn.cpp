@@ -30,7 +30,7 @@ using namespace llvm;
 
 namespace nballerina {
 
-TypeCastInsn::TypeCastInsn(Operand lhs, BasicBlock *currentBB, Operand rhsOp)
+TypeCastInsn::TypeCastInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp)
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
 
 void TypeCastInsn::translate(LLVMModuleRef &) {
