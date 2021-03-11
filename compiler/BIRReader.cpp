@@ -669,10 +669,10 @@ Function *BIRReader::readFunction(Package *package) {
     }
 
     uint32_t BBCount = readS4be();
-    BasicBlock *previousBB = nullptr;
+    std::shared_ptr<BasicBlock> previousBB;
     for (size_t i = 0; i < BBCount; i++) {
-        BasicBlock *basicBlock = readBasicBlock(birFunction);
-        birFunction->insertBasicBlock(std::shared_ptr<BasicBlock>(basicBlock));
+        auto basicBlock = std::shared_ptr<BasicBlock>(readBasicBlock(birFunction));
+        birFunction->insertBasicBlock(basicBlock);
         // Create links between the basic blocks
         if (previousBB) {
             previousBB->setNextBB(basicBlock);
