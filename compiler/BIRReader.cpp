@@ -585,7 +585,7 @@ bool BIRReader::ignoreFunction(std::string funcName) {
 }
 
 // Reads BIR function
-std::shared_ptr<Function> BIRReader::readFunction(Package *package) {
+std::shared_ptr<Function> BIRReader::readFunction(std::shared_ptr<Package> package) {
 
     // Read debug info
     uint32_t sLine = readS4be();
@@ -916,23 +916,25 @@ void BIRReader::patchTypesToFuncParam() {
 }
 */
 
-void BIRReader::readModule() {
+std::shared_ptr<nballerina::Package> BIRReader::readModule() {
     uint32_t idCpIndex = readS4be();
     ConstantPoolEntry *poolEntry = constantPool->getEntry(idCpIndex);
+    auto birPackage = std::make_shared<Package>();
+
     switch (poolEntry->getTag()) {
     case ConstantPoolEntry::tagEnum::TAG_ENUM_CP_ENTRY_PACKAGE: {
         PackageCpInfo *packageEntry = static_cast<PackageCpInfo *>(poolEntry);
         poolEntry = constantPool->getEntry(packageEntry->getOrgIndex());
         StringCpInfo *stringCp = static_cast<StringCpInfo *>(poolEntry);
-        birPackage.setOrgName(stringCp->getValue());
+        birPackage->setOrgName(stringCp->getValue());
 
         poolEntry = constantPool->getEntry(packageEntry->getNameIndex());
         stringCp = static_cast<StringCpInfo *>(poolEntry);
-        birPackage.setPackageName(stringCp->getValue());
+        birPackage->setPackageName(stringCp->getValue());
 
         poolEntry = constantPool->getEntry(packageEntry->getVersionIndex());
         stringCp = static_cast<StringCpInfo *>(poolEntry);
-        birPackage.setVersion(stringCp->getValue());
+        birPackage->setVersion(stringCp->getValue());
         break;
     }
     default:
@@ -952,7 +954,7 @@ void BIRReader::readModule() {
     uint32_t globalVarCount = readS4be();
     if (globalVarCount > 0) {
         for (unsigned int i = 0; i < globalVarCount; i++) {
-            birPackage.insertGlobalVar(readGlobalVar());
+            birPackage->insertGlobalVar(readGlobalVar());
         }
     }
 
@@ -961,9 +963,9 @@ void BIRReader::readModule() {
 
     // Push all the functions in BIRpackage except __init, __start & __stop
     for (unsigned int i = 0; i < functionCount; i++) {
-        auto curFunc = readFunction(&birPackage);
+        auto curFunc = readFunction(birPackage);
         if (!ignoreFunction(curFunc->getName())) {
-            birPackage.insertFunction(curFunc);
+            birPackage->insertFunction(curFunc);
         }
     }
 
@@ -971,14 +973,16 @@ void BIRReader::readModule() {
 
     // Assign typedecl to function param of call Insn
     // patchTypesToFuncParam();
+
+    return birPackage;
 }
 
-void BIRReader::deserialize() {
+std::shared_ptr<nballerina::Package> BIRReader::deserialize() {
     // Read Constant Pool
     ConstantPoolSet *constantPoolSet = new ConstantPoolSet();
     constantPoolSet->read();
     setConstantPool(constantPoolSet);
 
     // Read Module
-    readModule();
+    return readModule();
 }

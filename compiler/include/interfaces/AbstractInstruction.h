@@ -21,7 +21,6 @@
 
 #include "Operand.h"
 #include "interfaces/Debuggable.h"
-#include "interfaces/PackageNode.h"
 #include <memory>
 
 namespace nballerina {
@@ -72,7 +71,7 @@ enum InstructionKind {
     INSTRUCTION_KIND_BINARY_BITWISE_UNSIGNED_RIGHT_SHIFT
 };
 
-class AbstractInstruction : public Debuggable, public PackageNode {
+class AbstractInstruction : public Debuggable {
   private:
     Operand lhsOp;
     std::shared_ptr<BasicBlock> parentBB;
@@ -85,7 +84,7 @@ class AbstractInstruction : public Debuggable, public PackageNode {
     AbstractInstruction() = delete;
     AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock> parentBB);
     virtual ~AbstractInstruction() = default;
-    Package *getPackage() final;
+    std::shared_ptr<Package> getPackage();
 };
 
 } // namespace nballerina

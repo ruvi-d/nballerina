@@ -20,7 +20,6 @@
 #define __BASICBLOCK__H__
 
 #include "interfaces/Debuggable.h"
-#include "interfaces/PackageNode.h"
 #include "interfaces/Translatable.h"
 #include <memory>
 #include <string>
@@ -33,7 +32,7 @@ class Function;
 class TerminatorInsn;
 class NonTerminatorInsn;
 
-class BasicBlock : public PackageNode, public Debuggable, public Translatable {
+class BasicBlock : public Debuggable, public Translatable {
   private:
     std::string id;
     std::shared_ptr<Function> parentFunction;
@@ -52,7 +51,6 @@ class BasicBlock : public PackageNode, public Debuggable, public Translatable {
     std::shared_ptr<Function> getFunction();
     std::shared_ptr<BasicBlock> &getNextBB();
     LLVMBasicBlockRef getLLVMBBRef();
-    Package *getPackage() final;
 
     void setNextBB(std::shared_ptr<BasicBlock> bb);
     void setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn);

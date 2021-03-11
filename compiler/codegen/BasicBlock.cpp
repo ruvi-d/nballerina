@@ -30,7 +30,6 @@ const std::string &BasicBlock::getId() const { return id; }
 TerminatorInsn *BasicBlock::getTerminatorInsnPtr() { return terminator.get(); }
 std::shared_ptr<Function> BasicBlock::getFunction() { return parentFunction; }
 LLVMBasicBlockRef BasicBlock::getLLVMBBRef() { return bbRefObj; }
-Package *BasicBlock::getPackage() { return parentFunction->getPackage(); }
 
 void BasicBlock::setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn) { terminator = std::move(insn); }
 void BasicBlock::setNextBB(std::shared_ptr<BasicBlock> bb) { nextBB = bb; }

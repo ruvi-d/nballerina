@@ -40,7 +40,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     LLVMValueRef *ParamRefs = new LLVMValueRef[argCount];
 
     auto function = getPackage()->getFunction(functionName);
-    if (function == nullptr) {
+    if (!function) {
         llvm_unreachable("Unknown function call");
     }
     for (int i = 0; i < argCount; i++) {

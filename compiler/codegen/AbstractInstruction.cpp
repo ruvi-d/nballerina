@@ -18,6 +18,7 @@
 
 #include "interfaces/AbstractInstruction.h"
 #include "BasicBlock.h"
+#include "Function.h"
 
 namespace nballerina {
 
@@ -26,6 +27,6 @@ AbstractInstruction::AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock
 
 const Operand &AbstractInstruction::getLhsOperand() const { return lhsOp; }
 std::shared_ptr<Function> AbstractInstruction::getFunction() { return parentBB->getFunction(); }
-Package *AbstractInstruction::getPackage() { return parentBB->getPackage(); }
+std::shared_ptr<Package> AbstractInstruction::getPackage() { return parentBB->getFunction()->getPackage(); }
 
 } // namespace nballerina

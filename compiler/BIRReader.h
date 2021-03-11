@@ -66,8 +66,8 @@ class BIRReader {
     nballerina::StructureInsn *readStructureInsn();
     void readInsn(std::shared_ptr<nballerina::BasicBlock> basicBlock);
     std::shared_ptr<nballerina::BasicBlock> readBasicBlock(std::shared_ptr<nballerina::Function> birFunction);
-    std::shared_ptr<nballerina::Function> readFunction(nballerina::Package *birPackage);
-    void readModule();
+    std::shared_ptr<nballerina::Function> readFunction(std::shared_ptr<nballerina::Package> birPackage);
+    std::shared_ptr<nballerina::Package> readModule();
 
     // Read bytes functions
     uint8_t readU1();
@@ -78,7 +78,6 @@ class BIRReader {
     static bool ignoreFunction(std::string funcName);
 
   public:
-    nballerina::Package birPackage;
     static BIRReader reader;
     static BIRReader &getInstance() { return reader; }
     void setFileStream(std::string FileName) {
@@ -90,7 +89,7 @@ class BIRReader {
         is.open(fileName, std::ifstream::binary);
     }
     std::string getFileName() { return fileName; }
-    void deserialize();
+    std::shared_ptr<nballerina::Package> deserialize();
     void setConstantPool(ConstantPoolSet *constantPoolSet) { constantPool = constantPoolSet; }
     void patchTypesToFuncParam();
     friend class ConstantPoolEntry;
