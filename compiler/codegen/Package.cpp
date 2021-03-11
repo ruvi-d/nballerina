@@ -115,10 +115,7 @@ void Package::translate(LLVMModuleRef &modRef) {
 
     // creating struct smart pointer to store any type variables data.
     LLVMTypeRef structGen = LLVMStructCreateNamed(LLVMGetGlobalContext(), "struct.smtPtr");
-    LLVMTypeRef *structElementTypes = new LLVMTypeRef[3];
-    structElementTypes[0] = LLVMInt32Type();
-    structElementTypes[1] = LLVMInt32Type();
-    structElementTypes[2] = LLVMPointerType(LLVMInt8Type(), 0);
+    LLVMTypeRef structElementTypes[] = {LLVMInt32Type(), LLVMInt32Type(), LLVMPointerType(LLVMInt8Type(), 0)};
     LLVMStructSetBody(structGen, structElementTypes, 3, 0);
     boxType = llvm::unwrap<llvm::StructType>(structGen);
 
@@ -144,6 +141,7 @@ void Package::translate(LLVMModuleRef &modRef) {
         if (funcType != nullptr) {
             function->setLLVMFunctionValue(LLVMAddFunction(modRef, function->getName().c_str(), funcType));
         }
+        delete paramTypes;
     }
 
     // iterating over each function translate the function body.

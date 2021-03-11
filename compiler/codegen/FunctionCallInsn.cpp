@@ -58,6 +58,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     if (getNextBB()) {
         LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
     }
+    delete ParamRefs;
 }
 
 } // namespace nballerina

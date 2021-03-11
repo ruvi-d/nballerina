@@ -37,9 +37,8 @@ LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
     if (addedFuncRef != nullptr) {
         return addedFuncRef;
     }
-    LLVMTypeRef *paramTypes = new LLVMTypeRef[1];
-    paramTypes[0] = LLVMInt32Type();
-    LLVMTypeRef funcType = LLVMFunctionType(LLVMInt32Type(), paramTypes, 1, 0);
+    LLVMTypeRef paramTypes = LLVMInt32Type();
+    LLVMTypeRef funcType = LLVMFunctionType(LLVMInt32Type(), &paramTypes, 1, 0);
     addedFuncRef = LLVMAddFunction(modRef, "new_int_array", funcType);
     getPackage()->addFunctionRef("new_int_array", addedFuncRef);
     return addedFuncRef;
@@ -48,13 +47,10 @@ LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
 void ArrayInsn::translate(LLVMModuleRef &modRef) {
     auto funcObj = getFunction();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
-    LLVMValueRef *sizeOpValueRef = new LLVMValueRef[1];
     LLVMValueRef localTempCarRef = funcObj->createTempVariable(sizeOp);
-    sizeOpValueRef[0] = localTempCarRef;
-
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef arrayInitFunc = getArrayInitDeclaration(modRef);
-    LLVMValueRef newArrayRef = LLVMBuildCall(builder, arrayInitFunc, sizeOpValueRef, 1, "");
+    LLVMValueRef newArrayRef = LLVMBuildCall(builder, arrayInitFunc, &localTempCarRef, 1, "");
 
     LLVMBuildStore(builder, newArrayRef, lhsOpRef);
 }
@@ -68,10 +64,8 @@ LLVMValueRef ArrayLoadInsn::getArrayLoadDeclaration(LLVMModuleRef &modRef) {
     if (addedFuncRef != nullptr) {
         return addedFuncRef;
     }
-    LLVMTypeRef *paramTypes = new LLVMTypeRef[2];
     LLVMTypeRef int32PtrType = LLVMPointerType(LLVMInt32Type(), 0);
-    paramTypes[0] = int32PtrType;
-    paramTypes[1] = LLVMInt32Type();
+    LLVMTypeRef paramTypes[] = {int32PtrType, LLVMInt32Type()};
     LLVMTypeRef funcType = LLVMFunctionType(int32PtrType, paramTypes, 2, 0);
     addedFuncRef = LLVMAddFunction(modRef, "int_array_load", funcType);
     getPackage()->addFunctionRef("int_array_load", addedFuncRef);
@@ -87,9 +81,7 @@ void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
     LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
 
-    LLVMValueRef *sizeOpValueRef = new LLVMValueRef[2];
-    sizeOpValueRef[0] = rhsOpRef;
-    sizeOpValueRef[1] = keyRef;
+    LLVMValueRef sizeOpValueRef[] = {rhsOpRef, keyRef};
     LLVMValueRef valueInArrayPointer = LLVMBuildCall(builder, ArrayLoadFunc, sizeOpValueRef, 2, "");
     LLVMValueRef ArrayTempVal = LLVMBuildLoad(builder, valueInArrayPointer, "");
     LLVMBuildStore(builder, ArrayTempVal, lhsOpRef);
@@ -105,11 +97,8 @@ LLVMValueRef ArrayStoreInsn::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
     if (addedFuncRef == nullptr) {
         return addedFuncRef;
     }
-    LLVMTypeRef *paramTypes = new LLVMTypeRef[3];
     LLVMTypeRef int32PtrType = LLVMPointerType(LLVMInt32Type(), 0);
-    paramTypes[0] = int32PtrType;
-    paramTypes[1] = LLVMInt32Type();
-    paramTypes[2] = int32PtrType;
+    LLVMTypeRef paramTypes[] = {int32PtrType, LLVMInt32Type(), int32PtrType};
     LLVMTypeRef funcType = LLVMFunctionType(LLVMVoidType(), paramTypes, 3, 0);
     addedFuncRef = LLVMAddFunction(modRef, "int_array_store", funcType);
     getPackage()->addFunctionRef("int_array_store", addedFuncRef);
@@ -124,10 +113,7 @@ void ArrayStoreInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
     LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
-    LLVMValueRef *argOpValueRef = new LLVMValueRef[3];
-    argOpValueRef[0] = lhsOpRef;
-    argOpValueRef[1] = keyRef;
-    argOpValueRef[2] = rhsOpRef;
+    LLVMValueRef argOpValueRef[] = {lhsOpRef, keyRef, rhsOpRef};
 
     LLVMBuildCall(builder, ArrayLoadFunc, argOpValueRef, 3, "");
 }
