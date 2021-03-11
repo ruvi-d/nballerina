@@ -163,24 +163,20 @@ void Function::patchBasicBlocks() {
             ConditionBrInsn *instruction = (static_cast<ConditionBrInsn *>(terminator));
             auto trueBB = FindBasicBlock(instruction->getIfThenBB()->getId());
             auto falseBB = FindBasicBlock(instruction->getElseBB()->getId());
-            BasicBlock *danglingTrueBB = instruction->getIfThenBB();
-            BasicBlock *danglingFalseBB = instruction->getElseBB();
-            instruction->setIfThenBB(trueBB.get());
-            instruction->setElseBB(falseBB.get());
+            instruction->setIfThenBB(trueBB);
+            instruction->setElseBB(falseBB);
             instruction->setPatched();
             break;
         }
         case INSTRUCTION_KIND_GOTO: {
             auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
-            BasicBlock *danglingBB = terminator->getNextBB();
-            terminator->setNextBB(destBB.get());
+            terminator->setNextBB(destBB);
             terminator->setPatched();
             break;
         }
         case INSTRUCTION_KIND_CALL: {
             auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
-            BasicBlock *danglingBB = terminator->getNextBB();
-            terminator->setNextBB(destBB.get());
+            terminator->setNextBB(destBB);
             break;
         }
         default:

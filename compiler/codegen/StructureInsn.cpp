@@ -30,7 +30,8 @@ using namespace llvm;
 
 namespace nballerina {
 
-StructureInsn::StructureInsn(Operand lhs, BasicBlock *currentBB) : NonTerminatorInsn(std::move(lhs), currentBB) {}
+StructureInsn::StructureInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
+    : NonTerminatorInsn(std::move(lhs), currentBB) {}
 
 void StructureInsn::translate(LLVMModuleRef &modRef) {
 

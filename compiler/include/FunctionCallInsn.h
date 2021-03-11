@@ -34,8 +34,8 @@ class FunctionCallInsn : public TerminatorInsn {
 
   public:
     FunctionCallInsn() = delete;
-    FunctionCallInsn(std::string _funcName, int argNumber, BasicBlock *nextBB, Operand lhs,
-                     std::vector<Operand> fnArgs, BasicBlock *currentBB);
+    FunctionCallInsn(std::string _funcName, int argNumber, std::shared_ptr<BasicBlock> nextBB, Operand lhs,
+                     std::vector<Operand> fnArgs, std::shared_ptr<BasicBlock> currentBB);
     ~FunctionCallInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

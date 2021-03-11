@@ -27,7 +27,7 @@ using namespace std;
 
 namespace nballerina {
 
-UnaryOpInsn::UnaryOpInsn(Operand lhs, BasicBlock *currentBB, Operand rhs)
+UnaryOpInsn::UnaryOpInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhs)
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhs)) {}
 
 void UnaryOpInsn::translate(LLVMModuleRef &) {

@@ -36,11 +36,11 @@ class ConstantLoadInsn : public NonTerminatorInsn {
 
   public:
     ConstantLoadInsn() = delete;
-    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, int intVal);
-    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, float floatVal);
-    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, bool boolVal);
-    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB, std::string str);
-    ConstantLoadInsn(Operand lhs, BasicBlock *currentBB);
+    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, int intVal);
+    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal);
+    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal);
+    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::string str);
+    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB);
     ~ConstantLoadInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

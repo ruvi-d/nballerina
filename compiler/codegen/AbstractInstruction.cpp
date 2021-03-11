@@ -21,7 +21,7 @@
 
 namespace nballerina {
 
-AbstractInstruction::AbstractInstruction(Operand lOp, BasicBlock *parentBB)
+AbstractInstruction::AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock> parentBB)
     : lhsOp(std::move(lOp)), parentBB(parentBB) {}
 
 const Operand &AbstractInstruction::getLhsOperand() const { return lhsOp; }
