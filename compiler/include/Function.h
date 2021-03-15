@@ -72,7 +72,7 @@ class Function : public Debuggable, public Translatable {
     const std::optional<RestParam> &getRestParam() const;
     const std::optional<Variable> &getReturnVar() const;
     Package *getPackageMutableRef() const;
-    const Package *getPackage() const;
+    const Package *getPackageRef() const;
     LLVMBuilderRef getLLVMBuilder() const;
     LLVMValueRef getLLVMFunctionValue() const;
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName) const;
@@ -82,7 +82,7 @@ class Function : public Debuggable, public Translatable {
     std::optional<Variable> getLocalOrGlobalVariable(const Operand &op) const;
     LLVMTypeRef getLLVMTypeOfReturnVal() const;
     bool isMainFunction() const;
-    const FunctionParam &getParam(int i) const;
+    const std::vector<FunctionParam> &getParams() const;
     LLVMValueRef createTempVariable(const Operand &op) const;
 
     void patchBasicBlocks();
