@@ -36,7 +36,7 @@ TypeTag Type::getMemberTypeTag() const {
     return TYPE_TAG_INVALID;
 }
 
-std::string Type::getNameOfType(TypeTag typeTag) {
+const std::string Type::getNameOfType(TypeTag typeTag) {
     switch (typeTag) {
     case TYPE_TAG_INT:
         return "int";

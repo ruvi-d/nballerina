@@ -66,7 +66,7 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         LLVMValueRef origTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 0, "origTypeIdx");
         const auto &origVarDecl = funcObj.getLocalVariable(lhsOpName);
         TypeTag origTypeTag = origVarDecl.getType().getTypeTag();
-        auto origTypeName = Type::getNameOfType(origTypeTag);
+        const auto &origTypeName = Type::getNameOfType(origTypeTag);
         getPackageMutableRef().addToStrTable(origTypeName);
         LLVMValueRef constValue = LLVMConstInt(LLVMInt32Type(), -1, 0);
         LLVMValueRef origStoreRef = LLVMBuildStore(builder, constValue, origTypeIdx);
@@ -74,7 +74,7 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         // struct second element last type
         LLVMValueRef lastTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 1, "lastTypeIdx");
         TypeTag lastTypeTag = funcObj.getLocalVariable(rhsOpName).getType().getTypeTag();
-        auto lastTypeName = Type::getNameOfType(lastTypeTag);
+        const auto lastTypeName = Type::getNameOfType(lastTypeTag);
         getPackageMutableRef().addToStrTable(lastTypeName);
         LLVMValueRef constValue1 = LLVMConstInt(LLVMInt32Type(), -2, 0);
         LLVMValueRef lastStoreRef = LLVMBuildStore(builder, constValue1, lastTypeIdx);

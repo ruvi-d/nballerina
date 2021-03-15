@@ -56,7 +56,7 @@ void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modR
     const auto &funcObj = getFunctionRef();
     LLVMBuilderRef builder = funcObj.getLLVMBuilder();
     LLVMValueRef lhsOpRef = funcObj.getLLVMLocalOrGlobalVar(getLhsOperand());
-    auto mapType = lhsVar.getType();
+    const auto &mapType = lhsVar.getType();
 
     // Get member type
     TypeTag memberTypeTag = mapType.getMemberTypeTag();

@@ -42,7 +42,7 @@ class TerminatorInsn : public AbstractInstruction, public Translatable {
                    bool patchRequired = false);
     virtual ~TerminatorInsn() = default;
 
-    std::shared_ptr<BasicBlock> getNextBB();
+    BasicBlock *getNextBB() const;
     bool isPatched() const;
     InstructionKind getInstKind() const;
 

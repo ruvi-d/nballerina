@@ -36,7 +36,7 @@ class Location {
     Location(std::string name, int sline, int scol, int eline, int ecol);
     ~Location() = default;
 
-    std::string getFileName();
+    const std::string &getFileName();
     int getStartLineNum();
     int getStartColumnNum();
     int getEndLineNum();

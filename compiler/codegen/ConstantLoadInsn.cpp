@@ -26,9 +26,6 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Module.h"
 
-using namespace std;
-using namespace llvm;
-
 namespace nballerina {
 
 // With Nil Type setting only Type Tag because value will be zero with NIL Type.
@@ -47,7 +44,7 @@ ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> curr
 
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef constRef = nullptr;
-    auto lhsOp = getLhsOperand();
+    const auto &lhsOp = getLhsOperand();
     const auto &funcRef = getFunctionRef();
     LLVMBuilderRef builder = funcRef.getLLVMBuilder();
     LLVMValueRef lhsRef = funcRef.getLLVMLocalOrGlobalVar(lhsOp);
@@ -69,27 +66,28 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     }
     case TYPE_TAG_STRING:
     case TYPE_TAG_CHAR_STRING: {
-        string stringValue = strValue;
-        llvm::Constant *C = llvm::ConstantDataArray::getString(*unwrap(LLVMGetGlobalContext()),
-                                                               StringRef(stringValue.c_str(), stringValue.length()));
-        globalStringValue = std::make_unique<llvm::GlobalVariable>(*unwrap(modRef), C->getType(), false,
+        std::string stringValue = strValue;
+        llvm::Constant *C = llvm::ConstantDataArray::getString(
+            *llvm::unwrap(LLVMGetGlobalContext()), llvm::StringRef(stringValue.c_str(), stringValue.length()));
+        globalStringValue = std::make_unique<llvm::GlobalVariable>(*llvm::unwrap(modRef), C->getType(), false,
                                                                    llvm::GlobalValue::PrivateLinkage, C, ".str");
         globalStringValue->setUnnamedAddr(llvm::GlobalValue::UnnamedAddr::Global);
         globalStringValue->setAlignment(llvm::Align(1));
 
-        LLVMValueRef paramTypes[] = {wrap(unwrap(builder)->getInt64(0)), wrap(unwrap(builder)->getInt64(0))};
+        LLVMValueRef paramTypes[] = {llvm::wrap(llvm::unwrap(builder)->getInt64(0)),
+                                     llvm::wrap(llvm::unwrap(builder)->getInt64(0))};
         constRef = LLVMBuildInBoundsGEP(builder, wrap(globalStringValue.get()), paramTypes, 2, "simple");
         break;
     }
     case TYPE_TAG_NIL: {
-        string lhsOpName = lhsOp.getName();
+        std::string lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
         assert(funcRef.getReturnVar());
         if (funcRef.isMainFunction() && (lhsOpName.compare(funcRef.getReturnVar()->getName()) == 0)) {
             return;
         }
         LLVMValueRef constTempRef = getPackageRef().getGlobalNilVar();
-        string tempName = lhsOpName + "_temp";
+        std::string tempName = lhsOpName + "_temp";
         constRef = LLVMBuildLoad(builder, constTempRef, tempName.c_str());
         break;
     }
