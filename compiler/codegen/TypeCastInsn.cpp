@@ -64,15 +64,12 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         LLVMBuildStore(builder, castLoad, lhsOpRef);
     } else if (funcObj->getLocalVariable(lhsOpName)->getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef structAllocaRef = funcObj->getLLVMLocalVar(getLhsOperand().getName());
-        StringTableBuilder *strTable = getPackage()->getStrTableBuilder();
-
         // struct first element original type
         LLVMValueRef origTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 0, "origTypeIdx");
         auto origVarDecl = funcObj->getLocalVariable(lhsOpName);
         TypeTag origTypeTag = origVarDecl->getType().getTypeTag();
         auto origTypeName = Type::getNameOfType(origTypeTag);
-        if (!strTable->contains(origTypeName))
-            strTable->add(origTypeName);
+        getPackage()->addToStrTable(origTypeName);
         LLVMValueRef constValue = LLVMConstInt(LLVMInt32Type(), -1, 0);
         LLVMValueRef origStoreRef = LLVMBuildStore(builder, constValue, origTypeIdx);
         getPackage()->addStringOffsetRelocationEntry(origTypeName, origStoreRef);
@@ -81,8 +78,7 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         auto lastTypeVarDecl = funcObj->getLocalVariable(rhsOpName);
         TypeTag lastTypeTag = lastTypeVarDecl->getType().getTypeTag();
         auto lastTypeName = Type::getNameOfType(lastTypeTag);
-        if (!strTable->contains(lastTypeName))
-            strTable->add(lastTypeName);
+        getPackage()->addToStrTable(lastTypeName);
         LLVMValueRef constValue1 = LLVMConstInt(LLVMInt32Type(), -2, 0);
         LLVMValueRef lastStoreRef = LLVMBuildStore(builder, constValue1, lastTypeIdx);
         getPackage()->addStringOffsetRelocationEntry(lastTypeName, lastStoreRef);
