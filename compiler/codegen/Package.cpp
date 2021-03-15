@@ -182,7 +182,7 @@ void Package::applyStringOffsetRelocations() {
 }
 
 LLVMValueRef Package::getFunctionRef(const std::string &arrayName) const {
-    auto it = functionRefs.find(arrayName);
+    const auto &it = functionRefs.find(arrayName);
     if (it == functionRefs.end()) {
         return nullptr;
     }
@@ -190,7 +190,7 @@ LLVMValueRef Package::getFunctionRef(const std::string &arrayName) const {
 }
 
 std::optional<Variable> Package::getGlobalVariable(const std::string &name) const {
-    auto varIt = globalVars.find(name);
+    const auto &varIt = globalVars.find(name);
     if (varIt == globalVars.end()) {
         return std::nullopt;
     }

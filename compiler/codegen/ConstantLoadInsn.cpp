@@ -84,7 +84,8 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
         string lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
         assert(getFunctionRef()->getReturnVar());
-        if (getFunctionRef()->isMainFunction() && (lhsOpName.compare(getFunctionRef()->getReturnVar()->getName()) == 0)) {
+        if (getFunctionRef()->isMainFunction() &&
+            (lhsOpName.compare(getFunctionRef()->getReturnVar()->getName()) == 0)) {
             return;
         }
         LLVMValueRef constTempRef = getPackageRef()->getGlobalNilVar();
