@@ -35,7 +35,7 @@ Function::Function(std::shared_ptr<Package> parentPackage, std::string name, std
 
 // Search basic block based on the basic block ID
 std::shared_ptr<BasicBlock> Function::FindBasicBlock(const std::string &id) {
-    auto bb = basicBlocksMap.find(id);
+    const auto &bb = basicBlocksMap.find(id);
     if (bb == basicBlocksMap.end()) {
         return nullptr;
     }
@@ -43,14 +43,14 @@ std::shared_ptr<BasicBlock> Function::FindBasicBlock(const std::string &id) {
 }
 
 const std::string &Function::getName() const { return name; }
-const FunctionParam &Function::getParam(int i) const { return requiredParams[i]; }
+const std::vector<FunctionParam> &Function::getParams() const { return requiredParams; }
 const std::optional<RestParam> &Function::getRestParam() const { return restParam; }
 const std::optional<Variable> &Function::getReturnVar() const { return returnVar; }
 LLVMBuilderRef Function::getLLVMBuilder() const { return llvmBuilder; }
 LLVMValueRef Function::getLLVMFunctionValue() const { return llvmFunction; }
 
 LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsName) const {
-    auto branch = branchComparisonList.find(lhsName);
+    const auto &branch = branchComparisonList.find(lhsName);
     if (branch == branchComparisonList.end()) {
         return nullptr;
     }
@@ -58,7 +58,7 @@ LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsNam
 }
 
 LLVMValueRef Function::getLLVMLocalVar(const std::string &varName) const {
-    auto varIt = localVarRefs.find(varName);
+    const auto &varIt = localVarRefs.find(varName);
     if (varIt == localVarRefs.end()) {
         return nullptr;
     }
@@ -89,7 +89,7 @@ static bool isParamter(const Variable &locVar) {
 
 LLVMTypeRef Function::getLLVMTypeOfReturnVal() const {
 
-    auto retType = returnVar->getType();
+    const auto &retType = returnVar->getType();
 
     // if main function return type is void, but user wants to return some
     // value using _bal_result (global variable from BIR), change main function
@@ -123,7 +123,7 @@ void Function::insertBranchComparisonValue(const std::string &name, LLVMValueRef
 }
 
 const Variable &Function::getLocalVariable(const std::string &opName) const {
-    auto varIt = localVars.find(opName);
+    const auto &varIt = localVars.find(opName);
     assert(varIt != localVars.end());
     return varIt->second;
 }
@@ -144,7 +144,7 @@ LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const {
     return getLLVMLocalVar(op.getName());
 }
 
-const Package *Function::getPackage() const { return parentPackage.get(); }
+const Package *Function::getPackageRef() const { return parentPackage.get(); }
 Package *Function::getPackageMutableRef() const { return parentPackage.get(); }
 
 size_t Function::getNumParams() const { return requiredParams.size(); }
@@ -182,7 +182,7 @@ void Function::patchBasicBlocks() {
             break;
         }
         default:
-            std::fprintf(stderr, "%s:%d Invalid Insn Kind for Instruction Patching.\n", __FILE__, __LINE__);
+            llvm_unreachable("Invalid Insn Kind for Instruction Patching");
             break;
         }
     }
