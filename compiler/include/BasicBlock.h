@@ -44,13 +44,17 @@ class BasicBlock : public Debuggable, public Translatable {
   public:
     BasicBlock() = delete;
     BasicBlock(std::string id, std::shared_ptr<Function> parentFunc);
+    BasicBlock(const BasicBlock &) = delete;
+    BasicBlock(BasicBlock &&obj) noexcept = delete;
+    BasicBlock &operator=(const BasicBlock &obj) = delete;
+    BasicBlock &operator=(BasicBlock &&obj) noexcept = delete;
     ~BasicBlock() = default;
 
     const std::string &getId() const;
-    TerminatorInsn *getTerminatorInsnPtr();
-    std::shared_ptr<Function> getFunction();
-    std::shared_ptr<BasicBlock> &getNextBB();
-    LLVMBasicBlockRef getLLVMBBRef();
+    TerminatorInsn *getTerminatorInsnPtr() const;
+    std::shared_ptr<Function> getParentFunctionMutableRef() const;
+    const Function *getParentFunctionRef() const;
+    LLVMBasicBlockRef getLLVMBBRef() const;
 
     void setNextBB(std::shared_ptr<BasicBlock> bb);
     void setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn);
