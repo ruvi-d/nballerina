@@ -41,12 +41,12 @@ void ConditionBrInsn::setElseBB(std::shared_ptr<BasicBlock> bb) { elseBB = bb; }
 
 void ConditionBrInsn::translate(LLVMModuleRef &) {
 
-    LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
+    LLVMBuilderRef builder = getFunctionRef()->getLLVMBuilder();
     string lhsName = getLhsOperand().getName();
 
-    LLVMValueRef brCondition = getFunction()->getLLVMValueForBranchComparison(lhsName);
+    LLVMValueRef brCondition = getFunctionRef()->getLLVMValueForBranchComparison(lhsName);
     if (brCondition == nullptr) {
-        brCondition = LLVMBuildIsNotNull(builder, getFunction()->createTempVariable(getLhsOperand()), lhsName.c_str());
+        brCondition = LLVMBuildIsNotNull(builder, getFunctionRef()->createTempVariable(getLhsOperand()), lhsName.c_str());
     }
 
     LLVMBuildCondBr(builder, brCondition, ifThenBB->getLLVMBBRef(), elseBB->getLLVMBBRef());

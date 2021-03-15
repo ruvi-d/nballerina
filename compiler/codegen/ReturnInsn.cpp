@@ -34,7 +34,7 @@ ReturnInsn::ReturnInsn(std::shared_ptr<BasicBlock> currentBB)
 
 void ReturnInsn::translate(LLVMModuleRef &) {
 
-    auto funcObj = getFunction();
+    auto funcObj = getFunctionRef();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
 
     if (!funcObj->isMainFunction()) {

@@ -35,7 +35,7 @@ FunctionCallInsn::FunctionCallInsn(std::string funcName, int argNumber, std::sha
 }
 
 void FunctionCallInsn::translate(LLVMModuleRef &) {
-    auto funcObj = getFunction();
+    auto funcObj = getFunctionRef();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     std::unique_ptr<LLVMValueRef[]> ParamRefs(new LLVMValueRef[argCount]);
 

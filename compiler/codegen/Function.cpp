@@ -47,10 +47,10 @@ const FunctionParam &Function::getParam(int i) const { return requiredParams[i];
 unsigned int Function::getFlags() { return flags; }
 const std::optional<RestParam> &Function::getRestParam() const { return restParam; }
 const std::optional<Variable> &Function::getReturnVar() const { return returnVar; }
-LLVMBuilderRef Function::getLLVMBuilder() { return llvmBuilder; }
-LLVMValueRef Function::getLLVMFunctionValue() { return llvmFunction; }
+LLVMBuilderRef Function::getLLVMBuilder() const { return llvmBuilder; }
+LLVMValueRef Function::getLLVMFunctionValue() const { return llvmFunction; }
 
-LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsName) {
+LLVMValueRef Function::getLLVMValueForBranchComparison(const std::string &lhsName) const {
     auto branch = branchComparisonList.find(lhsName);
     if (branch == branchComparisonList.end()) {
         return nullptr;
@@ -88,7 +88,7 @@ static bool isParamter(const Variable &locVar) {
     }
 }
 
-LLVMTypeRef Function::getLLVMTypeOfReturnVal() {
+LLVMTypeRef Function::getLLVMTypeOfReturnVal() const {
 
     auto retType = returnVar->getType();
 
@@ -151,9 +151,9 @@ std::shared_ptr<Package> Function::getPackage() { return parentPackage; }
 
 size_t Function::getNumParams() { return requiredParams.size(); }
 
-bool Function::isMainFunction() { return (name.compare(MAIN_FUNCTION_NAME) == 0); }
+bool Function::isMainFunction() const { return (name.compare(MAIN_FUNCTION_NAME) == 0); }
 
-bool Function::isExternalFunction() { return ((flags & NATIVE) == NATIVE); }
+bool Function::isExternalFunction() const { return ((flags & NATIVE) == NATIVE); }
 
 // Patches the Terminator Insn with destination Basic Block
 void Function::patchBasicBlocks() {

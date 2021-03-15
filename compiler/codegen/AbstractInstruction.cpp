@@ -26,7 +26,8 @@ AbstractInstruction::AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock
     : lhsOp(std::move(lOp)), parentBB(parentBB) {}
 
 const Operand &AbstractInstruction::getLhsOperand() const { return lhsOp; }
-std::shared_ptr<Function> AbstractInstruction::getFunction() { return parentBB->getFunction(); }
+const Function *AbstractInstruction::getFunctionRef() const { return parentBB->getFunction().get(); }
+Function *AbstractInstruction::getFunctionMutableRef() { return parentBB->getFunction().get(); }
 std::shared_ptr<Package> AbstractInstruction::getPackage() { return parentBB->getFunction()->getPackage(); }
 
 } // namespace nballerina
