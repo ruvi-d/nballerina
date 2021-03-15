@@ -30,7 +30,7 @@ class MapStoreInsn : public NonTerminatorInsn {
 
   public:
     MapStoreInsn() = delete;
-    MapStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand ROp);
+    MapStoreInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &KOp, const Operand &ROp);
     ~MapStoreInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

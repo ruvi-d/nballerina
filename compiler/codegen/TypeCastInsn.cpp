@@ -30,21 +30,18 @@ using namespace llvm;
 
 namespace nballerina {
 
-TypeCastInsn::TypeCastInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
+TypeCastInsn::TypeCastInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &rhsOp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), rhsOp(rhsOp) {}
 
 void TypeCastInsn::translate(LLVMModuleRef &) {
     const auto &funcObj = getFunctionRef();
     string lhsOpName = getLhsOperand().getName();
     string rhsOpName = rhsOp.getName();
     LLVMBuilderRef builder = funcObj.getLLVMBuilder();
-    LLVMValueRef rhsOpRef;
-    LLVMValueRef lhsOpRef;
-    LLVMTypeRef lhsTypeRef;
 
-    rhsOpRef = funcObj.getLLVMLocalVar(rhsOpName);
-    lhsOpRef = funcObj.getLLVMLocalVar(lhsOpName);
-    lhsTypeRef = wrap(unwrap(lhsOpRef)->getType());
+    LLVMValueRef rhsOpRef = funcObj.getLLVMLocalVar(rhsOpName);
+    LLVMValueRef lhsOpRef = funcObj.getLLVMLocalVar(lhsOpName);
+    LLVMTypeRef lhsTypeRef = wrap(unwrap(lhsOpRef)->getType());
     if (funcObj.getLocalVariable(rhsOpName).getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef lastTypeIdx __attribute__((unused)) = LLVMBuildStructGEP(builder, rhsOpRef, 1, "lastTypeIdx");
 

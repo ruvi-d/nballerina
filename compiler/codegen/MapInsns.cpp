@@ -31,8 +31,9 @@ namespace nballerina {
 
 // new Map Instruction and Codegen logic are in the llvmStructure.cpp
 
-MapStoreInsn::MapStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand rOp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
+MapStoreInsn::MapStoreInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &KOp,
+                           const Operand &rOp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), keyOp(KOp), rhsOp(rOp) {}
 
 void MapStoreInsn::translate(LLVMModuleRef &modRef) {
     const auto &funcObj = getFunctionRef();
@@ -40,7 +41,7 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
 
     // Find Variable corresponding to lhs to determine member type
     auto lhsVar = funcObj.getLocalOrGlobalVariable(getLhsOperand());
-    assert(lhsVar);
+    assert(lhsVar.has_value());
     const auto &mapType = lhsVar->getType();
     TypeTag memberTypeTag = mapType.getMemberTypeTag();
 

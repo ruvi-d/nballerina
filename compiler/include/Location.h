@@ -36,11 +36,11 @@ class Location {
     Location(std::string name, int sline, int scol, int eline, int ecol);
     ~Location() = default;
 
-    const std::string &getFileName();
-    int getStartLineNum();
-    int getStartColumnNum();
-    int getEndLineNum();
-    int getEndColumnNum();
+    const std::string &getFileName() const;
+    int getStartLineNum() const;
+    int getStartColumnNum() const;
+    int getEndLineNum() const;
+    int getEndColumnNum() const;
 };
 
 } // namespace nballerina

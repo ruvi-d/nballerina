@@ -25,13 +25,13 @@
 namespace nballerina {
 
 GoToInsn::GoToInsn(std::shared_ptr<BasicBlock> nextBB, std::shared_ptr<BasicBlock> currentBB)
-    : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nextBB, true) {
+    : TerminatorInsn(Operand("", NOT_A_KIND), std::move(currentBB), std::move(nextBB), true) {
     kind = INSTRUCTION_KIND_GOTO;
 }
 
 void GoToInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = getFunctionRef().getLLVMBuilder();
-    assert(getNextBB());
+    assert(getNextBB() != nullptr);
     LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
 }
 

@@ -30,8 +30,8 @@
 namespace nballerina {
 
 Function::Function(std::shared_ptr<Package> parentPackage, std::string name, std::string workerName, unsigned int flags)
-    : parentPackage(parentPackage), name(std::move(name)), workerName(std::move(workerName)),
-      flags(flags), returnVar{}, restParam{}, llvmBuilder(nullptr), llvmFunction(nullptr) {}
+    : parentPackage(std::move(parentPackage)), name(std::move(name)), workerName(std::move(workerName)), flags(flags),
+      llvmBuilder(nullptr), llvmFunction(nullptr) {}
 
 // Search basic block based on the basic block ID
 std::shared_ptr<BasicBlock> Function::FindBasicBlock(const std::string &id) {
@@ -105,15 +105,16 @@ LLVMTypeRef Function::getLLVMTypeOfReturnVal() const {
     return parentPackage->getLLVMTypeOfType(retType);
 }
 
-void Function::insertParam(FunctionParam param) { requiredParams.push_back(std::move(param)); }
-void Function::setRestParam(RestParam param) { restParam = std::move(param); }
-void Function::insertLocalVar(Variable var) {
-    localVars.insert(std::pair<std::string, Variable>(var.getName(), std::move(var)));
+void Function::insertParam(FunctionParam param) { requiredParams.push_back(param); }
+void Function::setRestParam(RestParam param) { restParam = param; }
+void Function::insertLocalVar(const Variable &var) {
+    localVars.insert(std::pair<std::string, Variable>(var.getName(), var));
 }
-void Function::setReturnVar(Variable var) { returnVar = std::move(var); }
+void Function::setReturnVar(const Variable &var) { returnVar = var; }
 void Function::insertBasicBlock(std::shared_ptr<BasicBlock> bb) {
-    if (!firstBlock)
+    if (!firstBlock) {
         firstBlock = bb;
+    }
     basicBlocksMap.insert(std::pair<std::string, std::shared_ptr<BasicBlock>>(bb->getId(), bb));
 }
 void Function::setLLVMBuilder(LLVMBuilderRef b) { llvmBuilder = b; }
@@ -149,14 +150,14 @@ Package &Function::getPackageMutableRef() const { return *parentPackage; }
 
 size_t Function::getNumParams() const { return requiredParams.size(); }
 
-bool Function::isMainFunction() const { return (name.compare(MAIN_FUNCTION_NAME) == 0); }
+bool Function::isMainFunction() const { return (name == MAIN_FUNCTION_NAME); }
 
 bool Function::isExternalFunction() const { return ((flags & NATIVE) == NATIVE); }
 
 // Patches the Terminator Insn with destination Basic Block
 void Function::patchBasicBlocks() {
     for (auto &basicBlock : basicBlocksMap) {
-        auto terminator = basicBlock.second->getTerminatorInsnPtr();
+        auto *terminator = basicBlock.second->getTerminatorInsnPtr();
         if ((terminator == nullptr) || !terminator->isPatched()) {
             continue;
         }

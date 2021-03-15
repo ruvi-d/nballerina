@@ -96,7 +96,7 @@ class Type {
 
     TypeTag getTypeTag() const;
     const std::string &getName() const;
-    static const std::string getNameOfType(TypeTag typeTag);
+    static std::string getNameOfType(TypeTag typeTag);
     TypeTag getMemberTypeTag() const;
 };
 

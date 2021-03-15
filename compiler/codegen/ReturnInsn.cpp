@@ -30,7 +30,7 @@ using namespace llvm;
 namespace nballerina {
 
 ReturnInsn::ReturnInsn(std::shared_ptr<BasicBlock> currentBB)
-    : TerminatorInsn(Operand("", NOT_A_KIND), currentBB, nullptr) {}
+    : TerminatorInsn(Operand("", NOT_A_KIND), std::move(currentBB), nullptr) {}
 
 void ReturnInsn::translate(LLVMModuleRef &) {
 
@@ -38,7 +38,7 @@ void ReturnInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = funcObj.getLLVMBuilder();
 
     if (!funcObj.isMainFunction()) {
-        assert(funcObj.getReturnVar());
+        assert(funcObj.getReturnVar().has_value());
         LLVMValueRef retValueRef =
             LLVMBuildLoad(builder, funcObj.getLLVMLocalVar(funcObj.getReturnVar()->getName()), "return_val_temp");
         LLVMBuildRet(builder, retValueRef);

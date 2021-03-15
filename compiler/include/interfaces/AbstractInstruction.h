@@ -85,7 +85,7 @@ class AbstractInstruction : public Debuggable {
 
   public:
     AbstractInstruction() = delete;
-    AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock> parentBB);
+    AbstractInstruction(const Operand &lOp, std::shared_ptr<BasicBlock> parentBB);
     virtual ~AbstractInstruction() = default;
 };
 

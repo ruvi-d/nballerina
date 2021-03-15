@@ -20,8 +20,8 @@
 #define __CONSTANTLOAD__H__
 
 #include "NonTerminatorInsn.h"
-#include "llvm/IR/GlobalVariable.h"
 #include "Types.h"
+#include "llvm/IR/GlobalVariable.h"
 #include <string>
 
 namespace nballerina {
@@ -38,11 +38,11 @@ class ConstantLoadInsn : public NonTerminatorInsn {
 
   public:
     ConstantLoadInsn() = delete;
-    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, int intVal);
-    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal);
-    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal);
-    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::string str);
-    ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB);
+    ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, int intVal);
+    ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal);
+    ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal);
+    ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, std::string str);
+    ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB);
     ~ConstantLoadInsn() = default;
 
     void translate(LLVMModuleRef &modRef) final;

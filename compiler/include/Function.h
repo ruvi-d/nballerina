@@ -91,8 +91,8 @@ class Function : public Debuggable, public Translatable {
     void patchBasicBlocks();
     void insertParam(FunctionParam param);
     void setRestParam(RestParam param);
-    void setReturnVar(Variable var);
-    void insertLocalVar(Variable var);
+    void setReturnVar(const Variable &var);
+    void insertLocalVar(const Variable &var);
     void insertBasicBlock(std::shared_ptr<BasicBlock> bb);
     void insertBranchComparisonValue(const std::string &lhsName, LLVMValueRef compRef);
     void setLLVMBuilder(LLVMBuilderRef builder);

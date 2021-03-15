@@ -24,7 +24,7 @@ Type::Type(TypeTag type, std::string namep, int flagsp, TypeTag memberType)
     : type(type), name(std::move(namep)), flags(flagsp), memberType(memberType) {}
 
 Type::Type(TypeTag type, std::string namep, int flagsp)
-    : type(type), name(std::move(namep)), flags(flagsp), memberType() {}
+    : type(type), name(std::move(namep)), flags(flagsp) {}
 
 TypeTag Type::getTypeTag() const { return type; }
 const std::string &Type::getName() const { return name; }
@@ -36,7 +36,7 @@ TypeTag Type::getMemberTypeTag() const {
     return TYPE_TAG_INVALID;
 }
 
-const std::string Type::getNameOfType(TypeTag typeTag) {
+std::string Type::getNameOfType(TypeTag typeTag) {
     switch (typeTag) {
     case TYPE_TAG_INT:
         return "int";

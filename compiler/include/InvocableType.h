@@ -36,8 +36,8 @@ class InvocableType {
 
   public:
     InvocableType() = delete;
-    InvocableType(std::vector<Type> paramTy, Type restTy, Type retTy);
-    InvocableType(std::vector<Type> paramTy, Type retTy);
+    InvocableType(std::vector<Type> paramTy, const Type &restTy, const Type &retTy);
+    InvocableType(std::vector<Type> paramTy, const Type &retTy);
     ~InvocableType() = default;
 };
 

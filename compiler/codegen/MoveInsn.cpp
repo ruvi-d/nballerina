@@ -25,8 +25,8 @@
 
 namespace nballerina {
 
-MoveInsn::MoveInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
+MoveInsn::MoveInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &rhsOp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), rhsOp(rhsOp) {}
 
 void MoveInsn::translate(LLVMModuleRef &) {
 

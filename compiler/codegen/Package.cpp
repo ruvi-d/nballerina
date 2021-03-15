@@ -46,8 +46,9 @@ const std::string &Package::getVersion() const { return version; }
 const std::string &Package::getSrcFileName() const { return sourceFileName; }
 
 void Package::addToStrTable(const std::string &name) {
-    if (!strBuilder->contains(name))
+    if (!strBuilder->contains(name)) {
         strBuilder->add(name);
+    }
 }
 void Package::setOrgName(std::string orgName) { org = std::move(orgName); }
 void Package::setPackageName(std::string pkgName) { name = std::move(pkgName); }
@@ -55,7 +56,7 @@ void Package::setVersion(std::string verName) { version = std::move(verName); }
 
 void Package::setSrcFileName(std::string srcFileName) { sourceFileName = std::move(srcFileName); }
 
-void Package::insertFunction(std::shared_ptr<Function> function) {
+void Package::insertFunction(const std::shared_ptr<Function> &function) {
     functionLookUp.insert(std::pair<std::string, std::shared_ptr<Function>>(function->getName(), function));
 }
 
@@ -77,7 +78,6 @@ LLVMTypeRef Package::getLLVMTypeOfType(const Type &type) const {
     case TYPE_TAG_CHAR_STRING:
     case TYPE_TAG_STRING:
     case TYPE_TAG_MAP:
-        return LLVMPointerType(LLVMInt8Type(), 0);
     case TYPE_TAG_NIL:
         return LLVMPointerType(LLVMInt8Type(), 0);
     case TYPE_TAG_ANY:
@@ -150,8 +150,9 @@ void Package::translate(LLVMModuleRef &modRef) {
 
     // iterating over each function translate the function body
     for (auto &function : functionLookUp) {
-        if (function.second->isExternalFunction())
+        if (function.second->isExternalFunction()) {
             continue;
+        }
         function.second->translate(modRef);
     }
 

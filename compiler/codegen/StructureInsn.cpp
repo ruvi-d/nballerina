@@ -30,15 +30,15 @@ using namespace llvm;
 
 namespace nballerina {
 
-StructureInsn::StructureInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
-    : NonTerminatorInsn(std::move(lhs), currentBB) {}
+StructureInsn::StructureInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB)
+    : NonTerminatorInsn(lhs, std::move(currentBB)) {}
 
 void StructureInsn::translate(LLVMModuleRef &modRef) {
 
     const auto &funcObj = getFunctionRef();
     // Find Variable corresponding to lhs to determine structure and member type
     auto lhsVar = funcObj.getLocalOrGlobalVariable(getLhsOperand());
-    assert(lhsVar);
+    assert(lhsVar.has_value());
 
     // Determine structure type
     TypeTag structType = lhsVar->getType().getTypeTag();

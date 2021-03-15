@@ -38,7 +38,7 @@ class TerminatorInsn : public AbstractInstruction, public Translatable {
 
   public:
     TerminatorInsn() = delete;
-    TerminatorInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::shared_ptr<BasicBlock> then,
+    TerminatorInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, std::shared_ptr<BasicBlock> then,
                    bool patchRequired = false);
     virtual ~TerminatorInsn() = default;
 

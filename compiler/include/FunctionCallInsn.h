@@ -34,7 +34,7 @@ class FunctionCallInsn : public TerminatorInsn {
 
   public:
     FunctionCallInsn() = delete;
-    FunctionCallInsn(std::string _funcName, int argNumber, std::shared_ptr<BasicBlock> nextBB, Operand lhs,
+    FunctionCallInsn(std::string _funcName, int argNumber, std::shared_ptr<BasicBlock> nextBB, const Operand &lhs,
                      std::vector<Operand> fnArgs, std::shared_ptr<BasicBlock> currentBB);
     ~FunctionCallInsn() = default;
 

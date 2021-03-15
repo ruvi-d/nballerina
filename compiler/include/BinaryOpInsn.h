@@ -35,7 +35,8 @@ class BinaryOpInsn : public NonTerminatorInsn {
 
   public:
     BinaryOpInsn() = delete;
-    BinaryOpInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhsOp1, Operand rhsOp2);
+    BinaryOpInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &rhsOp1,
+                 const Operand &rhsOp2);
     ~BinaryOpInsn() = default;
 
     void setInstKind(InstructionKind kind);

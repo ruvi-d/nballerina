@@ -30,7 +30,7 @@ class ConditionBrInsn : public TerminatorInsn {
 
   public:
     ConditionBrInsn() = delete;
-    ConditionBrInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::shared_ptr<BasicBlock> ifThenBB,
+    ConditionBrInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, std::shared_ptr<BasicBlock> ifThenBB,
                     std::shared_ptr<BasicBlock> elseBB);
     ~ConditionBrInsn() = default;
 

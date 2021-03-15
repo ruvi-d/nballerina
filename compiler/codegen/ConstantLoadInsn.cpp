@@ -29,18 +29,20 @@
 namespace nballerina {
 
 // With Nil Type setting only Type Tag because value will be zero with NIL Type.
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_NIL) {}
+ConstantLoadInsn::ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), typeTag(TYPE_TAG_NIL) {}
 
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, int intVal)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_INT), intValue(intVal) {}
+ConstantLoadInsn::ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, int intVal)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), typeTag(TYPE_TAG_INT), intValue(intVal) {}
 
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_FLOAT), floatValue(floatVal) {}
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_BOOLEAN), boolValue(boolVal) {}
-ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, std::string str)
-    : NonTerminatorInsn(std::move(lhs), currentBB), typeTag(TYPE_TAG_STRING), strValue(std::move(str)) {}
+ConstantLoadInsn::ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, float floatVal)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), typeTag(TYPE_TAG_FLOAT), floatValue(floatVal) {}
+
+ConstantLoadInsn::ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, bool boolVal)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), typeTag(TYPE_TAG_BOOLEAN), boolValue(boolVal) {}
+
+ConstantLoadInsn::ConstantLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, std::string str)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), typeTag(TYPE_TAG_STRING), strValue(std::move(str)) {}
 
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef constRef = nullptr;
@@ -80,10 +82,10 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
         break;
     }
     case TYPE_TAG_NIL: {
-        std::string lhsOpName = lhsOp.getName();
+        const auto &lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
-        assert(funcRef.getReturnVar());
-        if (funcRef.isMainFunction() && (lhsOpName.compare(funcRef.getReturnVar()->getName()) == 0)) {
+        assert(funcRef.getReturnVar().has_value());
+        if (funcRef.isMainFunction() && (lhsOpName == funcRef.getReturnVar()->getName())) {
             return;
         }
         LLVMValueRef constTempRef = getPackageRef().getGlobalNilVar();
@@ -95,8 +97,9 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
         llvm_unreachable("Unknown Type");
     }
 
-    if ((constRef != nullptr) && (lhsRef != nullptr))
+    if ((constRef != nullptr) && (lhsRef != nullptr)) {
         LLVMBuildStore(builder, constRef, lhsRef);
+    }
 }
 
 } // namespace nballerina

@@ -28,8 +28,8 @@ using namespace std;
 namespace nballerina {
 
 // New Array Instruction
-ArrayInsn::ArrayInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand sizeOp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), sizeOp(std::move(sizeOp)) {}
+ArrayInsn::ArrayInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &sizeOp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), sizeOp(sizeOp) {}
 
 LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
 
@@ -56,8 +56,9 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
 }
 
 // Array Load Instruction
-ArrayLoadInsn::ArrayLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand ROp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(ROp)) {}
+ArrayLoadInsn::ArrayLoadInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &KOp,
+                             const Operand &ROp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), keyOp(KOp), rhsOp(ROp) {}
 
 LLVMValueRef ArrayLoadInsn::getArrayLoadDeclaration(LLVMModuleRef &modRef) {
     LLVMValueRef addedFuncRef = getPackageRef().getFunctionRef("int_array_load");
@@ -88,8 +89,9 @@ void ArrayLoadInsn::translate(LLVMModuleRef &modRef) {
 }
 
 // Array Store Instruction
-ArrayStoreInsn::ArrayStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand KOp, Operand rOp)
-    : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
+ArrayStoreInsn::ArrayStoreInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &KOp,
+                               const Operand &rOp)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), keyOp(KOp), rhsOp(rOp) {}
 
 LLVMValueRef ArrayStoreInsn::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
 
