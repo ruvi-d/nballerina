@@ -37,6 +37,7 @@ class Type;
 
 class Package : public Translatable {
   private:
+    inline static const std::string BAL_NIL_VALUE = "bal_nil_value";
     std::string org;
     std::string name;
     std::string version;
@@ -50,7 +51,6 @@ class Package : public Translatable {
     std::map<std::string, LLVMValueRef> functionRefs;
     std::vector<std::unique_ptr<llvm::GlobalVariable>> globalStringValues;
     void applyStringOffsetRelocations();
-    inline static const std::string BAL_NIL_VALUE = "bal_nil_value";
 
   public:
     Package() = default;

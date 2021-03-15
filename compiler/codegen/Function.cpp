@@ -42,7 +42,7 @@ std::shared_ptr<BasicBlock> Function::FindBasicBlock(const std::string &id) {
     return bb->second;
 }
 
-std::string Function::getName() { return name; }
+const std::string &Function::getName() const { return name; }
 const FunctionParam &Function::getParam(int i) const { return requiredParams[i]; }
 const std::optional<RestParam> &Function::getRestParam() const { return restParam; }
 const std::optional<Variable> &Function::getReturnVar() const { return returnVar; }
@@ -146,9 +146,10 @@ LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const {
     return getLLVMLocalVar(op.getName());
 }
 
-std::shared_ptr<Package> Function::getPackage() { return parentPackage; }
+const Package *Function::getPackage() const { return parentPackage.get(); }
+Package *Function::getPackageMutableRef() const { return parentPackage.get(); }
 
-size_t Function::getNumParams() { return requiredParams.size(); }
+size_t Function::getNumParams() const { return requiredParams.size(); }
 
 bool Function::isMainFunction() const { return (name.compare(MAIN_FUNCTION_NAME) == 0); }
 

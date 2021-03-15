@@ -69,19 +69,19 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         auto origVarDecl = funcObj->getLocalVariable(lhsOpName);
         TypeTag origTypeTag = origVarDecl->getType().getTypeTag();
         auto origTypeName = Type::getNameOfType(origTypeTag);
-        getPackage()->addToStrTable(origTypeName);
+        getPackageMutableRef()->addToStrTable(origTypeName);
         LLVMValueRef constValue = LLVMConstInt(LLVMInt32Type(), -1, 0);
         LLVMValueRef origStoreRef = LLVMBuildStore(builder, constValue, origTypeIdx);
-        getPackage()->addStringOffsetRelocationEntry(origTypeName, origStoreRef);
+        getPackageMutableRef()->addStringOffsetRelocationEntry(origTypeName, origStoreRef);
         // struct second element last type
         LLVMValueRef lastTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 1, "lastTypeIdx");
         auto lastTypeVarDecl = funcObj->getLocalVariable(rhsOpName);
         TypeTag lastTypeTag = lastTypeVarDecl->getType().getTypeTag();
         auto lastTypeName = Type::getNameOfType(lastTypeTag);
-        getPackage()->addToStrTable(lastTypeName);
+        getPackageMutableRef()->addToStrTable(lastTypeName);
         LLVMValueRef constValue1 = LLVMConstInt(LLVMInt32Type(), -2, 0);
         LLVMValueRef lastStoreRef = LLVMBuildStore(builder, constValue1, lastTypeIdx);
-        getPackage()->addStringOffsetRelocationEntry(lastTypeName, lastStoreRef);
+        getPackageMutableRef()->addStringOffsetRelocationEntry(lastTypeName, lastStoreRef);
 
         // struct third element void pointer data.
         LLVMValueRef elePtr2 = LLVMBuildStructGEP(builder, structAllocaRef, 2, "data");

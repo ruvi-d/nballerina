@@ -79,13 +79,14 @@ class AbstractInstruction : public Debuggable {
   protected:
     const Operand &getLhsOperand() const;
     const Function *getFunctionRef() const;
-    Function *getFunctionMutableRef();
+    const Package *getPackageRef() const;
+    Function *getFunctionMutableRef() const;
+    Package *getPackageMutableRef() const;
 
   public:
     AbstractInstruction() = delete;
     AbstractInstruction(Operand lOp, std::shared_ptr<BasicBlock> parentBB);
     virtual ~AbstractInstruction() = default;
-    std::shared_ptr<Package> getPackage();
 };
 
 } // namespace nballerina

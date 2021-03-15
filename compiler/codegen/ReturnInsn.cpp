@@ -45,7 +45,7 @@ void ReturnInsn::translate(LLVMModuleRef &) {
         return;
     }
 
-    LLVMValueRef globRetRef = getPackage()->getGlobalLLVMVar("_bal_result");
+    LLVMValueRef globRetRef = getPackageRef()->getGlobalLLVMVar("_bal_result");
     if (globRetRef == nullptr) {
         LLVMBuildRetVoid(builder);
         return;

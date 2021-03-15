@@ -39,7 +39,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     std::unique_ptr<LLVMValueRef[]> ParamRefs(new LLVMValueRef[argCount]);
 
-    const auto &function = getPackage()->getFunction(functionName);
+    const auto &function = getPackageRef()->getFunction(functionName);
     for (int i = 0; i < argCount; i++) {
         auto op = argsList[i];
         LLVMValueRef opRef = funcObj->createTempVariable(op);
