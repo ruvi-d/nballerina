@@ -26,7 +26,7 @@ TerminatorInsn::TerminatorInsn(Operand lhs, std::shared_ptr<BasicBlock> currentB
     : AbstractInstruction(std::move(lhs), currentBB), thenBB(then), patchRequired(patchRequired),
       kind(INSTRUCTION_NOT_AN_INSTRUCTION) {}
 
-std::shared_ptr<BasicBlock> TerminatorInsn::getNextBB() { return thenBB; }
+BasicBlock *TerminatorInsn::getNextBB() const { return thenBB.get(); }
 bool TerminatorInsn::isPatched() const { return patchRequired; }
 InstructionKind TerminatorInsn::getInstKind() const { return kind; }
 void TerminatorInsn::setPatched() { patchRequired = false; }

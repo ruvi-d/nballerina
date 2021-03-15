@@ -171,12 +171,14 @@ void Function::patchBasicBlocks() {
             break;
         }
         case INSTRUCTION_KIND_GOTO: {
+            assert(terminator->getNextBB());
             auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
             terminator->setNextBB(destBB);
             terminator->setPatched();
             break;
         }
         case INSTRUCTION_KIND_CALL: {
+            assert(terminator->getNextBB());
             auto destBB = FindBasicBlock(terminator->getNextBB()->getId());
             terminator->setNextBB(destBB);
             break;

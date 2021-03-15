@@ -41,7 +41,7 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
     // Find Variable corresponding to lhs to determine member type
     auto lhsVar = funcObj.getLocalOrGlobalVariable(getLhsOperand());
     assert(lhsVar);
-    auto mapType = lhsVar->getType();
+    const auto &mapType = lhsVar->getType();
     TypeTag memberTypeTag = mapType.getMemberTypeTag();
 
     // Only handle Int type

@@ -23,8 +23,6 @@
 #include <llvm-c/Core.h>
 #include <string>
 
-using namespace std;
-
 namespace nballerina {
 
 UnaryOpInsn::UnaryOpInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand rhs)
@@ -34,8 +32,8 @@ void UnaryOpInsn::translate(LLVMModuleRef &) {
 
     const auto &funcObj = getFunctionRef();
     LLVMBuilderRef builder = funcObj.getLLVMBuilder();
-    auto lhsOp = getLhsOperand();
-    string lhsTmpName = lhsOp.getName() + "_temp";
+    const auto &lhsOp = getLhsOperand();
+    std::string lhsTmpName = lhsOp.getName() + "_temp";
     LLVMValueRef lhsRef = funcObj.getLLVMLocalOrGlobalVar(lhsOp);
     LLVMValueRef rhsOpref = funcObj.createTempVariable(rhsOp);
     LLVMValueRef ifReturn = LLVMBuildNot(builder, rhsOpref, lhsTmpName.c_str());
