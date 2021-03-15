@@ -122,11 +122,9 @@ void Function::insertBranchComparisonValue(const std::string &name, LLVMValueRef
     branchComparisonList.insert(std::pair<std::string, LLVMValueRef>(name, compRef));
 }
 
-std::optional<Variable> Function::getLocalVariable(const std::string &opName) const {
+const Variable &Function::getLocalVariable(const std::string &opName) const {
     auto varIt = localVars.find(opName);
-    if (varIt == localVars.end()) {
-        return std::nullopt;
-    }
+    assert(varIt != localVars.end());
     return varIt->second;
 }
 

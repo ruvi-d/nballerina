@@ -45,9 +45,7 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
     rhsOpRef = funcObj->getLLVMLocalVar(rhsOpName);
     lhsOpRef = funcObj->getLLVMLocalVar(lhsOpName);
     lhsTypeRef = wrap(unwrap(lhsOpRef)->getType());
-    auto orignamVarDecl = funcObj->getLocalVariable(rhsOpName);
-
-    if (orignamVarDecl && orignamVarDecl->getType().getTypeTag() == TYPE_TAG_ANY) {
+    if (funcObj->getLocalVariable(rhsOpName).getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef lastTypeIdx __attribute__((unused)) = LLVMBuildStructGEP(builder, rhsOpRef, 1, "lastTypeIdx");
 
         // TBD: Here, We should be checking whether this type can be cast to
@@ -62,12 +60,12 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         LLVMValueRef castResult = LLVMBuildBitCast(builder, dataLoad, lhsTypeRef, lhsOpName.c_str());
         LLVMValueRef castLoad = LLVMBuildLoad(builder, castResult, "");
         LLVMBuildStore(builder, castLoad, lhsOpRef);
-    } else if (funcObj->getLocalVariable(lhsOpName)->getType().getTypeTag() == TYPE_TAG_ANY) {
+    } else if (funcObj->getLocalVariable(lhsOpName).getType().getTypeTag() == TYPE_TAG_ANY) {
         LLVMValueRef structAllocaRef = funcObj->getLLVMLocalVar(getLhsOperand().getName());
         // struct first element original type
         LLVMValueRef origTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 0, "origTypeIdx");
-        auto origVarDecl = funcObj->getLocalVariable(lhsOpName);
-        TypeTag origTypeTag = origVarDecl->getType().getTypeTag();
+        const auto &origVarDecl = funcObj->getLocalVariable(lhsOpName);
+        TypeTag origTypeTag = origVarDecl.getType().getTypeTag();
         auto origTypeName = Type::getNameOfType(origTypeTag);
         getPackageMutableRef()->addToStrTable(origTypeName);
         LLVMValueRef constValue = LLVMConstInt(LLVMInt32Type(), -1, 0);
@@ -75,8 +73,7 @@ void TypeCastInsn::translate(LLVMModuleRef &) {
         getPackageMutableRef()->addStringOffsetRelocationEntry(origTypeName, origStoreRef);
         // struct second element last type
         LLVMValueRef lastTypeIdx = LLVMBuildStructGEP(builder, structAllocaRef, 1, "lastTypeIdx");
-        auto lastTypeVarDecl = funcObj->getLocalVariable(rhsOpName);
-        TypeTag lastTypeTag = lastTypeVarDecl->getType().getTypeTag();
+        TypeTag lastTypeTag = funcObj->getLocalVariable(rhsOpName).getType().getTypeTag();
         auto lastTypeName = Type::getNameOfType(lastTypeTag);
         getPackageMutableRef()->addToStrTable(lastTypeName);
         LLVMValueRef constValue1 = LLVMConstInt(LLVMInt32Type(), -2, 0);

@@ -78,7 +78,7 @@ class Function : public Debuggable, public Translatable {
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName) const;
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
     LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;
-    std::optional<Variable> getLocalVariable(const std::string &opName) const;
+    const Variable &getLocalVariable(const std::string &opName) const;
     std::optional<Variable> getLocalOrGlobalVariable(const Operand &op) const;
     LLVMTypeRef getLLVMTypeOfReturnVal() const;
     bool isMainFunction() const;
