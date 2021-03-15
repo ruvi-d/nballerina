@@ -39,10 +39,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     std::unique_ptr<LLVMValueRef[]> ParamRefs(new LLVMValueRef[argCount]);
 
-    auto function = getPackage()->getFunction(functionName);
-    if (!function) {
-        llvm_unreachable("Unknown function call");
-    }
+    const auto &function = getPackage()->getFunction(functionName);
     for (int i = 0; i < argCount; i++) {
         auto op = argsList[i];
         LLVMValueRef opRef = funcObj->createTempVariable(op);
@@ -50,7 +47,7 @@ void FunctionCallInsn::translate(LLVMModuleRef &) {
     }
 
     LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef namedFuncRef = function->getLLVMFunctionValue();
+    LLVMValueRef namedFuncRef = function.getLLVMFunctionValue();
     LLVMValueRef callResult = LLVMBuildCall(builder, namedFuncRef, ParamRefs.get(), argCount, "call");
     LLVMBuildStore(builder, callResult, lhsRef);
 

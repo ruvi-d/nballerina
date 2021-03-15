@@ -30,21 +30,25 @@ using namespace std;
 namespace nballerina {
 
 // return ValueRef of global variable based on variable name.
-LLVMValueRef Package::getGlobalLLVMVar(const std::string &globVar) {
-    auto varIt = globalVarRefs.find(globVar);
+LLVMValueRef Package::getGlobalLLVMVar(const std::string &globVar) const {
+    const auto &varIt = globalVarRefs.find(globVar);
     if (varIt == globalVarRefs.end()) {
         return nullptr;
     }
     return varIt->second;
 }
 
-LLVMValueRef Package::getGlobalNilVar() { return getGlobalLLVMVar(BAL_NIL_VALUE); }
+LLVMValueRef Package::getGlobalNilVar() const { return getGlobalLLVMVar(BAL_NIL_VALUE); }
 
-std::string Package::getOrgName() { return org; }
-std::string Package::getPackageName() { return name; }
-std::string Package::getVersion() { return version; }
-std::string Package::getSrcFileName() { return sourceFileName; }
-llvm::StringTableBuilder *Package::getStrTableBuilder() { return strBuilder.get(); }
+const std::string &Package::getOrgName() const { return org; }
+const std::string &Package::getPackageName() const { return name; }
+const std::string &Package::getVersion() const { return version; }
+const std::string &Package::getSrcFileName() const { return sourceFileName; }
+
+void Package::addToStrTable(const std::string &name) {
+    if (!strBuilder->contains(name))
+        strBuilder->add(name);
+}
 void Package::setOrgName(std::string orgName) { org = std::move(orgName); }
 void Package::setPackageName(std::string pkgName) { name = std::move(pkgName); }
 void Package::setVersion(std::string verName) { version = std::move(verName); }
@@ -52,11 +56,10 @@ void Package::setVersion(std::string verName) { version = std::move(verName); }
 void Package::setSrcFileName(std::string srcFileName) { sourceFileName = std::move(srcFileName); }
 
 void Package::insertFunction(std::shared_ptr<Function> function) {
-    functions.push_back(function);
     functionLookUp.insert(std::pair<std::string, std::shared_ptr<Function>>(function->getName(), function));
 }
 
-std::shared_ptr<Function> Package::getFunction(const std::string &funcName) { return functionLookUp.at(funcName); }
+const Function &Package::getFunction(const std::string &name) const { return *functionLookUp.at(name); }
 
 void Package::addFunctionRef(const std::string &arrayName, LLVMValueRef functionRef) {
     functionRefs.insert(std::pair<std::string, LLVMValueRef>(arrayName, functionRef));
@@ -122,37 +125,37 @@ void Package::translate(LLVMModuleRef &modRef) {
 
     // iterating over each function, first create function definition
     // (without function body) and adding to Module.
-    for (const auto &function : functions) {
-        function->setLLVMBuilder(LLVMCreateBuilder());
-        size_t numParams = function->getNumParams();
+    for (const auto &function : functionLookUp) {
+        function.second->setLLVMBuilder(LLVMCreateBuilder());
+        size_t numParams = function.second->getNumParams();
         std::unique_ptr<LLVMTypeRef[]> paramTypes(new LLVMTypeRef[numParams]);
         bool isVarArg = false;
 
-        if (function->getRestParam()) {
+        if (function.second->getRestParam()) {
             isVarArg = true;
         }
-        assert(function->getReturnVar());
+        assert(function.second->getReturnVar());
         for (size_t i = 0; i < numParams; i++) {
-            FunctionParam funcParam = function->getParam(i);
+            FunctionParam funcParam = function.second->getParam(i);
             paramTypes[i] = getLLVMTypeOfType(funcParam.getType());
         }
 
-        LLVMTypeRef funcType = LLVMFunctionType(function->getLLVMTypeOfReturnVal(), paramTypes.get(), numParams,
+        LLVMTypeRef funcType = LLVMFunctionType(function.second->getLLVMTypeOfReturnVal(), paramTypes.get(), numParams,
                                                 static_cast<LLVMBool>(isVarArg));
         if (funcType != nullptr) {
-            function->setLLVMFunctionValue(LLVMAddFunction(modRef, function->getName().c_str(), funcType));
+            function.second->setLLVMFunctionValue(
+                LLVMAddFunction(modRef, function.second->getName().c_str(), funcType));
         }
     }
 
-    // iterating over each function translate the function body.
-    for (const auto &function : functions) {
-        if (function->isExternalFunction())
+    // iterating over each function translate the function body
+    for (auto &function : functionLookUp) {
+        if (function.second->isExternalFunction())
             continue;
-        function->translate(modRef);
+        function.second->translate(modRef);
     }
 
-    // This Api will finalize the string table builder if table size is not
-    // zero.
+    // This Api will finalize the string table builder if table size is not zero
     if (strBuilder->getSize() != 0) {
         applyStringOffsetRelocations();
     }
@@ -178,7 +181,7 @@ void Package::applyStringOffsetRelocations() {
     }
 }
 
-LLVMValueRef Package::getFunctionRef(const std::string &arrayName) {
+LLVMValueRef Package::getFunctionRef(const std::string &arrayName) const {
     auto it = functionRefs.find(arrayName);
     if (it == functionRefs.end()) {
         return nullptr;

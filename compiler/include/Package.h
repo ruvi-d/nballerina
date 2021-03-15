@@ -41,7 +41,6 @@ class Package : public Translatable {
     std::string name;
     std::string version;
     std::string sourceFileName;
-    std::vector<std::shared_ptr<Function>> functions;
     std::map<std::string, Variable> globalVars;
     std::map<std::string, LLVMValueRef> globalVarRefs;
     std::map<std::string, std::shared_ptr<Function>> functionLookUp;
@@ -56,27 +55,34 @@ class Package : public Translatable {
   public:
     Package() = default;
     ~Package() = default;
+    Package(const Package &) = delete;
+    Package(Package &&obj) noexcept = delete;
+    Package &operator=(const Package &obj) = delete;
+    Package &operator=(Package &&obj) noexcept = delete;
 
-    std::string getOrgName();
-    std::string getPackageName();
-    std::string getVersion();
-    std::string getSrcFileName();
-    std::optional<Variable> getGlobalVariable(const std::string &name) const;
-    LLVMValueRef getGlobalLLVMVar(const std::string &globVar);
+    const std::string &getOrgName() const;
+    const std::string &getVersion() const;
+    const std::string &getSrcFileName() const;
+    const std::string &getPackageName() const;
+    const Function &getFunction(const std::string &name) const;
+    LLVMValueRef getGlobalLLVMVar(const std::string &globVar) const;
     LLVMTypeRef getLLVMTypeOfType(const Type &type) const;
-    llvm::StringTableBuilder *getStrTableBuilder();
-    std::shared_ptr<Function> getFunction(const std::string &name);
-    LLVMValueRef getFunctionRef(const std::string &arrayName);
-    LLVMValueRef getGlobalNilVar();
+    LLVMValueRef getFunctionRef(const std::string &arrayName) const;
+    LLVMValueRef getGlobalNilVar() const;
 
+    // Return is optional only because we need to support _bal_resul
+    // ToDo remove optional when support for _bal_result is removed
+    std::optional<Variable> getGlobalVariable(const std::string &name) const;
+
+    void addToStrTable(const std::string &name);
     void setOrgName(std::string orgName);
     void setPackageName(std::string pkgName);
     void setVersion(std::string verName);
     void setSrcFileName(std::string srcFileName);
     void insertGlobalVar(Variable var);
     void insertFunction(std::shared_ptr<Function> function);
-    void addFunctionRef(const std::string &, LLVMValueRef functionRef);
-    void addStringOffsetRelocationEntry(const std::string &, LLVMValueRef storeInsn);
+    void addFunctionRef(const std::string &arrayName, LLVMValueRef functionRef);
+    void addStringOffsetRelocationEntry(const std::string &eleType, LLVMValueRef storeInsn);
 
     void translate(LLVMModuleRef &modRef) final;
 };
