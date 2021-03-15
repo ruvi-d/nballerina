@@ -41,6 +41,9 @@ class Package;
 
 class Function : public Debuggable, public Translatable {
   private:
+    inline static const std::string MAIN_FUNCTION_NAME = "main";
+    static constexpr unsigned int PUBLIC = 1;
+    static constexpr unsigned int NATIVE = PUBLIC << 1;
     std::shared_ptr<Package> parentPackage;
     std::string name;
     std::string workerName;
@@ -55,26 +58,26 @@ class Function : public Debuggable, public Translatable {
     std::map<std::string, LLVMValueRef> branchComparisonList;
     std::map<std::string, LLVMValueRef> localVarRefs;
     std::vector<FunctionParam> requiredParams;
-    inline static const std::string MAIN_FUNCTION_NAME = "main";
-    static constexpr unsigned int PUBLIC = 1;
-    static constexpr unsigned int NATIVE = PUBLIC << 1;
     std::shared_ptr<BasicBlock> FindBasicBlock(const std::string &id);
 
   public:
     Function() = delete;
     Function(std::shared_ptr<Package> parentPackage, std::string name, std::string workerName, unsigned int flags);
     Function(const Function &) = delete;
+    Function(Function &&obj) noexcept = delete;
+    Function &operator=(const Function &obj) = delete;
+    Function &operator=(Function &&obj) noexcept = delete;
     ~Function() = default;
 
-    std::string getName();
-    size_t getNumParams();
-    unsigned int getFlags();
+    const std::string &getName() const;
+    size_t getNumParams() const;
     const std::optional<RestParam> &getRestParam() const;
     const std::optional<Variable> &getReturnVar() const;
+    Package *getPackageMutableRef() const;
+    const Package *getPackage() const;
     LLVMBuilderRef getLLVMBuilder() const;
     LLVMValueRef getLLVMFunctionValue() const;
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName) const;
-    std::shared_ptr<Package> getPackage();
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
     LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;
     std::optional<Variable> getLocalVariable(const std::string &opName) const;

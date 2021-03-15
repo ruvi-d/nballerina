@@ -63,7 +63,7 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
 // Declaration for map<int> type store function
 LLVMValueRef MapStoreInsn::getMapIntStoreDeclaration(LLVMModuleRef &modRef) {
 
-    LLVMValueRef mapStoreFunc = getPackage()->getFunctionRef("map_store_int");
+    LLVMValueRef mapStoreFunc = getPackageRef()->getFunctionRef("map_store_int");
     if (mapStoreFunc != nullptr) {
         return mapStoreFunc;
     }
@@ -73,7 +73,7 @@ LLVMValueRef MapStoreInsn::getMapIntStoreDeclaration(LLVMModuleRef &modRef) {
     LLVMTypeRef paramTypes[] = {memPtrType, charArrayPtrType, int32PtrType};
     LLVMTypeRef funcType = LLVMFunctionType(LLVMVoidType(), paramTypes, 3, 0);
     mapStoreFunc = LLVMAddFunction(modRef, "map_store_int", funcType);
-    getPackage()->addFunctionRef("map_store_int", mapStoreFunc);
+    getPackageMutableRef()->addFunctionRef("map_store_int", mapStoreFunc);
     return mapStoreFunc;
 }
 

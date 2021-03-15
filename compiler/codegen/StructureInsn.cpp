@@ -75,14 +75,14 @@ void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modR
 // Declaration for new map<int> function
 LLVMValueRef StructureInsn::getNewMapIntDeclaration(LLVMModuleRef &modRef) {
 
-    LLVMValueRef newMapIntFunc = getPackage()->getFunctionRef("map_new_int");
+    LLVMValueRef newMapIntFunc = getPackageRef()->getFunctionRef("map_new_int");
     if (newMapIntFunc != nullptr) {
         return newMapIntFunc;
     }
     LLVMTypeRef memPtrType = LLVMPointerType(LLVMInt8Type(), 0);
     LLVMTypeRef funcType = LLVMFunctionType(memPtrType, nullptr, 0, 0);
     newMapIntFunc = LLVMAddFunction(modRef, "map_new_int", funcType);
-    getPackage()->addFunctionRef("map_new_int", newMapIntFunc);
+    getPackageMutableRef()->addFunctionRef("map_new_int", newMapIntFunc);
     return newMapIntFunc;
 }
 
