@@ -35,18 +35,18 @@ FunctionCallInsn::FunctionCallInsn(std::string funcName, int argNumber, std::sha
 }
 
 void FunctionCallInsn::translate(LLVMModuleRef &) {
-    auto funcObj = getFunctionRef();
-    LLVMBuilderRef builder = funcObj->getLLVMBuilder();
+    const auto &funcObj = getFunctionRef();
+    LLVMBuilderRef builder = funcObj.getLLVMBuilder();
     std::unique_ptr<LLVMValueRef[]> ParamRefs(new LLVMValueRef[argCount]);
 
-    const auto &function = getPackageRef()->getFunction(functionName);
+    const auto &function = getPackageRef().getFunction(functionName);
     for (int i = 0; i < argCount; i++) {
         auto op = argsList[i];
-        LLVMValueRef opRef = funcObj->createTempVariable(op);
+        LLVMValueRef opRef = funcObj.createTempVariable(op);
         ParamRefs[i] = opRef;
     }
 
-    LLVMValueRef lhsRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef lhsRef = funcObj.getLLVMLocalOrGlobalVar(getLhsOperand());
     LLVMValueRef namedFuncRef = function.getLLVMFunctionValue();
     LLVMValueRef callResult = LLVMBuildCall(builder, namedFuncRef, ParamRefs.get(), argCount, "call");
     LLVMBuildStore(builder, callResult, lhsRef);

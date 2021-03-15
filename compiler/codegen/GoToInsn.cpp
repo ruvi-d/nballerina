@@ -30,7 +30,7 @@ GoToInsn::GoToInsn(std::shared_ptr<BasicBlock> nextBB, std::shared_ptr<BasicBloc
 }
 
 void GoToInsn::translate(LLVMModuleRef &) {
-    LLVMBuilderRef builder = getFunctionRef()->getLLVMBuilder();
+    LLVMBuilderRef builder = getFunctionRef().getLLVMBuilder();
     LLVMBuildBr(builder, getNextBB()->getLLVMBBRef());
 }
 

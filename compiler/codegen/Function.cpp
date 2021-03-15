@@ -144,8 +144,8 @@ LLVMValueRef Function::getLLVMLocalOrGlobalVar(const Operand &op) const {
     return getLLVMLocalVar(op.getName());
 }
 
-const Package *Function::getPackageRef() const { return parentPackage.get(); }
-Package *Function::getPackageMutableRef() const { return parentPackage.get(); }
+const Package &Function::getPackageRef() const { return *parentPackage; }
+Package &Function::getPackageMutableRef() const { return *parentPackage; }
 
 size_t Function::getNumParams() const { return requiredParams.size(); }
 
@@ -161,8 +161,8 @@ void Function::patchBasicBlocks() {
         switch (terminator->getInstKind()) {
         case INSTRUCTION_KIND_CONDITIONAL_BRANCH: {
             ConditionBrInsn *instruction = (static_cast<ConditionBrInsn *>(terminator));
-            auto trueBB = FindBasicBlock(instruction->getIfThenBB()->getId());
-            auto falseBB = FindBasicBlock(instruction->getElseBB()->getId());
+            auto trueBB = FindBasicBlock(instruction->getIfThenBB().getId());
+            auto falseBB = FindBasicBlock(instruction->getElseBB().getId());
             instruction->setIfThenBB(trueBB);
             instruction->setElseBB(falseBB);
             instruction->setPatched();

@@ -34,18 +34,18 @@ ReturnInsn::ReturnInsn(std::shared_ptr<BasicBlock> currentBB)
 
 void ReturnInsn::translate(LLVMModuleRef &) {
 
-    auto funcObj = getFunctionRef();
-    LLVMBuilderRef builder = funcObj->getLLVMBuilder();
+    const auto &funcObj = getFunctionRef();
+    LLVMBuilderRef builder = funcObj.getLLVMBuilder();
 
-    if (!funcObj->isMainFunction()) {
-        assert(funcObj->getReturnVar());
+    if (!funcObj.isMainFunction()) {
+        assert(funcObj.getReturnVar());
         LLVMValueRef retValueRef =
-            LLVMBuildLoad(builder, funcObj->getLLVMLocalVar(funcObj->getReturnVar()->getName()), "return_val_temp");
+            LLVMBuildLoad(builder, funcObj.getLLVMLocalVar(funcObj.getReturnVar()->getName()), "return_val_temp");
         LLVMBuildRet(builder, retValueRef);
         return;
     }
 
-    LLVMValueRef globRetRef = getPackageRef()->getGlobalLLVMVar("_bal_result");
+    LLVMValueRef globRetRef = getPackageRef().getGlobalLLVMVar("_bal_result");
     if (globRetRef == nullptr) {
         LLVMBuildRetVoid(builder);
         return;

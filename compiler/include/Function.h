@@ -71,8 +71,8 @@ class Function : public Debuggable, public Translatable {
     size_t getNumParams() const;
     const std::optional<RestParam> &getRestParam() const;
     const std::optional<Variable> &getReturnVar() const;
-    Package *getPackageMutableRef() const;
-    const Package *getPackageRef() const;
+    Package &getPackageMutableRef() const;
+    const Package &getPackageRef() const;
     LLVMBuilderRef getLLVMBuilder() const;
     LLVMValueRef getLLVMFunctionValue() const;
     LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName) const;

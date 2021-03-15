@@ -34,19 +34,20 @@ ConditionBrInsn::ConditionBrInsn(Operand lhs, std::shared_ptr<BasicBlock> curren
     kind = INSTRUCTION_KIND_CONDITIONAL_BRANCH;
 }
 
-std::shared_ptr<BasicBlock> ConditionBrInsn::getIfThenBB() { return ifThenBB; }
-std::shared_ptr<BasicBlock> ConditionBrInsn::getElseBB() { return elseBB; }
+const BasicBlock &ConditionBrInsn::getIfThenBB() const { return *ifThenBB.get(); }
+const BasicBlock &ConditionBrInsn::getElseBB() const { return *elseBB.get(); }
 void ConditionBrInsn::setIfThenBB(std::shared_ptr<BasicBlock> bb) { ifThenBB = bb; }
 void ConditionBrInsn::setElseBB(std::shared_ptr<BasicBlock> bb) { elseBB = bb; }
 
 void ConditionBrInsn::translate(LLVMModuleRef &) {
 
-    LLVMBuilderRef builder = getFunctionRef()->getLLVMBuilder();
+    const auto &funcRef = getFunctionRef();
+    LLVMBuilderRef builder = funcRef.getLLVMBuilder();
     string lhsName = getLhsOperand().getName();
 
-    LLVMValueRef brCondition = getFunctionRef()->getLLVMValueForBranchComparison(lhsName);
+    LLVMValueRef brCondition = funcRef.getLLVMValueForBranchComparison(lhsName);
     if (brCondition == nullptr) {
-        brCondition = LLVMBuildIsNotNull(builder, getFunctionRef()->createTempVariable(getLhsOperand()), lhsName.c_str());
+        brCondition = LLVMBuildIsNotNull(builder, funcRef.createTempVariable(getLhsOperand()), lhsName.c_str());
     }
 
     LLVMBuildCondBr(builder, brCondition, ifThenBB->getLLVMBBRef(), elseBB->getLLVMBBRef());

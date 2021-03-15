@@ -35,11 +35,11 @@ MapStoreInsn::MapStoreInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, O
     : NonTerminatorInsn(std::move(lhs), currentBB), keyOp(std::move(KOp)), rhsOp(std::move(rOp)) {}
 
 void MapStoreInsn::translate(LLVMModuleRef &modRef) {
-    auto funcObj = getFunctionRef();
-    LLVMBuilderRef builder = funcObj->getLLVMBuilder();
+    const auto &funcObj = getFunctionRef();
+    LLVMBuilderRef builder = funcObj.getLLVMBuilder();
 
     // Find Variable corresponding to lhs to determine member type
-    auto lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    auto lhsVar = funcObj.getLocalOrGlobalVariable(getLhsOperand());
     assert(lhsVar);
     auto mapType = lhsVar->getType();
     TypeTag memberTypeTag = mapType.getMemberTypeTag();
@@ -52,9 +52,9 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
 
     // Codegen for Map of Int type store
     LLVMValueRef mapStoreFunc = getMapIntStoreDeclaration(modRef);
-    LLVMValueRef lhsOpTempRef = funcObj->createTempVariable(getLhsOperand());
-    LLVMValueRef rhsOpRef = funcObj->getLLVMLocalOrGlobalVar(rhsOp);
-    LLVMValueRef keyRef = funcObj->createTempVariable(keyOp);
+    LLVMValueRef lhsOpTempRef = funcObj.createTempVariable(getLhsOperand());
+    LLVMValueRef rhsOpRef = funcObj.getLLVMLocalOrGlobalVar(rhsOp);
+    LLVMValueRef keyRef = funcObj.createTempVariable(keyOp);
 
     LLVMValueRef argOpValueRef[] = {lhsOpTempRef, keyRef, rhsOpRef};
     LLVMBuildCall(builder, mapStoreFunc, argOpValueRef, 3, "");
@@ -63,7 +63,7 @@ void MapStoreInsn::translate(LLVMModuleRef &modRef) {
 // Declaration for map<int> type store function
 LLVMValueRef MapStoreInsn::getMapIntStoreDeclaration(LLVMModuleRef &modRef) {
 
-    LLVMValueRef mapStoreFunc = getPackageRef()->getFunctionRef("map_store_int");
+    LLVMValueRef mapStoreFunc = getPackageRef().getFunctionRef("map_store_int");
     if (mapStoreFunc != nullptr) {
         return mapStoreFunc;
     }
@@ -73,7 +73,7 @@ LLVMValueRef MapStoreInsn::getMapIntStoreDeclaration(LLVMModuleRef &modRef) {
     LLVMTypeRef paramTypes[] = {memPtrType, charArrayPtrType, int32PtrType};
     LLVMTypeRef funcType = LLVMFunctionType(LLVMVoidType(), paramTypes, 3, 0);
     mapStoreFunc = LLVMAddFunction(modRef, "map_store_int", funcType);
-    getPackageMutableRef()->addFunctionRef("map_store_int", mapStoreFunc);
+    getPackageMutableRef().addFunctionRef("map_store_int", mapStoreFunc);
     return mapStoreFunc;
 }
 

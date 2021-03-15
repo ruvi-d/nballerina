@@ -35,9 +35,9 @@ StructureInsn::StructureInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
 
 void StructureInsn::translate(LLVMModuleRef &modRef) {
 
-    auto funcObj = getFunctionRef();
+    const auto &funcObj = getFunctionRef();
     // Find Variable corresponding to lhs to determine structure and member type
-    auto lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
+    auto lhsVar = funcObj.getLocalOrGlobalVariable(getLhsOperand());
     assert(lhsVar);
 
     // Determine structure type
@@ -53,9 +53,9 @@ void StructureInsn::translate(LLVMModuleRef &modRef) {
 
 void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modRef) {
 
-    auto funcObj = getFunctionRef();
-    LLVMBuilderRef builder = funcObj->getLLVMBuilder();
-    LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
+    const auto &funcObj = getFunctionRef();
+    LLVMBuilderRef builder = funcObj.getLLVMBuilder();
+    LLVMValueRef lhsOpRef = funcObj.getLLVMLocalOrGlobalVar(getLhsOperand());
     auto mapType = lhsVar.getType();
 
     // Get member type
@@ -75,14 +75,14 @@ void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modR
 // Declaration for new map<int> function
 LLVMValueRef StructureInsn::getNewMapIntDeclaration(LLVMModuleRef &modRef) {
 
-    LLVMValueRef newMapIntFunc = getPackageRef()->getFunctionRef("map_new_int");
+    LLVMValueRef newMapIntFunc = getPackageRef().getFunctionRef("map_new_int");
     if (newMapIntFunc != nullptr) {
         return newMapIntFunc;
     }
     LLVMTypeRef memPtrType = LLVMPointerType(LLVMInt8Type(), 0);
     LLVMTypeRef funcType = LLVMFunctionType(memPtrType, nullptr, 0, 0);
     newMapIntFunc = LLVMAddFunction(modRef, "map_new_int", funcType);
-    getPackageMutableRef()->addFunctionRef("map_new_int", newMapIntFunc);
+    getPackageMutableRef().addFunctionRef("map_new_int", newMapIntFunc);
     return newMapIntFunc;
 }
 
