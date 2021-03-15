@@ -148,7 +148,7 @@ class StringCpInfo : public ConstantPoolEntry {
   public:
     StringCpInfo();
     void read();
-    ~StringCpInfo();
+    ~StringCpInfo() = default;
 
   private:
     std::string value;
@@ -163,7 +163,7 @@ class ShapeCpInfo : public ConstantPoolEntry {
   public:
     ShapeCpInfo();
     void read();
-    ~ShapeCpInfo();
+    ~ShapeCpInfo() = default;
 
   private:
     uint32_t shapeLength;
@@ -211,7 +211,7 @@ class PackageCpInfo : public ConstantPoolEntry {
   public:
     PackageCpInfo();
     void read();
-    ~PackageCpInfo();
+    ~PackageCpInfo() = default;
 
   private:
     uint32_t orgIndex;
@@ -232,7 +232,7 @@ class IntCpInfo : public ConstantPoolEntry {
   public:
     IntCpInfo();
     void read();
-    ~IntCpInfo();
+    ~IntCpInfo() = default;
 
   private:
     uint64_t value;
@@ -247,7 +247,7 @@ class BooleanCpInfo : public ConstantPoolEntry {
   public:
     BooleanCpInfo();
     void read();
-    ~BooleanCpInfo();
+    ~BooleanCpInfo() = default;
 
   private:
     uint8_t value;
@@ -262,7 +262,7 @@ class FloatCpInfo : public ConstantPoolEntry {
   public:
     FloatCpInfo();
     void read();
-    ~FloatCpInfo();
+    ~FloatCpInfo() = default;
 
   private:
     double value;
@@ -277,7 +277,7 @@ class ByteCpInfo : public ConstantPoolEntry {
   public:
     ByteCpInfo();
     void read();
-    ~ByteCpInfo();
+    ~ByteCpInfo() = default;
 
   private:
     uint32_t value;
@@ -295,11 +295,11 @@ class ConstantPoolSet {
     ~ConstantPoolSet();
 
   private:
-    std::vector<ConstantPoolEntry *> *poolEntries;
+    std::vector<std::unique_ptr<ConstantPoolEntry>> poolEntries;
 
   public:
     BIRReader &readerRef = BIRReader::reader;
-    ConstantPoolEntry *getEntry(int index) { return (*poolEntries)[index]; }
+    ConstantPoolEntry *getEntry(int index) { return poolEntries[index].get(); }
     std::string getStringCp(uint32_t index);
     uint32_t getIntCp(uint32_t index);
     nballerina::Type getTypeCp(uint32_t index, bool voidToInt);
@@ -381,7 +381,8 @@ class ReadConstLoadInsn : public ReadNonTerminatorInstruction {
     static ReadConstLoadInsn readConstLoadInsn;
     ReadConstLoadInsn() {}
     ~ReadConstLoadInsn() {}
-    std::unique_ptr<nballerina::ConstantLoadInsn> readNonTerminatorInsn(std::shared_ptr<nballerina::BasicBlock> currentBB);
+    std::unique_ptr<nballerina::ConstantLoadInsn>
+    readNonTerminatorInsn(std::shared_ptr<nballerina::BasicBlock> currentBB);
 };
 
 class ReadMoveInsn : public ReadNonTerminatorInstruction {
@@ -437,7 +438,8 @@ class ReadArrayStoreInsn : public ReadNonTerminatorInstruction {
     ReadArrayStoreInsn() {}
     static ReadArrayStoreInsn readArrayStoreInsn;
     ~ReadArrayStoreInsn() {}
-    std::unique_ptr<nballerina::ArrayStoreInsn> readNonTerminatorInsn(std::shared_ptr<nballerina::BasicBlock> currentBB);
+    std::unique_ptr<nballerina::ArrayStoreInsn>
+    readNonTerminatorInsn(std::shared_ptr<nballerina::BasicBlock> currentBB);
 };
 
 class ReadArrayLoadInsn : public ReadNonTerminatorInstruction {
