@@ -30,9 +30,9 @@ MoveInsn::MoveInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, Operand r
 
 void MoveInsn::translate(LLVMModuleRef &) {
 
-    LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
-    LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef rhsVarOpRef = getFunction()->createTempVariable(rhsOp);
+    LLVMBuilderRef builder = getFunctionRef()->getLLVMBuilder();
+    LLVMValueRef lhsRef = getFunctionRef()->getLLVMLocalOrGlobalVar(getLhsOperand());
+    LLVMValueRef rhsVarOpRef = getFunctionRef()->createTempVariable(rhsOp);
     LLVMBuildStore(builder, rhsVarOpRef, lhsRef);
 }
 

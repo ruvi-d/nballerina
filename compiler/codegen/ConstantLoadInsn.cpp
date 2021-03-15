@@ -48,10 +48,10 @@ ConstantLoadInsn::ConstantLoadInsn(Operand lhs, std::shared_ptr<BasicBlock> curr
 void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef constRef = nullptr;
     auto lhsOp = getLhsOperand();
-    LLVMBuilderRef builder = getFunction()->getLLVMBuilder();
-    LLVMValueRef lhsRef = getFunction()->getLLVMLocalOrGlobalVar(lhsOp);
+    LLVMBuilderRef builder = getFunctionRef()->getLLVMBuilder();
+    LLVMValueRef lhsRef = getFunctionRef()->getLLVMLocalOrGlobalVar(lhsOp);
 
-    assert(getFunction()->getLocalOrGlobalVariable(lhsOp)->getType().getTypeTag() == typeTag);
+    assert(getFunctionRef()->getLocalOrGlobalVariable(lhsOp)->getType().getTypeTag() == typeTag);
 
     switch (typeTag) {
     case TYPE_TAG_INT: {
@@ -83,8 +83,8 @@ void ConstantLoadInsn::translate(LLVMModuleRef &modRef) {
     case TYPE_TAG_NIL: {
         string lhsOpName = lhsOp.getName();
         // check for the main function and () is assigned to 0%
-        assert(getFunction()->getReturnVar());
-        if (getFunction()->isMainFunction() && (lhsOpName.compare(getFunction()->getReturnVar()->getName()) == 0)) {
+        assert(getFunctionRef()->getReturnVar());
+        if (getFunctionRef()->isMainFunction() && (lhsOpName.compare(getFunctionRef()->getReturnVar()->getName()) == 0)) {
             return;
         }
         LLVMValueRef constTempRef = getPackage()->getGlobalNilVar();

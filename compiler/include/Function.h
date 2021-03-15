@@ -67,20 +67,20 @@ class Function : public Debuggable, public Translatable {
     size_t getNumParams();
     const std::optional<RestParam> &getRestParam() const;
     const std::optional<Variable> &getReturnVar() const;
-    LLVMBuilderRef getLLVMBuilder();
-    LLVMValueRef getLLVMFunctionValue();
-    LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName);
+    LLVMBuilderRef getLLVMBuilder() const;
+    LLVMValueRef getLLVMFunctionValue() const;
+    LLVMValueRef getLLVMValueForBranchComparison(const std::string &lhsName) const;
     std::shared_ptr<Package> getPackage();
-    LLVMValueRef createTempVariable(const Operand &op) const;
     LLVMValueRef getLLVMLocalVar(const std::string &varName) const;
     LLVMValueRef getLLVMLocalOrGlobalVar(const Operand &op) const;
     std::optional<Variable> getLocalVariable(const std::string &opName) const;
     std::optional<Variable> getLocalOrGlobalVariable(const Operand &op) const;
-    LLVMTypeRef getLLVMTypeOfReturnVal();
-    bool isMainFunction();
+    LLVMTypeRef getLLVMTypeOfReturnVal() const;
+    bool isMainFunction() const;
     const FunctionParam &getParam(int i) const;
-    void patchBasicBlocks();
+    LLVMValueRef createTempVariable(const Operand &op) const;
 
+    void patchBasicBlocks();
     void insertParam(FunctionParam param);
     void setRestParam(RestParam param);
     void setReturnVar(Variable var);

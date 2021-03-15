@@ -35,7 +35,7 @@ StructureInsn::StructureInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB)
 
 void StructureInsn::translate(LLVMModuleRef &modRef) {
 
-    auto funcObj = getFunction();
+    auto funcObj = getFunctionRef();
     // Find Variable corresponding to lhs to determine structure and member type
     auto lhsVar = funcObj->getLocalOrGlobalVariable(getLhsOperand());
     assert(lhsVar);
@@ -53,7 +53,7 @@ void StructureInsn::translate(LLVMModuleRef &modRef) {
 
 void StructureInsn::mapInsnTranslate(const Variable &lhsVar, LLVMModuleRef &modRef) {
 
-    auto funcObj = getFunction();
+    auto funcObj = getFunctionRef();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();
     LLVMValueRef lhsOpRef = funcObj->getLLVMLocalOrGlobalVar(getLhsOperand());
     auto mapType = lhsVar.getType();

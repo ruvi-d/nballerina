@@ -34,7 +34,7 @@ TypeCastInsn::TypeCastInsn(Operand lhs, std::shared_ptr<BasicBlock> currentBB, O
     : NonTerminatorInsn(std::move(lhs), currentBB), rhsOp(std::move(rhsOp)) {}
 
 void TypeCastInsn::translate(LLVMModuleRef &) {
-    auto funcObj = getFunction();
+    auto funcObj = getFunctionRef();
     string lhsOpName = getLhsOperand().getName();
     string rhsOpName = rhsOp.getName();
     LLVMBuilderRef builder = funcObj->getLLVMBuilder();

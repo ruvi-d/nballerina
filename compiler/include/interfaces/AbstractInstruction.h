@@ -78,7 +78,8 @@ class AbstractInstruction : public Debuggable {
 
   protected:
     const Operand &getLhsOperand() const;
-    std::shared_ptr<Function> getFunction();
+    const Function *getFunctionRef() const;
+    Function *getFunctionMutableRef();
 
   public:
     AbstractInstruction() = delete;
