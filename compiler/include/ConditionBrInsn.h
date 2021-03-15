@@ -34,8 +34,8 @@ class ConditionBrInsn : public TerminatorInsn {
                     std::shared_ptr<BasicBlock> elseBB);
     ~ConditionBrInsn() = default;
 
-    std::shared_ptr<BasicBlock> getIfThenBB();
-    std::shared_ptr<BasicBlock> getElseBB();
+    const BasicBlock &getIfThenBB() const;
+    const BasicBlock &getElseBB() const;
 
     void setIfThenBB(std::shared_ptr<BasicBlock> bb);
     void setElseBB(std::shared_ptr<BasicBlock> bb);

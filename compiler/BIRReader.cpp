@@ -344,10 +344,10 @@ std::unique_ptr<ConditionBrInsn> ReadCondBrInsn::readTerminatorInsn(std::shared_
     uint32_t falseBbIdNameCpIndex = readerRef.readS4be();
 
     auto trueDummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(trueBbIdNameCpIndex),
-                                                            currentBB->getParentFunctionMutableRef());
+                                                            currentBB->getFunctionSharedObj());
 
     auto falseDummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(falseBbIdNameCpIndex),
-                                                             currentBB->getParentFunctionMutableRef());
+                                                             currentBB->getFunctionSharedObj());
 
     return std::make_unique<ConditionBrInsn>(std::move(lhsOp), currentBB, trueDummybasicBlock, falseDummybasicBlock);
 }
@@ -378,7 +378,7 @@ std::unique_ptr<FunctionCallInsn> ReadFuncCallInsn::readTerminatorInsn(std::shar
 
     uint32_t thenBbIdNameCpIndex = readerRef.readS4be();
     auto dummybasicBlock = std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(thenBbIdNameCpIndex),
-                                                        currentBB->getParentFunctionMutableRef());
+                                                        currentBB->getFunctionSharedObj());
 
     return std::make_unique<FunctionCallInsn>(funcName, argumentsCount, dummybasicBlock, lhsOp, std::move(fnArgs),
                                               currentBB);
@@ -443,7 +443,7 @@ std::unique_ptr<MapStoreInsn> ReadMapStoreInsn::readNonTerminatorInsn(std::share
 std::unique_ptr<GoToInsn> ReadGoToInsn::readTerminatorInsn(std::shared_ptr<BasicBlock> currentBB) {
     uint32_t nameId = readerRef.readS4be();
     auto dummybasicBlock =
-        std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(nameId), currentBB->getParentFunctionMutableRef());
+        std::make_shared<BasicBlock>(readerRef.constantPool->getStringCp(nameId), currentBB->getFunctionSharedObj());
     return std::make_unique<GoToInsn>(dummybasicBlock, currentBB);
 }
 

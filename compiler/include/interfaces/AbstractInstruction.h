@@ -78,10 +78,10 @@ class AbstractInstruction : public Debuggable {
 
   protected:
     const Operand &getLhsOperand() const;
-    const Function *getFunctionRef() const;
-    const Package *getPackageRef() const;
-    Function *getFunctionMutableRef() const;
-    Package *getPackageMutableRef() const;
+    const Function &getFunctionRef() const;
+    const Package &getPackageRef() const;
+    Function &getFunctionMutableRef() const;
+    Package &getPackageMutableRef() const;
 
   public:
     AbstractInstruction() = delete;

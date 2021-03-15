@@ -28,8 +28,8 @@ BasicBlock::BasicBlock(std::string pid, std::shared_ptr<Function> parentFunc)
 
 const std::string &BasicBlock::getId() const { return id; }
 TerminatorInsn *BasicBlock::getTerminatorInsnPtr() const { return terminator.get(); }
-std::shared_ptr<Function> BasicBlock::getParentFunctionMutableRef() const { return parentFunction; }
-const Function *BasicBlock::getParentFunctionRef() const { return parentFunction.get(); }
+std::shared_ptr<Function> BasicBlock::getFunctionSharedObj() const { return parentFunction; }
+const Function &BasicBlock::getParentFunctionRef() const { return *parentFunction.get(); }
 LLVMBasicBlockRef BasicBlock::getLLVMBBRef() const { return bbRefObj; }
 
 void BasicBlock::setTerminatorInsn(std::unique_ptr<TerminatorInsn> insn) { terminator = std::move(insn); }

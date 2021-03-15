@@ -52,8 +52,8 @@ class BasicBlock : public Debuggable, public Translatable {
 
     const std::string &getId() const;
     TerminatorInsn *getTerminatorInsnPtr() const;
-    std::shared_ptr<Function> getParentFunctionMutableRef() const;
-    const Function *getParentFunctionRef() const;
+    std::shared_ptr<Function> getFunctionSharedObj() const;
+    const Function &getParentFunctionRef() const;
     LLVMBasicBlockRef getLLVMBBRef() const;
 
     void setNextBB(std::shared_ptr<BasicBlock> bb);
