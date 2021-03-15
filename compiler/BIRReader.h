@@ -131,7 +131,8 @@ class ConstantPoolEntry {
         TAG_ENUM_CP_ENTRY_BYTE = 6,
         TAG_ENUM_CP_ENTRY_SHAPE = 7
     };
-    ConstantPoolEntry() {}
+    ConstantPoolEntry() = default;
+    virtual ~ConstantPoolEntry() = default;
     virtual void read() {}
 
   private:
@@ -148,7 +149,7 @@ class StringCpInfo : public ConstantPoolEntry {
   public:
     StringCpInfo();
     void read();
-    ~StringCpInfo() = default;
+    ~StringCpInfo() override = default;
 
   private:
     std::string value;
@@ -163,7 +164,7 @@ class ShapeCpInfo : public ConstantPoolEntry {
   public:
     ShapeCpInfo();
     void read();
-    ~ShapeCpInfo() = default;
+    ~ShapeCpInfo() override = default;
 
   private:
     uint32_t shapeLength;
@@ -211,7 +212,7 @@ class PackageCpInfo : public ConstantPoolEntry {
   public:
     PackageCpInfo();
     void read();
-    ~PackageCpInfo() = default;
+    ~PackageCpInfo() override = default;
 
   private:
     uint32_t orgIndex;
@@ -232,7 +233,7 @@ class IntCpInfo : public ConstantPoolEntry {
   public:
     IntCpInfo();
     void read();
-    ~IntCpInfo() = default;
+    ~IntCpInfo() override = default;
 
   private:
     uint64_t value;
@@ -247,7 +248,7 @@ class BooleanCpInfo : public ConstantPoolEntry {
   public:
     BooleanCpInfo();
     void read();
-    ~BooleanCpInfo() = default;
+    ~BooleanCpInfo() override = default;
 
   private:
     uint8_t value;
@@ -262,7 +263,7 @@ class FloatCpInfo : public ConstantPoolEntry {
   public:
     FloatCpInfo();
     void read();
-    ~FloatCpInfo() = default;
+    ~FloatCpInfo() override = default;
 
   private:
     double value;
@@ -277,7 +278,7 @@ class ByteCpInfo : public ConstantPoolEntry {
   public:
     ByteCpInfo();
     void read();
-    ~ByteCpInfo() = default;
+    ~ByteCpInfo() override = default;
 
   private:
     uint32_t value;
