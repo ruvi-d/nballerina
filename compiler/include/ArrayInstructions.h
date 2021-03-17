@@ -20,6 +20,7 @@
 #define __ARRAYINSNS__H__
 
 #include "NonTerminatorInsn.h"
+#include <vector>
 
 namespace nballerina {
 
@@ -29,11 +30,14 @@ class Type;
 class ArrayInsn : public NonTerminatorInsn {
   private:
     Operand sizeOp;
+    std::vector<Operand> initValues;
     LLVMValueRef getArrayInitDeclaration(LLVMModuleRef &modRef);
 
   public:
     ArrayInsn() = delete;
     ArrayInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &sizeOp);
+    ArrayInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &sizeOp,
+              std::vector<Operand> initValues);
     ~ArrayInsn() = default;
     void translate(LLVMModuleRef &modRef) final;
 };
@@ -55,13 +59,14 @@ class ArrayStoreInsn : public NonTerminatorInsn {
   private:
     Operand keyOp;
     Operand rhsOp;
-    LLVMValueRef getArrayStoreDeclaration(LLVMModuleRef &modRef);
 
   public:
     ArrayStoreInsn() = delete;
     ArrayStoreInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &KOp, const Operand &ROp);
     ~ArrayStoreInsn() = default;
 
+    static void codeGenArrayStore(LLVMBuilderRef builder, LLVMValueRef arrayStoreFunc, LLVMValueRef lhs, LLVMValueRef key,
+                                LLVMValueRef rhs);
     void translate(LLVMModuleRef &modRef) final;
 };
 } // namespace nballerina

@@ -438,10 +438,15 @@ std::unique_ptr<ArrayInsn> ReadArrayInsn::readNonTerminatorInsn(std::shared_ptr<
     auto lhsOp = readerRef.readOperand();
     auto sizeOperand = readerRef.readOperand();
 
-    // TODO handle Array init values
-    auto init_values_count = readerRef.readS4be();
-    for (size_t i = 0; i < init_values_count; i++) {
-        [[maybe_unused]] auto init_value = readerRef.readOperand();
+    auto initValuesCount = readerRef.readS4be();
+    if (initValuesCount == 0) {
+        return std::make_unique<ArrayInsn>(lhsOp, currentBB, sizeOperand);
+    }
+
+    std::vector<Operand> initValues;
+    initValues.reserve(initValuesCount);
+    for (size_t i = 0; i < initValuesCount; i++) {
+        initValues.push_back(readerRef.readOperand());
     }
     return std::make_unique<ArrayInsn>(lhsOp, currentBB, sizeOperand);
 }

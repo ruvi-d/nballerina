@@ -269,4 +269,18 @@ LLVMValueRef Package::getMapSpreadFieldDeclaration(LLVMModuleRef &modRef) {
     return func;
 }
 
+LLVMValueRef Package::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
+    const char *intArrayStoreChar = "int_array_store";
+    LLVMValueRef addedFuncRef = getFunctionRef(intArrayStoreChar);
+    if (addedFuncRef != nullptr) {
+        return addedFuncRef;
+    }
+    LLVMTypeRef paramTypes[] = {LLVMPointerType(LLVMInt8Type(), 0), LLVMInt32Type(),
+                                LLVMPointerType(LLVMInt32Type(), 0)};
+    LLVMTypeRef funcType = LLVMFunctionType(LLVMVoidType(), paramTypes, 3, 0);
+    addedFuncRef = LLVMAddFunction(modRef, intArrayStoreChar, funcType);
+    addFunctionRef(intArrayStoreChar, addedFuncRef);
+    return addedFuncRef;
+}
+
 } // namespace nballerina

@@ -31,6 +31,10 @@ namespace nballerina {
 ArrayInsn::ArrayInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &sizeOp)
     : NonTerminatorInsn(lhs, std::move(currentBB)), sizeOp(sizeOp) {}
 
+ArrayInsn::ArrayInsn(const Operand &lhs, std::shared_ptr<BasicBlock> currentBB, const Operand &sizeOp,
+                     std::vector<Operand> initValues)
+    : NonTerminatorInsn(lhs, std::move(currentBB)), sizeOp(sizeOp), initValues(std::move(initValues)) {}
+
 LLVMValueRef ArrayInsn::getArrayInitDeclaration(LLVMModuleRef &modRef) {
     const char *newIntArrayChar = "new_int_array";
     LLVMValueRef addedFuncRef = getPackageRef().getFunctionRef(newIntArrayChar);
@@ -53,6 +57,13 @@ void ArrayInsn::translate(LLVMModuleRef &modRef) {
     LLVMValueRef newArrayRef = LLVMBuildCall(builder, arrayInitFunc, &sizeOpValueRef, 1, "");
 
     LLVMBuildStore(builder, newArrayRef, lhsOpRef);
+
+    if (initValues.empty()) {
+        return;
+    }
+
+    // for (const auto &initValue : initValues) {
+    // }
 }
 
 // Array Load Instruction
@@ -91,29 +102,20 @@ ArrayStoreInsn::ArrayStoreInsn(const Operand &lhs, std::shared_ptr<BasicBlock> c
                                const Operand &rOp)
     : NonTerminatorInsn(lhs, std::move(currentBB)), keyOp(KOp), rhsOp(rOp) {}
 
-LLVMValueRef ArrayStoreInsn::getArrayStoreDeclaration(LLVMModuleRef &modRef) {
-    const char *intArrayStoreChar = "int_array_store";
-    LLVMValueRef addedFuncRef = getPackageRef().getFunctionRef(intArrayStoreChar);
-    if (addedFuncRef != nullptr) {
-        return addedFuncRef;
-    }
-    LLVMTypeRef paramTypes[] = {LLVMPointerType(LLVMInt8Type(), 0), LLVMInt32Type(),
-                                LLVMPointerType(LLVMInt32Type(), 0)};
-    LLVMTypeRef funcType = LLVMFunctionType(LLVMVoidType(), paramTypes, 3, 0);
-    addedFuncRef = LLVMAddFunction(modRef, intArrayStoreChar, funcType);
-    getPackageMutableRef().addFunctionRef(intArrayStoreChar, addedFuncRef);
-    return addedFuncRef;
-}
-
 void ArrayStoreInsn::translate(LLVMModuleRef &modRef) {
     const auto &funcObj = getFunctionRef();
-    LLVMBuilderRef builder = funcObj.getLLVMBuilder();
-    LLVMValueRef ArrayLoadFunc = getArrayStoreDeclaration(modRef);
-
+    auto builder = funcObj.getLLVMBuilder();
     LLVMValueRef lhsOpRef = funcObj.getLLVMLocalOrGlobalVar(getLhsOperand());
-    LLVMValueRef argOpValueRef[] = {LLVMBuildLoad(builder, lhsOpRef, ""), funcObj.createTempVariable(keyOp),
-                                    funcObj.getLLVMLocalOrGlobalVar(rhsOp)};
-    LLVMBuildCall(builder, ArrayLoadFunc, argOpValueRef, 3, "");
+    codeGenArrayStore(builder, getPackageMutableRef().getArrayStoreDeclaration(modRef),
+                      LLVMBuildLoad(builder, lhsOpRef, ""), funcObj.createTempVariable(keyOp),
+                      funcObj.getLLVMLocalOrGlobalVar(rhsOp));
+}
+
+// Generic map store static function
+void ArrayStoreInsn::codeGenArrayStore(LLVMBuilderRef builder, LLVMValueRef arrayStoreFunc, LLVMValueRef lhs,
+                                       LLVMValueRef key, LLVMValueRef rhs) {
+    LLVMValueRef argOpValueRef[] = {lhs, key, rhs};
+    LLVMBuildCall(builder, arrayStoreFunc, argOpValueRef, 3, "");
 }
 
 } // namespace nballerina

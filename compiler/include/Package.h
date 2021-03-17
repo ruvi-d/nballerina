@@ -77,6 +77,7 @@ class Package : public Translatable {
     std::optional<Variable> getGlobalVariable(const std::string &name) const;
     LLVMValueRef getMapIntStoreDeclaration(LLVMModuleRef &modRef);
     LLVMValueRef getMapSpreadFieldDeclaration(LLVMModuleRef &modRef);
+    LLVMValueRef getArrayStoreDeclaration(LLVMModuleRef &modRef);
 
     void addToStrTable(std::string_view name);
     void setOrgName(std::string orgName);
