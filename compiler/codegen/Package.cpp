@@ -122,7 +122,7 @@ void Package::translate(LLVMModuleRef &modRef) {
     for (auto const &it : globalVars) {
         auto const &globVar = it.second;
         LLVMTypeRef varTyperef = getLLVMTypeOfType(globVar.getType());
-        const std::string varName = globVar.getName();
+        const auto &varName = globVar.getName();
         // emit/adding the global variable.
         llvm::Constant *initValue = llvm::Constant::getNullValue(llvm::unwrap(varTyperef));
         auto gVar =
@@ -202,12 +202,8 @@ void Package::applyStringOffsetRelocations(LLVMModuleRef &modRef) {
         size_t finalOrigOffset = strBuilder->getOffset(element.first);
         LLVMValueRef tempVal = LLVMConstInt(LLVMInt32Type(), finalOrigOffset, 0);
         for (const auto &insn : element.second) {
-            LLVMValueRef constOperand;
-            llvm::GetElementPtrInst *GEPInst = llvm::dyn_cast<llvm::GetElementPtrInst>(llvm::unwrap(insn));
-            if (GEPInst)
-                constOperand = LLVMGetOperand(insn, 1);
-            else
-                constOperand = LLVMGetOperand(insn, 0);
+            auto *GEPInst = llvm::dyn_cast<llvm::GetElementPtrInst>(llvm::unwrap(insn));
+            LLVMValueRef constOperand = (GEPInst != nullptr) ? LLVMGetOperand(insn, 1) : LLVMGetOperand(insn, 0);
             LLVMReplaceAllUsesWith(constOperand, tempVal);
         }
     }
@@ -215,7 +211,7 @@ void Package::applyStringOffsetRelocations(LLVMModuleRef &modRef) {
     LLVMValueRef createAddrsSpace = LLVMAddGlobalInAddressSpace(modRef, arraType, STRING_TABLE_NAME.c_str(), 0);
     globalVarRefs.insert({STRING_TABLE_NAME, createAddrsSpace});
 
-    LLVMValueRef constString = LLVMConstString(concatString.get(), concatStringLen, false);
+    LLVMValueRef constString = LLVMConstString(concatString.get(), concatStringLen, 0);
     // Initializing global address space with generated string(concat all the
     // strings from string builder table).
     LLVMSetInitializer(createAddrsSpace, constString);
@@ -237,13 +233,13 @@ std::optional<Variable> Package::getGlobalVariable(const std::string &name) cons
     return varIt->second;
 }
 
-void Package::insertGlobalVar(Variable var) {
-    globalVars.insert(std::pair<std::string, Variable>(var.getName(), std::move(var)));
+void Package::insertGlobalVar(const Variable &var) {
+    globalVars.insert(std::pair<std::string, Variable>(var.getName(), var));
 }
 
 // Declaration for map<int> type store function
 LLVMValueRef Package::getMapIntStoreDeclaration(LLVMModuleRef &modRef) {
-    const auto *externalFunctionName= "map_store_int";
+    const auto *externalFunctionName = "map_store_int";
 
     LLVMValueRef mapStoreFunc = getFunctionRef(externalFunctionName);
     if (mapStoreFunc != nullptr) {
