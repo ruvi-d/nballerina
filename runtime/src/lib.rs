@@ -187,3 +187,24 @@ pub extern "C" fn map_store_int(ptr: *mut BalMapInt, key: *const c_char, member_
     // Print length to test functionality
     println!("length={}", bal_map.length());
 }
+
+#[no_mangle]
+pub extern "C" fn map_spread_field_init(ptr_source: *mut BalMapInt, ptr_expr: *mut BalMapInt) {
+    // Load source BalMap from pointer
+    let map_src = unsafe {
+        assert!(!ptr_source.is_null());
+        &mut *ptr_source
+    };
+    
+    // Load expr BalMap from pointer
+    let map_expr = unsafe {
+        assert!(!ptr_expr.is_null());
+        &mut *ptr_expr
+    };
+
+    // Insert from spread field expression
+    map_src.insert_spread_field(map_expr);
+
+    // Print length to test functionality
+    println!("length={}", map_src.length());
+}
